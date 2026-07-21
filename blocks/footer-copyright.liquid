@@ -1,0 +1,184 @@
+
+{% assign block_settings = block.settings %}
+<div
+  class="
+    footer-utilities__group-copyright footer-utilities__group-copyright-custom flex justify-center gap-sm align-center
+    custom-typography hover-links
+    {% if block_settings.font_size != "" %}custom-font-size{% endif %}
+    {{ block_settings.custom_class | escape }}
+  "
+  style="
+    {% render 'typography-style', preset: 'custom', settings: block_settings %}
+    {% if block_settings.text_color != blank %}--color-utilities: {{ block_settings.text_color }};{% endif %}
+    {% if block_settings.link_hover_color != blank %}--link-hover-color: {{ block_settings.link_hover_color }};{% endif %}
+  "
+  {{ block.shopify_attributes }}
+>
+  <span class="footer-utilities__text">
+    &copy; 2013 - {{ 'now' | date: '%Y' }}
+    {{ shop.name | link_to: routes.root_url -}}
+    {%- if block_settings.show_powered_by -%}
+      , Developed By <a href="https://thegrowmore.com/" class="powered-by-link hover-icon-scale flex justify-left gap-xs align-center">
+         <span class="underline">GrowMore</span> <span class="icon-size--xs icon-link"> {{ 'icon-link.svg' | inline_asset_content }} </span>
+        </a>
+    {%- endif -%}
+  </span>
+  {% assign menu = linklists[block.settings.menu] %}
+  {% if menu.links.size > 0 %}
+  <span>
+    <nav aria-label="{{ menu.title | escape }}">      
+          <ul class="list-unstyled policy-footer-menu flex justify-left gap-sm align-center">
+            {% for link in menu.links %}
+              <li class="policy-menu__item {{ block_settings.link_preset }}">
+                <a href="{{ link.url }}" class="hover-icon-scale">
+                  {{ link.title }}{% if link.data_sharing_opt_out_icon %}{{ link.data_sharing_opt_out_icon }}{% endif %}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>        
+    </nav>
+  </span>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .footer-utilities__group-copyright {
+    color: var(--color-utilities, var(--color-foreground-muted));
+  }
+
+  /* Center the copyright, overriding the section's left-align for grid cells. */
+  .utilities .footer-utilities__group-copyright {
+    text-align: center;
+  }
+
+  .footer-utilities__group-copyright .footer-utilities__text {
+    /* Keep the whole credit on one line; never break onto a second row. */
+    white-space: nowrap;
+  }
+
+  /* Flow the GrowMore link inline with the text instead of as its own block. */
+
+  .icon-link{
+    margin-top: -3px;
+  }
+
+  .icon-link svg path{
+    stroke: currentColor;
+  }
+
+  .footer-utilities__group-copyright .powered-by-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-2xs, 0.25rem);
+    vertical-align: middle;
+  }
+
+  /* Hover color + icon scale are handled by the generic .hover-links /
+     .hover-icon-scale utilities in base-extended.css, driven by the
+     "Link hover color" setting (--link-hover-color). The GrowMore icon uses
+     stroke: currentColor above, so it follows the hover color automatically. */
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.copyright",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_powered_by",
+      "label": "Show \"Developed by GrowMore\" credit",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "t:content.manage_store_name"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text_color",
+      "placeholder": "t:settings.default"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover color",
+      "default": "#fbbc05"
+    },
+    {
+      "type": "select",
+      "id": "font_size",
+      "label": "t:settings.size",
+      "options": [
+        {
+          "value": "0.625rem",
+          "label": "10px"
+        },
+        {
+          "value": "0.75rem",
+          "label": "12px"
+        },
+        {
+          "value": "0.875rem",
+          "label": "14px"
+        },
+        {
+          "value": "1rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.125rem",
+          "label": "18px"
+        }
+      ],
+      "default": "0.75rem"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "t:settings.case",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Menu"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu"
+    },
+    {
+      "type": "header",
+      "content": "t:content.advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "t:settings.custom_class",
+      "info": "t:info.custom_class"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.copyright",
+      "category": "t:categories.footer"
+    }
+  ]
+}
+{% endschema %}

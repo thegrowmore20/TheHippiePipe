@@ -1,0 +1,58 @@
+{%- doc -%}
+  Renders one collection "pill" for the mega menu product row — used when a top-level menu item's
+  children are collection links. Image priority: 1) custom.megamenu_image metafield  2) collection
+  image  3) first product image.
+
+  @param {object} collection - The collection to render.
+  @param {string} [ratio] - Unused; the pill thumbnail is a fixed square.
+{%- enddoc -%}
+
+{%- if collection != blank -%}
+  {%- liquid
+    assign card_image = blank
+    assign megamenu_image = collection.metafields.custom.megamenu_image.value
+    if megamenu_image != blank
+      assign card_image = megamenu_image
+    endif
+    if card_image == blank and collection.image != blank
+      assign card_image = collection.image
+    endif
+    if card_image == blank
+      assign first_product = collection.products | where: 'featured_image' | first
+      assign card_image = first_product.featured_image
+    endif
+  -%}
+  <li class="mega-menu-product-row__item mega-menu-collection-pill">
+    <a href="{{ collection.url }}" class="mega-menu-collection-pill__link">
+      <span class="mega-menu-collection-pill__media">
+        {%- if card_image != blank -%}
+          {{
+            card_image
+            | image_url: width: 200
+            | image_tag: loading: 'lazy', class: 'mega-menu-collection-pill__image', widths: '80, 120, 160, 200', sizes: '60px'
+          }}
+        {%- endif -%}
+      </span>
+      <span class="mega-menu-collection-pill__text">
+        <span class="mega-menu-collection-pill__title">{{ collection.title }}</span>
+        <span class="mega-menu-collection-pill__count">({{ collection.all_products_count }})</span>
+      </span>
+    </a>
+  </li>
+{%- endif -%}
+
+{% stylesheet %}
+  .mega-menu-collection-pill { padding: 8px 12px; }
+  .mega-menu-collection-pill__link { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+  .mega-menu-collection-pill__media {
+    flex: 0 0 auto; display: block; width: 44px; height: 44px; border-radius: 8px; overflow: hidden;
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-5, 0.05));
+  }
+  .mega-menu-collection-pill__image { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .mega-menu-collection-pill__text { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+  .mega-menu-collection-pill__title { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mega-menu-collection-pill__count {
+    margin-block-start: 2px; font-size: var(--font-size--xs);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-50));
+  }
+{% endstylesheet %}

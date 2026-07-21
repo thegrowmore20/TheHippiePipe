@@ -1,0 +1,43 @@
+{%- doc -%}
+  Renders one product card for the mega menu product row: the theme's resource-card plus an
+  optional Loox rating inside the card content.
+
+  Note: this theme's resource-card does not accept `hide_price` or `card_footer` params, so the
+  price is hidden via a modifier class + CSS (see blocks/_header-menu.liquid) and the Loox rating
+  is rendered after the card inside the same bordered item.
+
+  @param {object} product - The product to render.
+  @param {boolean} [show_rating] - Whether to render the Loox rating.
+  @param {boolean} [show_second_image] - Whether to swap to the second image on hover.
+  @param {string} [ratio] - Image aspect ratio.
+  @param {boolean} [hide_price] - When true, the price is hidden.
+{%- enddoc -%}
+
+{%- if product != blank -%}
+  <li class="mega-menu-product-row__item{% if hide_price %} mega-menu-product-row__item--no-price{% endif %}">
+    {% render 'resource-card',
+      resource: product,
+      resource_type: 'product',
+      image_hover: show_second_image,
+      image_aspect_ratio: ratio,
+      image_sizes: '(min-width: 990px) 12vw, 40vw',
+      product_view_context: 'dialog'
+    %}
+    {%- if show_rating -%}
+      <div
+        class="mega-menu-product-row__rating"
+        aria-label="Rated {{ product.metafields.loox.avg_rating }} out of 5 based on {{ product.metafields.loox.num_reviews }} reviews"
+      >
+        <div
+          class="loox-rating"
+          data-pattern="[rating] ([count])"
+          data-show-empty-stars="true"
+          data-id="{{ product.id }}"
+          data-rating="{{ product.metafields.loox.avg_rating }}"
+          data-raters="{{ product.metafields.loox.num_reviews }}"
+          data-floating-product-reviews-enabled="true"
+        ></div>
+      </div>
+    {%- endif -%}
+  </li>
+{%- endif -%}

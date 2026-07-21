@@ -1,0 +1,160 @@
+
+.gap-2xs {
+  gap: var(--gap-2xs);
+}
+
+.gap-xs {
+  gap: var(--gap-xs);
+}
+
+.gap-sm {
+  gap: var(--gap-sm);
+}
+
+.gap-md {
+  gap: var(--gap-md);
+}
+.gap-lg {
+  gap: var(--gap-lg);
+}
+
+.gap-xl {
+  gap: var(--gap-xl);
+}
+
+.font-size--2xs {
+  font-size: var(--font-size--2xs);
+}
+
+.font-size--xs {
+  font-size: var(--font-size--xs);
+}
+
+.font-size--sm {
+  font-size: var(--font-size--sm);
+}
+
+.font-size--md {
+  font-size: var(--font-size--md);
+}
+
+.font-size--lg {
+  font-size: var(--font-size--lg);
+}
+
+.font-size--xl {
+  font-size: var(--font-size--xl);
+}
+
+.icon-size--2xs{
+  width: var(--icon-size-2xs);
+  height: var(--icon-size-2xs);
+}
+
+.icon-size--xs{
+  width: var(--icon-size-xs);
+  height: var(--icon-size-xs);
+}
+
+.icon-size--md{
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+.icon-size--sm,
+.custom-icon-size,
+.icon-chevron{
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.opacity-70{
+  opacity: var(--opacity-70);
+}
+
+.border-separator{
+    height: 1px;
+    background-color: rgb(255 255 255 / 6%);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.align-start {
+  align-items: start;  
+}
+
+.align-center {
+  align-items: center;
+}
+
+.align-end {
+  align-items: end;
+}
+
+.underline{
+  text-decoration-line: underline;
+  text-underline-offset: 0.3em;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+/* --- Generic hover interactions -------------------------------------- *
+ * Drive the color from the block: set --link-hover-color on the element
+ * (or an ancestor) via a theme-editor color setting. The scale defaults to
+ * 1.1 and can be overridden per element with --hover-scale.
+ * -------------------------------------------------------------------- */
+
+/* Per-link hover color. Add .hover-links to a container that holds <a>s. */
+.hover-links a {
+  transition: color var(--hover-transition-duration) var(--hover-transition-timing);
+}
+
+.hover-links a:hover,
+.hover-links a:focus-visible {
+  color: var(--link-hover-color, currentColor);
+}
+
+/* Element-level hover color (e.g. a group that is itself a link, or an icon
+ * button). Propagates to nested text and icons: this theme's icons use
+ * stroke/fill: currentColor, so setting color recolors the svg; nested text
+ * that carries its own color is overridden by the higher-specificity selector. */
+.hover-color,
+.hover-color :is(a, rte-formatter,span, p, li, strong, em, h1, h2, h3, h4, h5, h6, svg, .svg-wrapper, [class*='icon']) {
+  transition: color var(--hover-transition-duration) var(--hover-transition-timing);
+}
+
+.hover-color:hover,
+.hover-color:focus-within,
+.hover-color:hover :is(a, rte-formatter,  span, p, li, strong, em, h1, h2, h3, h4, h5, h6, svg, .svg-wrapper, [class*='icon']),
+.hover-color:focus-within :is(a, rte-formatter,  span, p, li, strong, em, h1, h2, h3, h4, h5, h6, svg, .svg-wrapper, [class*='icon']) {
+  color: var(--link-hover-color, currentColor);
+}
+
+/* Scale an icon (svg) on hover. Add .hover-icon-scale to the link/element
+ * that contains the icon. Icons drawn with currentColor also follow the
+ * hover color set above. */
+.hover-icon-scale svg {
+  transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+  transform-origin: center;
+}
+
+.hover-icon-scale:hover svg,
+.hover-icon-scale:focus-within svg {
+  transform: scale(var(--hover-scale, 1.1));
+}
+
+.hover-color:hover .custom-icon-size path.st0,
+.hover-color:hover .custom-icon-size polygon.st0 {
+    fill: var(--link-hover-color, currentColor);
+}
+
+.hover-color:hover .custom-icon-size path{
+    stroke: var(--link-hover-color, currentColor);
+}
+
+#powrIframeLoader {
+    display: none;
+}

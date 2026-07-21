@@ -1,0 +1,111 @@
+{%- doc -%}
+  Renders the Loox star rating for the nearest product in context.
+
+  Loox hydrates `.loox-rating` on the client from the data attributes below, so the
+  markup is intentionally empty. Requires the Loox app embed to be enabled.
+{%- enddoc -%}
+
+{% liquid
+  assign product = closest.product
+  assign rating = product.metafields.loox.avg_rating
+  assign review_count = product.metafields.loox.num_reviews
+%}
+
+{% if product != blank %}
+  <div
+    class="card-product-rating spacing-style {{ block.settings.custom_class | escape }}"
+    style="{% render 'spacing-style', settings: block.settings %} --card-product-rating-justify: {{ block.settings.alignment }};"
+    aria-label="Rated {{ rating }} out of 5 based on {{ review_count }} reviews"
+    {{ block.shopify_attributes }}
+  >
+    <div
+      class="loox-rating"
+      data-pattern="[rating] ([count])"
+      data-show-empty-stars="true"
+      data-id="{{ product.id }}"
+      data-rating="{{ rating }}"
+      data-raters="{{ review_count }}"
+      data-floating-product-reviews-enabled="true"
+    ></div>
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .card-product-rating {
+    display: flex;
+    justify-content: var(--card-product-rating-justify, flex-start);
+  }
+
+  /* Loox injects its own markup after hydration; keep it from inheriting link styles. */
+  .card-product-rating .loox-rating {
+    line-height: 1;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Loox rating",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "t:settings.custom_class",
+      "info": "t:info.custom_class"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Loox rating"
+    }
+  ]
+}
+{% endschema %}

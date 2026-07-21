@@ -1,0 +1,134 @@
+{%- doc -%}
+  Renders a full-width row of product cards for a header menu dropdown — the "Product row"
+  media type. Called from blocks/_header-menu.liquid for each top-level link that has a dropdown,
+  in place of the standard link columns.
+
+  Product source, in order of preference:
+    1. The product sub-links added under this menu item (hand-picked curation).
+    2. Otherwise, the collection the menu item links to, like the native featured_products mode.
+
+  @param {object} parent_link - The menu link supplying the products (via sub-links or its collection).
+  @param {object} section - The header section object.
+  @param {object} block_settings - The _header-menu block settings.
+{%- enddoc -%}
+
+{% liquid
+  # Inspect the sub-links added under this menu item to decide what to show.
+  #   - Product sub-links  -> a row of product cards (hand-picked curation).
+  #   - Collection sub-links -> a row of collection cards (each links to its collection).
+  # Products take priority when both are present.
+  assign product_link_count = 0
+  assign collection_link_count = 0
+  for sub_link in parent_link.links
+    if sub_link.type == 'product_link'
+      assign product_link_count = product_link_count | plus: 1
+    elsif sub_link.type == 'collection_link'
+      assign collection_link_count = collection_link_count | plus: 1
+    endif
+  endfor
+
+  assign use_sub_links = false
+  if product_link_count > 0
+    assign use_sub_links = true
+  endif
+
+  # Children are collections (and no product sub-links): show collection cards instead of products.
+  assign use_collection_links = false
+  if product_link_count == 0 and collection_link_count > 0
+    assign use_collection_links = true
+  endif
+
+  # Fallback source: the collection the link points to (native featured_products behaviour).
+  assign collection_object = null
+  if parent_link.type == 'collection_link'
+    assign collection_object = parent_link.object
+  elsif parent_link.type == 'catalog_link' or parent_link.type == 'collections_link'
+    assign collection_object = collections.all
+  endif
+
+  assign has_products = false
+  if use_sub_links or use_collection_links
+    assign has_products = true
+  elsif collection_object != blank and collection_object.products_count > 0
+    assign has_products = true
+  endif
+
+  assign product_count = block_settings.product_row_count | default: 6
+  assign columns = block_settings.product_row_columns | default: 6
+  assign columns_tablet = columns | divided_by: 2 | at_least: 2
+  assign ratio = block_settings.product_row_aspect_ratio | default: '1 / 1'
+  assign radius = block_settings.image_border_radius | default: 0
+  assign show_rating = block_settings.product_row_show_rating
+  assign show_second_image = block_settings.product_row_show_second_image
+  assign border_color = block_settings.product_row_border_color | default: '#f5ebeb'
+  assign title_font_size = block_settings.product_row_title_font_size
+  assign content_width = block_settings.product_row_width | default: '62.5rem'
+
+  assign hide_price = false
+  if block_settings.product_row_show_price == false
+    assign hide_price = true
+  endif
+%}
+
+{%- if has_products -%}
+  <div
+    class="mega-menu mega-menu-product-row section section--full-width"
+    style="
+      --mmpr-columns: {{ columns }};
+      --mmpr-columns-tablet: {{ columns_tablet }};
+      --mmpr-border-color: {{ border_color }};
+      --mmpr-content-width: {{ content_width }};
+      {% if title_font_size != blank %}--mmpr-title-font-size: {{ title_font_size }};{% endif %}
+      --resource-card-corner-radius: {{ radius }}px;
+    "
+  >
+    <ul class="mega-menu-product-row__grid{% if use_collection_links %} mega-menu-product-row__grid--collections{% endif %} list-unstyled">
+      {%- if use_collection_links -%}
+        {%- for sub_link in parent_link.links -%}
+          {%- if sub_link.type == 'collection_link' -%}
+            {% render 'mega-menu-collection-card', collection: sub_link.object, ratio: ratio %}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- elsif use_sub_links -%}
+        {%- assign rendered = 0 -%}
+        {%- for sub_link in parent_link.links -%}
+          {%- if sub_link.type == 'product_link' and rendered < product_count -%}
+            {% render 'mega-menu-product-card',
+              product: sub_link.object,
+              show_rating: show_rating,
+              show_second_image: show_second_image,
+              ratio: ratio,
+              hide_price: hide_price
+            %}
+            {%- assign rendered = rendered | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for product in collection_object.products limit: product_count -%}
+          {% render 'mega-menu-product-card',
+            product: product,
+            show_rating: show_rating,
+            show_second_image: show_second_image,
+            ratio: ratio,
+            hide_price: hide_price
+          %}
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+  </div>
+{%- else -%}
+  {% assign list_id = 'MegaMenuList-' | append: parent_link.title | handle %}
+  <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
+    <div class="mega-menu__grid" data-menu-grid-id="{{ list_id }}">
+      {% render 'mega-menu-list',
+        parent_link: parent_link,
+        id: list_id,
+        section: section,
+        grid_columns_count: 6,
+        grid_columns_count_tablet: 4,
+        grid_columns_count_collection_images: 8,
+        menu_content_type: 'text'
+      %}
+    </div>
+  </div>
+{%- endif -%}

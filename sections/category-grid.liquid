@@ -1,0 +1,924 @@
+{% liquid
+  assign has_background = false
+  if section.settings.background_color != blank
+    assign has_background = true
+    render 'contrast-override', background_color: section.settings.background_color, section_id: section.id
+  endif
+
+  assign ratio = section.settings.card_aspect_ratio
+%}
+
+<div class="section-background{% if has_background %} color-custom-{{ section.id }}{% endif %}"></div>
+
+<div
+  class="
+    section
+    section--{{ section.settings.section_width }}
+    {% if has_background %}color-custom-{{ section.id }}{% endif %}
+    spacing-style
+    gap-style
+  "
+  style="
+    {% render 'spacing-style', settings: section.settings %}
+    {% render 'gap-style', value: section.settings.gap %}
+  "
+  data-testid="category-grid"
+>
+  {%- comment -%}
+    A static group above the grid, so heading/subheading blocks land here instead of
+    becoming grid cells. Hidden by base.css when the group has no children.
+  {%- endcomment -%}
+  <div class="section-resource-list__header category-grid__header">
+    {% content_for 'block', type: 'group', id: 'static-header' %}
+  </div>
+
+  <div
+    class="category-grid{% unless ratio == 'adapt' %} category-grid--fixed-ratio{% endunless %}"
+    style="
+      --category-grid-columns: {{ section.settings.columns }};
+      --category-grid-columns-mobile: {{ section.settings.mobile_columns }};
+      --category-grid-column-gap: {{ section.settings.columns_gap }}px;
+      --category-grid-row-gap: {{ section.settings.rows_gap }}px;
+      {%- unless ratio == 'adapt' %} --category-grid-card-ratio: {{ ratio }};{% endunless -%}
+    "
+  >
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  /* Mobile-first, matching the theme's 750px desktop breakpoint. */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--category-grid-columns-mobile, 2), minmax(0, 1fr));
+    column-gap: var(--category-grid-column-gap, 12px);
+    row-gap: var(--category-grid-row-gap, 12px);
+  }
+
+  @media screen and (min-width: 750px) {
+    .category-grid {
+      grid-template-columns: repeat(var(--category-grid-columns, 3), minmax(0, 1fr));
+    }
+  }
+
+  /* Grid items default to min-width: auto, which lets a long title widen its whole column. */
+  .category-grid > * {
+    min-width: 0;
+  }
+
+  /* The background image is absolutely positioned, so the card clips it to its own radius. */
+  .category-grid > .group-block {
+    overflow: clip;
+  }
+
+  /* Outranks .group-block--height-fit/fill so the ratio sets the height, not the text inside. */
+  .category-grid--fixed-ratio > .group-block {
+    aspect-ratio: var(--category-grid-card-ratio);
+    height: auto;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Category grid",
+  "tag": "section",
+  "class": "category-grid-section",
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.cards_layout"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:settings.columns",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "mobile_columns",
+      "label": "t:settings.mobile_columns",
+      "options": [
+        {
+          "value": "1",
+          "label": "t:options.one_number"
+        },
+        {
+          "value": "2",
+          "label": "t:options.two_number"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "card_aspect_ratio",
+      "label": "Card shape",
+      "options": [
+        {
+          "value": "2 / 1",
+          "label": "Wide (2:1)"
+        },
+        {
+          "value": "16 / 9",
+          "label": "Landscape (16:9)"
+        },
+        {
+          "value": "3 / 2",
+          "label": "Landscape (3:2)"
+        },
+        {
+          "value": "1 / 1",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "4 / 5",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "adapt",
+          "label": "Adapt to content"
+        }
+      ],
+      "default": "2 / 1",
+      "info": "Every card keeps this shape at every screen size. Choose \"Adapt to content\" to let each card size itself."
+    },
+    {
+      "type": "range",
+      "id": "columns_gap",
+      "label": "t:settings.horizontal_gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "rows_gap",
+      "label": "t:settings.vertical_gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:content.section_layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24,
+      "info": "Space between the header and the grid."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "placeholder": "t:settings.default"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Margin"
+    },
+    {
+      "type": "range",
+      "id": "margin-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category grid",
+      "category": "t:categories.collections",
+      "settings": {
+        "columns": 3,
+        "mobile_columns": "2",
+        "card_aspect_ratio": "2 / 1",
+        "columns_gap": 12,
+        "rows_gap": 12,
+        "section_width": "page-width",
+        "gap": 24,
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      },
+      "blocks": {
+        "static-header": {
+          "type": "group",
+          "name": "Header",
+          "static": true,
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 4,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit",
+            "background_media": "none",
+            "border": "none",
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "heading": {
+              "type": "text",
+              "name": "Heading",
+              "settings": {
+                "text": "<h2>Shop by category</h2>",
+                "type_preset": "h3",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "subheading": {
+              "type": "text",
+              "name": "Subheading",
+              "settings": {
+                "text": "<p>Find the right gear for the way you smoke.</p>",
+                "type_preset": "paragraph",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": ["heading", "subheading"]
+        },
+        "card_1": {
+          "type": "group",
+          "name": "ENSŌ",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fill",
+            "background_media": "image",
+            "background_image_position": "cover",
+            "toggle_overlay": true,
+            "overlay_color": "#00000040",
+            "overlay_style": "gradient",
+            "gradient_direction": "to bottom",
+            "border": "none",
+            "border_radius": 12,
+            "link": "",
+            "open_in_new_tab": false,
+            "padding-block-start": 20,
+            "padding-block-end": 20,
+            "padding-inline-start": 20,
+            "padding-inline-end": 20,
+            "custom_class": "category-card"
+          },
+          "blocks": {
+            "title": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>ENSŌ</p>",
+                "type_preset": "h5",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "subtitle": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Accessories</p>",
+                "type_preset": "paragraph",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 2,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": [
+            "title",
+            "subtitle"
+          ]
+        },
+        "card_2": {
+          "type": "group",
+          "name": "Legacy",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fill",
+            "background_media": "image",
+            "background_image_position": "cover",
+            "toggle_overlay": true,
+            "overlay_color": "#00000040",
+            "overlay_style": "gradient",
+            "gradient_direction": "to bottom",
+            "border": "none",
+            "border_radius": 12,
+            "link": "",
+            "open_in_new_tab": false,
+            "padding-block-start": 20,
+            "padding-block-end": 20,
+            "padding-inline-start": 20,
+            "padding-inline-end": 20,
+            "custom_class": "category-card"
+          },
+          "blocks": {
+            "title": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Legacy</p>",
+                "type_preset": "h5",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "subtitle": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Accessories</p>",
+                "type_preset": "paragraph",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 2,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": [
+            "title",
+            "subtitle"
+          ]
+        },
+        "card_3": {
+          "type": "group",
+          "name": "X",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fill",
+            "background_media": "image",
+            "background_image_position": "cover",
+            "toggle_overlay": true,
+            "overlay_color": "#00000040",
+            "overlay_style": "gradient",
+            "gradient_direction": "to bottom",
+            "border": "none",
+            "border_radius": 12,
+            "link": "",
+            "open_in_new_tab": false,
+            "padding-block-start": 20,
+            "padding-block-end": 20,
+            "padding-inline-start": 20,
+            "padding-inline-end": 20,
+            "custom_class": "category-card"
+          },
+          "blocks": {
+            "title": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>X</p>",
+                "type_preset": "h5",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "subtitle": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Accessories</p>",
+                "type_preset": "paragraph",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 2,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": [
+            "title",
+            "subtitle"
+          ]
+        },
+        "card_4": {
+          "type": "group",
+          "name": "XS GO",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fill",
+            "background_media": "image",
+            "background_image_position": "cover",
+            "toggle_overlay": true,
+            "overlay_color": "#00000040",
+            "overlay_style": "gradient",
+            "gradient_direction": "to bottom",
+            "border": "none",
+            "border_radius": 12,
+            "link": "",
+            "open_in_new_tab": false,
+            "padding-block-start": 20,
+            "padding-block-end": 20,
+            "padding-inline-start": 20,
+            "padding-inline-end": 20,
+            "custom_class": "category-card"
+          },
+          "blocks": {
+            "title": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>XS GO</p>",
+                "type_preset": "h5",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "subtitle": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Accessories</p>",
+                "type_preset": "paragraph",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 2,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": [
+            "title",
+            "subtitle"
+          ]
+        },
+        "card_5": {
+          "type": "group",
+          "name": "OM",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fill",
+            "background_media": "image",
+            "background_image_position": "cover",
+            "toggle_overlay": true,
+            "overlay_color": "#00000040",
+            "overlay_style": "gradient",
+            "gradient_direction": "to bottom",
+            "border": "none",
+            "border_radius": 12,
+            "link": "",
+            "open_in_new_tab": false,
+            "padding-block-start": 20,
+            "padding-block-end": 20,
+            "padding-inline-start": 20,
+            "padding-inline-end": 20,
+            "custom_class": "category-card"
+          },
+          "blocks": {
+            "title": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>OM</p>",
+                "type_preset": "h5",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "subtitle": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Accessories</p>",
+                "type_preset": "paragraph",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 2,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": [
+            "title",
+            "subtitle"
+          ]
+        },
+        "card_6": {
+          "type": "group",
+          "name": "Breathelet",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fill",
+            "background_media": "image",
+            "background_image_position": "cover",
+            "toggle_overlay": true,
+            "overlay_color": "#00000040",
+            "overlay_style": "gradient",
+            "gradient_direction": "to bottom",
+            "border": "none",
+            "border_radius": 12,
+            "link": "",
+            "open_in_new_tab": false,
+            "padding-block-start": 20,
+            "padding-block-end": 20,
+            "padding-inline-start": 20,
+            "padding-inline-end": 20,
+            "custom_class": "category-card"
+          },
+          "blocks": {
+            "title": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Breathelet</p>",
+                "type_preset": "h5",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "subtitle": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Accessories</p>",
+                "type_preset": "paragraph",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 2,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": [
+            "title",
+            "subtitle"
+          ]
+        },
+        "card_7": {
+          "type": "group",
+          "name": "Chargers",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fill",
+            "background_media": "image",
+            "background_image_position": "cover",
+            "toggle_overlay": true,
+            "overlay_color": "#00000040",
+            "overlay_style": "gradient",
+            "gradient_direction": "to bottom",
+            "border": "none",
+            "border_radius": 12,
+            "link": "",
+            "open_in_new_tab": false,
+            "padding-block-start": 20,
+            "padding-block-end": 20,
+            "padding-inline-start": 20,
+            "padding-inline-end": 20,
+            "custom_class": "category-card"
+          },
+          "blocks": {
+            "title": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Chargers</p>",
+                "type_preset": "h5",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": [
+            "title"
+          ]
+        },
+        "card_8": {
+          "type": "group",
+          "name": "Wearables",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fill",
+            "background_media": "image",
+            "background_image_position": "cover",
+            "toggle_overlay": true,
+            "overlay_color": "#00000040",
+            "overlay_style": "gradient",
+            "gradient_direction": "to bottom",
+            "border": "none",
+            "border_radius": 12,
+            "link": "",
+            "open_in_new_tab": false,
+            "padding-block-start": 20,
+            "padding-block-end": 20,
+            "padding-inline-start": 20,
+            "padding-inline-end": 20,
+            "custom_class": "category-card"
+          },
+          "blocks": {
+            "title": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Wearables</p>",
+                "type_preset": "h5",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": [
+            "title"
+          ]
+        },
+        "card_9": {
+          "type": "group",
+          "name": "Grinders",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fill",
+            "background_media": "image",
+            "background_image_position": "cover",
+            "toggle_overlay": true,
+            "overlay_color": "#00000040",
+            "overlay_style": "gradient",
+            "gradient_direction": "to bottom",
+            "border": "none",
+            "border_radius": 12,
+            "link": "",
+            "open_in_new_tab": false,
+            "padding-block-start": 20,
+            "padding-block-end": 20,
+            "padding-inline-start": 20,
+            "padding-inline-end": 20,
+            "custom_class": "category-card"
+          },
+          "blocks": {
+            "title": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Grinders</p>",
+                "type_preset": "h5",
+                "text_color": "#ffffff",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "wrap": "pretty",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": [
+            "title"
+          ]
+        }
+      },
+      "block_order": [
+        "card_1",
+        "card_2",
+        "card_3",
+        "card_4",
+        "card_5",
+        "card_6",
+        "card_7",
+        "card_8",
+        "card_9"
+      ]
+    }
+  ]
+}
+{% endschema %}

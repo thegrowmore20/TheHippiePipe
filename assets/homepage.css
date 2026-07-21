@@ -1,0 +1,7 @@
+.loox-rating-overall{
+    height: 27px;
+}
+
+.loox-rating-overall .loox-rating-label{
+    color: var(--loox-rating-color, #fff);
+}

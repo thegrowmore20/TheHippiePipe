@@ -1,0 +1,16 @@
+{%- comment -%}
+  Intended for blocks and sections that provide values for all the referenced settings.
+
+  <div style="{%  render 'spacing-padding', settings: section.settings %}">
+
+   Accepts:
+      settings: {block.settings || section.settings}
+{%- endcomment -%}
+
+--padding-block-start: {{ settings['padding-block-start'] | default: 0 }}px; --padding-block-end:
+{{- settings['padding-block-end'] | default: 0 -}}
+px; --padding-inline-start:{{ settings['padding-inline-start'] | default: 0 }}px; --padding-inline-end:
+{{- settings['padding-inline-end'] | default: 0 -}}
+px;
+{%- if settings['margin-block-start'] -%}--margin-block-start: {{ settings['margin-block-start'] }}px;{%- endif -%}
+{%- if settings['margin-block-end'] -%}--margin-block-end: {{ settings['margin-block-end'] }}px;{%- endif -%}
