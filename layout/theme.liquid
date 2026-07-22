@@ -43,13 +43,20 @@
     {%- render 'color-palette' -%}
 
     {%- comment -%} Card title line clamping (product cards use a theme setting; blog cards fixed at 2). {%- endcomment -%}
+    {%- liquid
+      # Fall back to the schema default: a setting that has never been saved in the theme
+      # editor is absent from settings_data.json, so Liquid reads it as nil even though the
+      # editor displays the default. Without this the clamp below is never emitted.
+      # 0 is truthy in Liquid, so an explicit "0" (full title) still wins over the fallback.
+      assign product_card_title_lines = settings.product_card_title_lines | default: 2
+    -%}
     {% style %}
-      {% if settings.product_card_title_lines > 0 %}
+      {% if product_card_title_lines > 0 %}
         .product-card [role='heading'] {
           display: -webkit-box;
           -webkit-box-orient: vertical;
-          -webkit-line-clamp: {{ settings.product_card_title_lines }};
-          line-clamp: {{ settings.product_card_title_lines }};
+          -webkit-line-clamp: {{ product_card_title_lines }};
+          line-clamp: {{ product_card_title_lines }};
           overflow: hidden;
         }
       {% endif %}

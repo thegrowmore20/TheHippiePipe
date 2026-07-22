@@ -61,6 +61,11 @@
       assign media_fit = block_settings.constrain_to_viewport
     endif
   endif
+
+  # Fall back to the schema default: a setting never saved in the theme editor is absent from
+  # settings_data.json, so Liquid reads nil while the editor shows the default as enabled.
+  # allow_false keeps an explicit "off" once the merchant has actually saved it.
+  assign show_second_image_on_hover = settings.show_second_image_on_hover | default: true, allow_false: true
 %}
 
 <div
@@ -72,7 +77,7 @@
     --gallery-aspect-ratio: {{ ratio }};
   "
   data-product-id="{{ product.id }}"
-  {% if settings.show_second_image_on_hover and product.media.size > 1 %}
+  {% if show_second_image_on_hover and product.media.size > 1 %}
     on:pointerenter="/previewImage"
     on:pointerleave="/resetImage"
   {% endif %}
@@ -141,7 +146,7 @@
           assign max_visible_slide_count = 1
           if settings.product_card_carousel
             assign max_visible_slide_count = 5
-          elsif settings.show_second_image_on_hover
+          elsif show_second_image_on_hover
             assign max_visible_slide_count = 2
           endif
 

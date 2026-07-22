@@ -2,6 +2,16 @@
 
 {% liquid
   assign max_items = section.settings.max_products
+
+  # `product_source` is absent from sections saved before this setting existed, so it reads
+  # as nil there — fall back to the collection behaviour those sections already had.
+  assign product_source = section.settings.product_source | default: 'collection'
+  if product_source == 'product_list'
+    assign source_products = section.settings.product_list
+  else
+    assign source_products = section.settings.collection.products
+  endif
+
   if section.settings.background_color != blank
     render 'contrast-override', background_color: section.settings.background_color, section_id: section.id
   endif
@@ -30,25 +40,23 @@
   </div>
 
   {% capture list_items %}
-    {% if section.settings.collection != blank and shop.products_count != 0 %}
-      {% paginate section.settings.collection.products by max_items %}
-        {% for product in section.settings.collection.products limit: max_items %}
+    {% if source_products != blank and shop.products_count != 0 %}
+      {% for product in source_products limit: max_items %}
         <div
           class="resource-list__item"
         >
-            {% content_for 'block',
-              type: '_product-card',
-              id: 'static-product-card',
-              closest.product: product,
-              product_view_context: 'collection'
-            %}
-          </div>
+          {% content_for 'block',
+            type: '_product-card',
+            id: 'static-product-card',
+            closest.product: product,
+            product_view_context: 'collection'
+          %}
+        </div>
 
-          {% unless forloop.last %}
-            <!--@list/split-->
-          {% endunless %}
-        {% endfor %}
-      {% endpaginate %}
+        {% unless forloop.last %}
+          <!--@list/split-->
+        {% endunless %}
+      {% endfor %}
     {% else %}
       {% for i in (1..max_items) %}
         <div
@@ -106,9 +114,33 @@
   },
   "settings": [
     {
+      "type": "select",
+      "id": "product_source",
+      "label": "t:settings.product_source",
+      "options": [
+        {
+          "value": "collection",
+          "label": "t:options.collection"
+        },
+        {
+          "value": "product_list",
+          "label": "t:options.product_list"
+        }
+      ],
+      "default": "collection"
+    },
+    {
       "type": "collection",
       "id": "collection",
-      "label": "t:settings.collection"
+      "label": "t:settings.collection",
+      "info": "t:info.used_when_source_is_collection"
+    },
+    {
+      "type": "product_list",
+      "id": "product_list",
+      "label": "t:settings.products",
+      "limit": 16,
+      "info": "t:info.used_when_source_is_product_list"
     },
     {
       "type": "select",
@@ -377,6 +409,7 @@
       "name": "t:names.products_grid",
       "category": "t:categories.products",
       "settings": {
+        "product_source": "collection",
         "collection": "",
         "max_products": 8,
         "layout_type": "grid",
@@ -557,6 +590,7 @@
       "name": "t:names.products_carousel",
       "category": "t:categories.products",
       "settings": {
+        "product_source": "collection",
         "collection": "",
         "max_products": 6,
         "layout_type": "carousel",
@@ -737,6 +771,7 @@
       "name": "t:names.products_editorial",
       "category": "t:categories.products",
       "settings": {
+        "product_source": "collection",
         "collection": "",
         "layout_type": "editorial",
         "carousel_on_mobile": false,

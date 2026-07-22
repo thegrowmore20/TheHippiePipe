@@ -36,6 +36,9 @@
   endif
 
   assign slideshow_class = 'slideshow--content-' | append: section.settings.content_position
+  if section.settings.content_width == 'container'
+    assign slideshow_class = slideshow_class | append: ' slideshow--content-container'
+  endif
   if section.blocks.size == 1
     assign slideshow_class = slideshow_class | append: ' slideshow--single-media'
   endif
@@ -75,7 +78,10 @@
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
 <div
-  class="slideshow-section spacing-style section {{ section_width_class }}{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %} disable-section-top-offset"
+  {% if section.settings.custom_id != blank %}
+    id="{{ section.settings.custom_id | escape }}"
+  {% endif %}
+  class="slideshow-section spacing-style section {{ section_width_class }}{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %} disable-section-top-offset {{ section.settings.custom_class | escape }}"
   style="{% render 'spacing-padding', settings: section.settings %}; --slideshow-gap: {{ section.settings.slideshow_gap }}px;{% if rounded_slide_corners %} --corner-radius: {{ section.settings.corner_radius }}px;{% endif %}"
 >
   <h2 class="visually-hidden">{{ 'accessibility.slideshow' | t }}</h2>
@@ -95,6 +101,26 @@
 
 {% stylesheet %}
   .slideshow-section {
+    --slideshow-height-offset: 0px;
+  }
+
+  /*
+   * A full-screen slideshow sitting directly under the header would otherwise be
+   * 100svh *plus* the header, pushing the page down. Subtract the header height,
+   * but only for the first section — later slideshows scroll past the header anyway.
+   * Being extra specific in the selector for performance reasons.
+   */
+  body:has(#header-group > .header-section > #header-component) .slideshow-wrapper:first-child .slideshow-section {
+    --slideshow-height-offset: var(--header-group-height, 0px);
+  }
+
+  .slideshow-section {
+    .slideshow--content-container .slide__content {
+      width: 100%;
+      max-width: var(--page-content-width);
+      margin-inline: auto;
+    }
+
     slideshow-arrows .slideshow-control:first-of-type {
       margin-inline-start: var(--padding-xs);
     }
@@ -184,7 +210,7 @@
 {% schema %}
 {
   "name": "t:names.slideshow",
-  "class": "container-background-image",
+  "class": "container-background-image slideshow-wrapper",
   "blocks": [
     {
       "type": "_slide"
@@ -275,6 +301,10 @@
         {
           "value": "large",
           "label": "t:options.large"
+        },
+        {
+          "value": "full_screen",
+          "label": "t:options.full_screen"
         }
       ],
       "default": "medium",
@@ -295,6 +325,22 @@
         }
       ],
       "default": "on-media"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "t:settings.content_width",
+      "options": [
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        },
+        {
+          "value": "container",
+          "label": "t:options.container"
+        }
+      ],
+      "default": "full-width"
     },
     {
       "type": "color",
@@ -419,27 +465,19 @@
     },
     {
       "type": "header",
-      "content": "Margin"
+      "content": "t:content.advanced"
     },
     {
-      "type": "range",
-      "id": "margin-block-start",
-      "label": "t:settings.top",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0
+      "type": "text",
+      "id": "custom_class",
+      "label": "t:settings.custom_class",
+      "info": "t:info.custom_class"
     },
     {
-      "type": "range",
-      "id": "margin-block-end",
-      "label": "t:settings.bottom",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0
+      "type": "text",
+      "id": "custom_id",
+      "label": "t:settings.custom_id",
+      "info": "t:info.custom_id"
     }
   ],
   "presets": [

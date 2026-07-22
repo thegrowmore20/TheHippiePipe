@@ -7,7 +7,7 @@
   @param {string} [style] - HTML style attribute of the slideshow slide
   @param {string} [attributes] - Additional HTML attributes to add to the slideshow slide
   @param {boolean} [hidden] - Hidden slides will not be shown in the slideshow
-  @param {string} [slide_size] - The size of the slide (small, medium, large)
+  @param {string} [slide_size] - The size of the slide (small, medium, large, full_screen)
   @param {string} [slide_id] - The unique id assigned to the slide amongst all slides in the slideshow
   @param {string} [media_fit] - { 'cover', 'contain' } - CSS property for how the media should be fit in the slide
   @param {boolean} [navigate_to_slide] - Whether the user can click to navigate to the slide
@@ -33,19 +33,20 @@
     when 'large'
       assign grid_template_rows = grid_template_rows | replace: '50dvh', '40dvh'
       assign grid_template_rows_desktop = grid_template_rows_desktop | replace: '70dvh', '60dvh'
+    when 'full_screen'
+      # The slide already fills the viewport via --slide-min-height, so the media takes
+      # the remaining space rather than a fixed height that would overflow it.
+      assign grid_template_rows = grid_template_rows | replace: '50dvh 1fr', '1fr auto'
+      assign grid_template_rows_desktop = grid_template_rows_desktop | replace: '70dvh 1fr', '1fr auto'
   endcase
 -%}
 
 <slideshow-slide
   ref="slides[]"
   aria-hidden="{% if index == 0 %}false{% else %}true{% endif %}"
-  style="--slideshow-timeline: --slide-{{ index }}; --product-media-fit: {{ media_fit | default: 'cover' }}; {{ grid_template_rows }} {{ grid_template_rows_desktop }}"
+  style="--slideshow-timeline: --slide-{{ index }}; --product-media-fit: {{ media_fit | default: 'cover' }}; {{ grid_template_rows }} {{ grid_template_rows_desktop }}{% if style != blank %} {{ style }}{% endif %}"
   {% if class != blank %}
     class="{{ class }}"
-  {% endif %}
-  {{ attributes }}
-  {% if style != blank %}
-    style="{{ style }}"
   {% endif %}
   {% if slide_id != blank %}
     slide-id="{{ slide_id }}"

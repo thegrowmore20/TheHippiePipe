@@ -1,0 +1,219 @@
+{%- doc -%}
+  Renders an estimated delivery window, counted forward in business days from today.
+
+  Weekend days are skipped, so "3 to 5 business days" lands on a weekday range.
+{%- enddoc -%}
+
+{%- liquid
+  assign block_settings = block.settings
+  assign one_day = 86400
+  assign today = 'now' | date: '%s'
+
+  assign start_target = block_settings.delivery_from | default: 3
+  assign end_target = block_settings.delivery_to | default: 5
+
+  # Guard against the range being inverted in the editor.
+  if start_target > end_target
+    assign swap = start_target
+    assign start_target = end_target
+    assign end_target = swap
+  endif
+
+  # One pass instead of two near-identical loops: walk forward day by day and
+  # capture the timestamp as each target is reached. The upper bound covers the
+  # maximum setting (14 business days) plus the weekends inside it.
+  assign business_days = 0
+  assign cursor = today
+  assign start_date = null
+  assign end_date = null
+  assign max_steps = end_target | times: 2 | plus: 7
+
+  for i in (1..max_steps)
+    assign cursor = cursor | plus: one_day
+    assign day_name = cursor | date: '%a'
+    unless day_name == 'Sat' or day_name == 'Sun'
+      assign business_days = business_days | plus: 1
+    endunless
+    if business_days == start_target and start_date == null
+      assign start_date = cursor
+    endif
+    if business_days == end_target
+      assign end_date = cursor
+      break
+    endif
+  endfor
+
+  assign start_month = start_date | date: '%b'
+  assign end_month = end_date | date: '%b'
+  assign start_day = start_date | date: '%-d'
+  assign end_day = end_date | date: '%-d'
+
+  # Drop the repeated month when both ends fall in the same one: "Receive by Mar 4 - 6".
+  if start_month == end_month
+    assign delivery_range = start_month | append: ' ' | append: start_day | append: ' - ' | append: end_day
+  else
+    assign delivery_range = start_month | append: ' ' | append: start_day | append: ' - ' | append: end_month | append: ' ' | append: end_day
+  endif
+-%}
+
+<div
+  class="delivery-dates spacing-style{% if block_settings.type_preset != blank %} {{ block_settings.type_preset }}{% endif %}"
+  style="
+    {%- render 'spacing-style', settings: block_settings -%}
+    {%- if block_settings.text_color != blank -%}
+      --delivery-dates-color: {{ block_settings.text_color }};
+    {%- endif -%}
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- if block_settings.show_icon -%}
+    <span class="delivery-dates__icon svg-wrapper" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
+        {%- render 'icon', icon: 'truck' -%}
+      </svg>
+    </span>
+  {%- endif -%}
+  <span>{{ 'content.delivery_estimate' | t: range: delivery_range }}</span>
+</div>
+
+{% stylesheet %}
+  .delivery-dates {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    color: var(--delivery-dates-color, var(--color-foreground));
+  }
+
+  .delivery-dates__icon {
+    flex-shrink: 0;
+    width: 1.25em;
+    height: 1.25em;
+  }
+
+  .delivery-dates__icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Delivery dates",
+  "settings": [
+    {
+      "type": "range",
+      "id": "delivery_from",
+      "label": "Delivery from",
+      "min": 2,
+      "max": 14,
+      "step": 1,
+      "default": 3,
+      "unit": "t:options.days_unit",
+      "info": "Business days from today when the delivery window opens. Weekends are skipped."
+    },
+    {
+      "type": "range",
+      "id": "delivery_to",
+      "label": "Delivery to",
+      "min": 2,
+      "max": 14,
+      "step": 1,
+      "default": 5,
+      "unit": "t:options.days_unit",
+      "info": "Business days from today when the delivery window closes."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show icon",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:content.typography"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "t:settings.preset",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "paragraph",
+          "label": "t:options.paragraph"
+        },
+        {
+          "value": "h5",
+          "label": "t:options.h5"
+        },
+        {
+          "value": "h6",
+          "label": "t:options.h6"
+        }
+      ],
+      "default": "",
+      "info": "t:info.edit_presets_in_theme_settings"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text_color",
+      "placeholder": "t:settings.default"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Delivery dates",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

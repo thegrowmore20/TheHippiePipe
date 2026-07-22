@@ -1,0 +1,189 @@
+{%- doc -%}
+  Renders the product's FAQ metaobjects as accordion rows, plus FAQPage structured data.
+
+  Reads product.metafields.custom.faqs — a list of metaobjects with `question` and `answer`.
+  Uses the theme's accordion-custom component, so open/close behaviour, animation and
+  keyboard handling come from the theme rather than a bespoke script.
+{%- enddoc -%}
+
+{%- liquid
+  assign block_settings = block.settings
+  assign faqs = product.metafields.custom.faqs.value
+-%}
+
+{%- if faqs != blank -%}
+  <div
+    class="product-faqs spacing-style"
+    style="
+      {%- render 'spacing-style', settings: block_settings -%}
+      --product-faqs-max-width: {{ block_settings.max_width | default: 800 }}px;
+    "
+    {{ block.shopify_attributes }}
+  >
+    {% content_for 'block', type: '_heading', id: 'product-faqs-heading' %}
+
+    <div class="product-faqs__list">
+      {%- for faq in faqs -%}
+        {%- capture faq_row -%}
+          <details class="product-faqs__row">
+            <summary class="product-faqs__question">
+              {{ faq.question.value }}
+              <span class="svg-wrapper icon-caret icon-animated">
+                {{- 'icon-caret.svg' | inline_asset_content -}}
+              </span>
+            </summary>
+            <div class="details-content product-faqs__answer rte">
+              {{ faq.answer | metafield_tag }}
+            </div>
+          </details>
+        {%- endcapture -%}
+        {% render 'accordion-custom-component', children: faq_row %}
+      {%- endfor -%}
+    </div>
+  </div>
+
+  {%- comment -%}
+    Structured data. `metafield_text` keeps the answer as plain text, and `escape`
+    makes it safe to embed in JSON.
+  {%- endcomment -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {%- for faq in faqs -%}
+          {
+            "@type": "Question",
+            "name": {{ faq.question.value | json }},
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": {{ faq.answer | metafield_text | json }}
+            }
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  /* Centred within whatever column the block sits in, capped at the merchant's width. */
+  .product-faqs {
+    width: 100%;
+    max-inline-size: var(--product-faqs-max-width, 100%);
+    margin-inline: auto;
+  }
+
+  .product-faqs__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-sm);
+    padding-block: var(--padding-sm);
+    border-block-end: 1px solid var(--color-border);
+    cursor: pointer;
+  }
+
+  .product-faqs__answer {
+    padding-block: var(--padding-sm);
+  }
+
+  /*
+   * The caret is a plain inline icon here rather than the theme's circular
+   * details marker, so size it against the question's own font size.
+   */
+  .product-faqs__question .icon-caret {
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
+  }
+
+  .product-faqs__question .icon-caret svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product Faqs",
+  "class": "product-faqs",
+  "blocks": [
+    {
+      "type": "_heading"
+    }
+  ],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the FAQ entries saved on this product's `custom.faqs` metafield."
+    },
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "t:settings.width",
+      "min": 400,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 800,
+      "info": "The block is centered within the column it sits in."
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Faqs",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

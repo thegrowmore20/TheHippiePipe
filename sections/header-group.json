@@ -41,7 +41,9 @@
         "divider_width": 1,
         "divider_color": "{{ settings.color_palette.color2 }}",
         "padding-block-start": 15,
-        "padding-block-end": 15
+        "padding-block-end": 15,
+        "margin-block-start": 0,
+        "margin-block-end": 0
       }
     },
     "header_section": {
@@ -69,6 +71,9 @@
             "type_font_primary_link": "subheading",
             "type_case_primary_link": "uppercase",
             "menu_style": "product_row",
+            "featured_products_aspect_ratio": "4 / 5",
+            "featured_collections_aspect_ratio": "16 / 9",
+            "image_border_radius": 0,
             "product_row_count": 6,
             "product_row_columns": 6,
             "product_row_aspect_ratio": "1 / 1",
@@ -78,9 +83,6 @@
             "product_row_show_second_image": false,
             "product_row_show_price": false,
             "product_row_show_rating": true,
-            "featured_products_aspect_ratio": "4 / 5",
-            "featured_collections_aspect_ratio": "16 / 9",
-            "image_border_radius": 0,
             "navigation_bar": false,
             "background_color_navigation_bar": "{{ settings.color_palette.background }}",
             "text_color_navigation_bar": "",
@@ -118,6 +120,7 @@
         "actions_font_size": "0.875rem",
         "actions_font": "body",
         "actions_text_case": "none",
+        "icon_hover_color": "{{ settings.color_palette.color4 }}",
         "background_color_top": "{{ settings.color_palette.color3 }}",
         "text_color_top": "{{ settings.color_palette.color4 }}",
         "background_color_bottom": "",

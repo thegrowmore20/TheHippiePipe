@@ -62,7 +62,6 @@
 }
 
 .icon-size--sm,
-.custom-icon-size,
 .icon-chevron{
   width: var(--icon-size-sm);
   height: var(--icon-size-sm);

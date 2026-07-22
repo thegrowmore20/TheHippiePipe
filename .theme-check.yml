@@ -1,0 +1,8 @@
+extends: theme-check:recommended
+
+# The storefront ships in English only. Keys added to en.default.json therefore have no
+# counterpart in the 49 other locale files Horizon bundles, and Shopify falls back to
+# en.default at render time. Leaving this on reported 411 offences for that fallback alone,
+# which buried the real errors. Turn it back on if the store starts publishing translations.
+MatchingTranslations:
+  enabled: false

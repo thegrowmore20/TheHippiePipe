@@ -1,6 +1,31 @@
 
 {% assign block_settings = block.settings %}
 
+{% capture accordion_row_content %}{% content_for 'blocks' %}{% endcapture %}
+
+{% liquid
+  # A row bound to an empty metafield still renders its child block wrappers, so the row
+  # has to be judged on its rendered output rather than on whether it has child blocks.
+  assign row_text = accordion_row_content | strip_html | replace: '&nbsp;', '' | strip
+  assign row_has_content = false
+
+  if row_text != blank
+    assign row_has_content = true
+  else
+    # Media and form controls are real content but carry no text, so look for their tags
+    # before calling the row empty.
+    assign content_tags = '<img|<svg|<video|<iframe|<picture|<input|<select|<button|<table' | split: '|'
+    for tag in content_tags
+      if accordion_row_content contains tag
+        assign row_has_content = true
+        break
+      endif
+    endfor
+  endif
+%}
+
+{% # Always render in the theme editor, otherwise an empty row can never be selected to fill in %}
+{% if row_has_content or request.design_mode %}
 {% capture accordion_row_children %}
   <details
     class="details"
@@ -27,7 +52,7 @@
     </summary>
 
     <div class="details-content">
-      {% content_for 'blocks' %}
+      {{ accordion_row_content }}
     </div>
   </details>
 {% endcapture %}
@@ -36,6 +61,7 @@
   open_by_default_on_desktop: block_settings.open_by_default,
   open_by_default_on_mobile: block_settings.open_by_default
 %}
+{% endif %}
 
 {% schema %}
 {

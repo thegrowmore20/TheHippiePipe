@@ -1,0 +1,409 @@
+{%- doc -%}
+  Renders a product comparison table with a sticky attribute column.
+
+  Data-driven mode (preferred): reads `custom.comparison_features` (metaobjects, one per row)
+  and `custom.comparison_products` (product references, the columns). Each feature metaobject
+  holds one field per product, keyed by that product's `custom.compare_key` — falling back to
+  the product handle with dashes turned into underscores.
+
+  Fallback mode: a hardcoded electric-vs-coal-vs-vape comparison, used when the metafields are
+  absent or the product handle is `enso`.
+{%- enddoc -%}
+
+{%- liquid
+  assign block_settings = block.settings
+
+  assign features = product.metafields.custom.comparison_features.value
+  assign compare_products = product.metafields.custom.comparison_products.value
+
+  assign current_key = product.metafields.custom.compare_key.value
+  if current_key == blank
+    assign current_key = product.handle | replace: '-', '_'
+  endif
+
+  assign use_metafields = false
+  if features != blank and compare_products != blank and product.handle != 'enso'
+    assign use_metafields = true
+  endif
+
+  assign card_sizes = '(min-width: 750px) 230px, 200px'
+-%}
+
+<comparison-table
+  class="comparison{% unless use_metafields %} comparison--fallback{% endunless %} spacing-style"
+  style="
+    {%- render 'spacing-style', settings: block_settings -%}
+    --comparison-border: {{ block_settings.border_color }};
+    --comparison-attribute-background: {{ block_settings.attribute_background }};
+    --comparison-column-width: {{ block_settings.column_width }}px;
+  "
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'block', type: '_heading', id: 'comparison-heading' %}
+
+  <div class="comparison__scroller" ref="scroller">
+    <table class="comparison__table">
+      <tbody>
+        <tr>
+          <td class="comparison__attribute comparison__attribute--empty"></td>
+
+          <th scope="col" class="comparison__column comparison__column--current">
+            {%- render 'resource-card',
+              resource: product,
+              resource_type: 'product',
+              image_aspect_ratio: '1 / 1',
+              image_sizes: card_sizes
+            -%}
+          </th>
+
+          {%- if use_metafields -%}
+            {%- for cp in compare_products -%}
+              {%- unless cp.id == product.id -%}
+                <th scope="col" class="comparison__column">
+                  {%- render 'resource-card',
+                    resource: cp,
+                    resource_type: 'product',
+                    image_aspect_ratio: '1 / 1',
+                    image_sizes: card_sizes
+                  -%}
+                </th>
+              {%- endunless -%}
+            {%- endfor -%}
+          {%- else -%}
+            {%- comment -%}
+              Fallback columns. These images live on an external CDN and are not managed by
+              this shop's media library.
+            {%- endcomment -%}
+            <th scope="col" class="comparison__column">
+              <img
+                class="comparison__column-image"
+                src="https://cdn.shopify.com/s/files/1/0777/8339/files/71Bhm4vc2SL._SX679.jpg?v=1775045042&width=460"
+                width="230"
+                height="230"
+                loading="lazy"
+                decoding="async"
+                sizes="{{ card_sizes }}"
+                alt="{{ 'content.comparison_alternative' | t: index: 1 }}"
+              >
+            </th>
+            <th scope="col" class="comparison__column">
+              <img
+                class="comparison__column-image"
+                src="https://cdn.shopify.com/s/files/1/0777/8339/files/51z90B1mVTL._AC_SY300_SX300_QL70_ML2.jpg?v=1775046681&width=460"
+                width="230"
+                height="230"
+                loading="lazy"
+                decoding="async"
+                sizes="{{ card_sizes }}"
+                alt="{{ 'content.comparison_alternative' | t: index: 2 }}"
+              >
+            </th>
+          {%- endif -%}
+        </tr>
+
+        {%- if use_metafields -%}
+          {%- for entry in features -%}
+            <tr>
+              <th scope="row" class="comparison__attribute">
+                {{ entry.feature_name.value | default: entry.feature_name }}
+              </th>
+
+              {%- assign current_value = entry[current_key] | metafield_tag | strip_html | strip -%}
+              <td class="comparison__cell comparison__cell--current">
+                {{ current_value | default: '—' }}
+              </td>
+
+              {%- for cp in compare_products -%}
+                {%- unless cp.id == product.id -%}
+                  {%- liquid
+                    assign cp_key = cp.metafields.custom.compare_key.value
+                    if cp_key == blank
+                      assign cp_key = cp.handle | replace: '-', '_'
+                    endif
+                    assign cp_value = entry[cp_key] | metafield_tag | strip_html | strip
+                  -%}
+                  <td class="comparison__cell">{{ cp_value | default: '—' }}</td>
+                {%- endunless -%}
+              {%- endfor -%}
+            </tr>
+          {%- endfor -%}
+        {%- else -%}
+          {%- comment -%}
+            Hardcoded fallback rows. Each entry is "attribute | this product | alternative 1 |
+            alternative 2", split on the pipe so the markup below stays a single loop.
+          {%- endcomment -%}
+          {%- assign fallback_rows = 'Category|Electric hookah|Coal hookah|Home vape,Heat style|Clean electric|Burning coal|Dry heat,What you use|Molasses + dry herb|Shisha molasses|Dry herb,Flavor quality|Pure flavor|Coal-tainted|Herb taste,Cloud style|Big clouds|Heavy smoke|Light vapor,Session vibe|Party or solo ritual|Old-school ritual|Solo sessions,Session time|Long sessions|Long sessions|Short sessions,Setup|Fast setup|Messy prep|Simple use,Portability|Cord-free|Bulky setup|Plug-in only,Best for|Modern hookah|Traditional smokers|Personal vaping' | split: ',' -%}
+          {%- for row in fallback_rows -%}
+            {%- assign cells = row | split: '|' -%}
+            <tr>
+              <th scope="row" class="comparison__attribute">{{ cells[0] }}</th>
+              <td class="comparison__cell comparison__cell--current">{{ cells[1] }}</td>
+              <td class="comparison__cell">{{ cells[2] }}</td>
+              <td class="comparison__cell">{{ cells[3] }}</td>
+            </tr>
+          {%- endfor -%}
+        {%- endif -%}
+      </tbody>
+    </table>
+  </div>
+
+  {%- if block_settings.footnote != blank -%}
+    <p class="comparison__footnote">{{ block_settings.footnote }}</p>
+  {%- endif -%}
+</comparison-table>
+
+<script>
+  if (!customElements.get('comparison-table')) {
+    customElements.define(
+      'comparison-table',
+      class ComparisonTable extends HTMLElement {
+        connectedCallback() {
+          this.scroller = this.querySelector('[ref="scroller"]');
+          if (!this.scroller) return;
+
+          // Pointer events give us mouse + pen in one path; touch keeps native scrolling.
+          this.scroller.addEventListener('pointerdown', this.onDown);
+          this.scroller.addEventListener('dragstart', (event) => event.preventDefault());
+        }
+
+        onDown = (event) => {
+          if (event.pointerType === 'touch' || event.button !== 0) return;
+
+          const startX = event.clientX;
+          const startLeft = this.scroller.scrollLeft;
+          let dragging = false;
+
+          const onMove = (moveEvent) => {
+            const delta = moveEvent.clientX - startX;
+            if (!dragging && Math.abs(delta) > 6) {
+              dragging = true;
+              this.scroller.classList.add('is-dragging');
+            }
+            if (dragging) this.scroller.scrollLeft = startLeft - delta;
+          };
+
+          const onUp = () => {
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+            window.removeEventListener('pointercancel', onUp);
+            this.scroller.classList.remove('is-dragging');
+            // Swallow the click that ends a drag so cards don't navigate.
+            if (dragging) {
+              this.scroller.addEventListener('click', (clickEvent) => {
+                clickEvent.preventDefault();
+                clickEvent.stopPropagation();
+              }, { capture: true, once: true });
+            }
+          };
+
+          window.addEventListener('pointermove', onMove);
+          window.addEventListener('pointerup', onUp);
+          window.addEventListener('pointercancel', onUp);
+        };
+
+        disconnectedCallback() {
+          if (this.scroller) this.scroller.removeEventListener('pointerdown', this.onDown);
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .comparison {
+    display: block;
+    width: 100%;
+  }
+
+  .comparison__scroller {
+    overflow-x: auto;
+    border-radius: var(--comparison-radius, 8px);
+    cursor: grab;
+  }
+
+  .comparison__scroller.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  .comparison__table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+  }
+
+  .comparison__table :is(td, th) {
+    border-block-end: 1px solid var(--comparison-border);
+    border-inline-end: 1px solid var(--comparison-border);
+    padding: var(--padding-xs) var(--padding-sm);
+    background-color: var(--color-background);
+    vertical-align: middle;
+    text-align: center;
+    font-size: var(--font-paragraph--size, 0.875rem);
+  }
+
+  /* Sticky first column so attribute names stay readable while the table scrolls. */
+  .comparison__attribute {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: var(--layer-raised, 2);
+    min-width: var(--comparison-column-width);
+    text-align: start;
+    font-weight: 600;
+    background-color: var(--comparison-attribute-background);
+    border-inline-start: 1px solid var(--comparison-border);
+  }
+
+  .comparison__attribute--empty {
+    border: 0;
+    background: transparent;
+  }
+
+  .comparison__column,
+  .comparison__cell {
+    inline-size: var(--comparison-column-width);
+    min-inline-size: var(--comparison-column-width);
+    max-inline-size: var(--comparison-column-width);
+  }
+
+  .comparison__column {
+    border-block-end: 0;
+    vertical-align: bottom;
+  }
+
+  .comparison__column-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* The resource-card is height:100% by default, which would stretch the header row. */
+  .comparison__column .resource-card,
+  .comparison__column .resource-card__wrapper {
+    height: auto;
+  }
+
+  .comparison__footnote {
+    margin-block-start: var(--margin-sm, 0.75rem);
+    text-align: center;
+    font-weight: 600;
+  }
+
+  @media screen and (max-width: 749px) {
+    .comparison__scroller {
+      cursor: auto;
+    }
+
+    .comparison__attribute {
+      min-width: 9.5rem;
+    }
+
+    .comparison__column,
+    .comparison__cell {
+      inline-size: 10rem;
+      min-inline-size: 10rem;
+      max-inline-size: 10rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Aplus comparison",
+  "blocks": [
+    {
+      "type": "_heading"
+    }
+  ],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Reads `custom.comparison_features` and `custom.comparison_products`. Without them, a built-in fallback comparison is shown."
+    },
+    {
+      "type": "text",
+      "id": "footnote",
+      "label": "Footnote",
+      "default": "Pure flavor. Big clouds. Modern hookah sessions without coal, flame, or the mess"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "t:settings.border_color",
+      "default": "{{ settings.color_palette.color2 }}"
+    },
+    {
+      "type": "color",
+      "id": "attribute_background",
+      "label": "t:settings.background",
+      "default": "{{ settings.color_palette.color6 }}"
+    },
+    {
+      "type": "range",
+      "id": "column_width",
+      "label": "t:settings.width",
+      "min": 140,
+      "max": 320,
+      "step": 10,
+      "unit": "px",
+      "default": 230
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Aplus comparison",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

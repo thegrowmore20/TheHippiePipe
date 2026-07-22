@@ -354,6 +354,8 @@
     data-presentation="{{ media_presentation }}"
     {{ block_shopify_attributes }}
   >
+    {% render 'wishtlist-button', product: closest.product %}
+
     {% capture slides %}
       {% for media in sorted_media %}
         {% capture children %}

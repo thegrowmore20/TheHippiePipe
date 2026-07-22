@@ -1,0 +1,72 @@
+/* -----------------------------------------------------------------------------
+ * Product page only. Loaded from snippets/stylesheets.liquid behind
+ * `request.page_type == "product"`, so nothing here reaches other templates.
+ * -------------------------------------------------------------------------- */
+
+/* Wishlist button floated over the product media.
+   media-gallery is position:sticky (.sticky-content), which already makes it the
+   containing block for this, so the gallery needs no positioning of its own. */
+.custom-wishlist-button {
+  position: absolute;
+  inset-block-start: var(--wishlist-button-offset, 1rem);
+  inset-inline-end: var(--wishlist-button-offset, 1rem);
+  z-index: var(--layer-raised, 2);
+
+  animation: wishlist-button-reveal var(--wishlist-button-fade, 0.3s) ease
+    var(--wishlist-button-delay, 1s) both;
+}
+
+@keyframes wishlist-button-reveal {
+  from {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Still delayed for reduced-motion users — the point is hiding the flicker, not
+   decoration — but it appears rather than fades. */
+@media (prefers-reduced-motion: reduce) {
+  .custom-wishlist-button {
+    animation-duration: 1ms;
+  }
+}
+
+.custom-wishlist-button button {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--color-background);
+  cursor: pointer;
+  transition: transform var(--animation-speed, 0.2s) var(--animation-easing, ease);
+
+  /* Both hearts draw from currentColor — the outline via stroke, the solid one via fill
+     as well — so each state only has to set this one value. */
+  color: var(--wishlist-icon-color, #000);
+}
+
+/* Not saved yet: outline heart, black stroke. */
+.custom-wishlist-button .xb-wishlist__add {
+  --wishlist-icon-color: #000;
+}
+
+/* Saved: solid heart in the brand red. */
+.custom-wishlist-button .xb-wishlist__remove {
+  --wishlist-icon-color: #ea4335;
+}
+
+.custom-wishlist-button button:hover {
+  transform: scale(1.08);
+}
+
+.custom-wishlist-button svg {
+  display: block;
+}

@@ -346,8 +346,16 @@
     }
   }
 
+  /*
+   * Flex row so the caret centres against the text's line box. Previously the title was an
+   * inline run and the caret relied on vertical-align: middle, which mis-centres a box that
+   * is taller than the text.
+   */
   .menu-list__link-title {
     padding-inline: calc(var(--gap-xl) / 2);
+    display: flex;
+    align-items: center;
+    line-height: normal;
   }
 
   /* Caret arrow on menu items that have a submenu (task 1) */
@@ -355,14 +363,21 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    /*
+     * .svg-wrapper forces a fixed --icon-size-sm (1.25rem) box, which is taller than the
+     * menu text and made the caret hang low. Size the box to the icon it contains.
+     */
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
     margin-inline-start: 0.35em;
-    vertical-align: middle;
     transition: transform var(--animation-speed-medium, 0.2s) var(--animation-easing, ease);
   }
 
   .menu-list__caret svg {
     width: 1em;
     height: 1em;
+    display: block;
   }
 
   .menu-list__list-item:has([aria-expanded='true']) .menu-list__caret {
@@ -421,8 +436,13 @@
     font-size: 11px;
   }
 
-  /* Price hidden via modifier class (this theme's resource-card has no hide_price param) */
-  .mega-menu-product-row__item--no-price :is(.price, .resource-card__content .price) {
+  /*
+   * Price hidden via modifier class (this theme's resource-card has no hide_price param).
+   * Hide the whole price container, not just `.price` — a product on sale also renders a
+   * `.compare-at-price` sibling, which stayed visible when only `.price` was targeted.
+   */
+  .mega-menu-product-row__item--no-price .resource-card__content [ref='priceContainer'],
+  .mega-menu-product-row__item--no-price .resource-card__content .volume-pricing-note {
     display: none;
   }
 

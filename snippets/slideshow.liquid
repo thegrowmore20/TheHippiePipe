@@ -48,6 +48,12 @@
     when 'large'
       assign slide_min_height = slide_min_height | replace: 'auto', '25rem'
       assign slide_min_height_desktop = slide_min_height_desktop | replace: 'auto', '45rem'
+    when 'full_screen'
+      # --slideshow-height-offset is set by the slideshow section so a full-screen
+      # slideshow sitting under the header doesn't overflow the viewport.
+      assign full_screen_height = 'calc(100svh - var(--slideshow-height-offset, 0px))'
+      assign slide_min_height = slide_min_height | replace: 'auto', full_screen_height
+      assign slide_min_height_desktop = slide_min_height_desktop | replace: 'auto', full_screen_height
   endcase
 
   case slide_position

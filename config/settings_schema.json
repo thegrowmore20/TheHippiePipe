@@ -69,7 +69,7 @@
       },
       {
         "type": "header",
-        "content": "Hover"
+        "content": "Custom colors"
       },
       {
         "type": "color",
@@ -408,6 +408,10 @@
             "label": "32px"
           },
           {
+            "value": "36",
+            "label": "36px"
+          },
+          {
             "value": "40",
             "label": "40px"
           },
@@ -558,6 +562,10 @@
           {
             "value": "24",
             "label": "24px"
+          },
+          {
+            "value": "30",
+            "label": "30px"
           },
           {
             "value": "32",

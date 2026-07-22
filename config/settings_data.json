@@ -9,8 +9,11 @@
  */
 {
   "current": {
+    "logo": "shopify://shop_images/logo.svg",
     "logo_height": 45,
     "logo_height_mobile": 28,
+    "favicon": "shopify://shop_images/faviconhippie-01.png",
+    "link_hover_color": "{{ settings.color_palette.color4 }}",
     "page_text_color": "{{ settings.color_palette.foreground }}",
     "type_body_font": "rubik_n4",
     "type_subheading_font": "rubik_n5",
@@ -23,7 +26,7 @@
     "type_line_height_h1": "display-tight",
     "type_letter_spacing_h1": "heading-normal",
     "type_case_h1": "none",
-    "type_font_h2": "heading",
+    "type_font_h2": "accent",
     "type_size_h2": "36",
     "type_line_height_h2": "display-tight",
     "type_letter_spacing_h2": "heading-normal",
@@ -54,9 +57,9 @@
     "badge_sold_out_background_color": "{{ settings.color_palette.color8 }}",
     "badge_sold_out_text_color": "{{ settings.color_palette.background }}",
     "badge_text_transform": "none",
-    "palette_primary_button_background": "{{ settings.color_palette.foreground }}",
-    "palette_primary_button_text": "{{ settings.color_palette.background }}",
-    "palette_primary_button_border": "{{ settings.color_palette.foreground }}",
+    "palette_primary_button_background": "{{ settings.color_palette.color3 }}",
+    "palette_primary_button_text": "{{ settings.color_palette.color4 }}",
+    "palette_primary_button_border": "{{ settings.color_palette.color3 }}",
     "primary_button_border_width": 1,
     "button_border_radius_primary": 100,
     "type_font_button_primary": "accent",
@@ -88,11 +91,13 @@
     "currency_code_enabled_product_pages": false,
     "currency_code_enabled_product_cards": false,
     "currency_code_enabled_cart_items": false,
-    "quick_add": false,
+    "quick_add": true,
     "mobile_quick_add": true,
     "quick_add_background": "{{ settings.color_palette.background }}",
     "quick_add_text": "{{ settings.color_palette.foreground }}",
     "product_card_media_fit": "contain",
+    "product_card_title_lines": 2,
+    "show_second_image_on_hover": true,
     "product_card_carousel": false,
     "product_corner_radius": 0,
     "card_corner_radius": 4,
@@ -110,23 +115,6 @@
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
     "content_for_index": [],
-    "color_palette": {
-      "background": "#ffffff",
-      "foreground": "#000000",
-      "color1": "#333333",
-      "color2": "#dfdfdf",
-      "color3": "#285a46",
-      "color4": "#f6d579",
-      "color5": "{{ settings.color_palette.background }}",
-      "color6": "#f6f6f6",
-      "color7": "#f5ebeb",
-      "color8": "#EA4335",
-      "color9": "#202020",
-      "color10": "#FBBC05",
-      "color11": "#34A853"
-    },
-    "logo": "shopify://shop_images/logo.svg",
-    "favicon": "shopify://shop_images/faviconhippie-01.png",
     "blocks": {
       "855628211100114053": {
         "type": "shopify://apps/klaviyo-email-marketing-sms/blocks/klaviyo-onsite-embed/2632fe16-c075-4321-a88b-50b567f42507",
@@ -144,7 +132,27 @@
         "settings": {
           "selector_collection": ""
         }
+      },
+      "13305437469741356523": {
+        "type": "shopify://apps/gsc-instagram-feed/blocks/embed/96970b1b-b770-454f-b16b-51f47e1aa4ed",
+        "disabled": false,
+        "settings": {}
       }
+    },
+    "color_palette": {
+      "background": "#ffffff",
+      "foreground": "#000000",
+      "color1": "#333333",
+      "color2": "#dfdfdf",
+      "color3": "#285a46",
+      "color4": "#f6d579",
+      "color5": "{{ settings.color_palette.background }}",
+      "color6": "#f6f6f6",
+      "color7": "#f5ebeb",
+      "color8": "#EA4335",
+      "color9": "#202020",
+      "color10": "#FBBC05",
+      "color11": "#34A853"
     }
   },
   "presets": {

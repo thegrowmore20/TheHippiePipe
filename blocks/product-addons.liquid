@@ -1,0 +1,392 @@
+{%- doc -%}
+  Renders the product's add-on products as a checkbox list with a running total.
+
+  Reads product.metafields.custom.addons — a list of product references. Selections are
+  published to `window.addonSelectedVariants[productId]` for the cart integration to read.
+
+  On mobile the list becomes a scroll-snap carousel using native touch scrolling, so no
+  slider script is needed.
+{%- enddoc -%}
+
+{%- liquid
+  assign block_settings = block.settings
+  assign addons = product.metafields.custom.addons.value
+-%}
+
+{%- if addons != blank -%}
+  <product-addons
+    class="addons spacing-style"
+    data-product-id="{{ product.id }}"
+    style="
+      {%- render 'spacing-style', settings: block_settings -%}
+      --addons-accent-background: {{ block_settings.accent_background }};
+      --addons-accent-text: {{ block_settings.accent_text }};
+    "
+    {{ block.shopify_attributes }}
+  >
+    {%- if block_settings.heading != blank -%}
+      <p class="addons__heading">{{ block_settings.heading }}</p>
+    {%- endif -%}
+
+    <ul class="addons__list list-unstyled">
+      {%- for item in addons -%}
+        {%- liquid
+          assign variant = item.selected_or_first_available_variant
+          assign price = item.price | money
+        -%}
+        <li class="addons__item">
+          <span class="addons__thumb">
+            {%- if item.featured_image -%}
+              {{
+                item.featured_image
+                | image_url: width: 160
+                | image_tag:
+                  widths: '54, 108, 160',
+                  sizes: '54px',
+                  width: 54,
+                  height: 54,
+                  alt: item.featured_image.alt | default: item.title,
+                  loading: 'lazy'
+              }}
+            {%- else -%}
+              {{- 'product-1' | placeholder_svg_tag: 'addons__placeholder' -}}
+            {%- endif -%}
+          </span>
+
+          <a href="{{ item.url }}" class="addons__name">{{ item.title | escape }}</a>
+
+          <label class="addons__toggle">
+            <span class="visually-hidden">
+              {{- 'content.addons_add_item' | t: title: item.title, price: price -}}
+            </span>
+            <input
+              type="checkbox"
+              name="addon_variant"
+              value="{{ variant.id }}"
+              data-price="{{ item.price }}"
+              data-title="{{ item.title | escape }}"
+            >
+            <span class="addons__pill" aria-hidden="true">
+              <span class="addons__pill-price">+&nbsp;{{ price }}</span>
+              <span class="addons__pill-check">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="4 10.5 8 14.5 16 5.5" />
+                </svg>
+              </span>
+            </span>
+          </label>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    <p class="addons__summary">
+      <span ref="summaryText">{{ 'content.addons_none_selected' | t }}</span>
+      <span class="addons__summary-total" ref="summaryTotal"></span>
+    </p>
+  </product-addons>
+
+  <script>
+    if (!customElements.get('product-addons')) {
+      customElements.define(
+        'product-addons',
+        class ProductAddons extends HTMLElement {
+          connectedCallback() {
+            this.productId = this.dataset.productId;
+            this.textEl = this.querySelector('[ref="summaryText"]');
+            this.totalEl = this.querySelector('[ref="summaryTotal"]');
+            this.addEventListener('change', (event) => {
+              if (event.target.name === 'addon_variant') this.updateSummary();
+            });
+            this.updateSummary();
+          }
+
+          disconnectedCallback() {
+            if (window.addonSelectedVariants) delete window.addonSelectedVariants[this.productId];
+          }
+
+          updateSummary() {
+            const checked = this.querySelectorAll('input[name="addon_variant"]:checked');
+            let total = 0;
+            const variants = [];
+
+            checked.forEach((input) => {
+              const price = parseInt(input.dataset.price, 10) || 0;
+              total += price;
+              variants.push({ variantId: input.value, title: input.dataset.title, price });
+            });
+
+            // Published for the cart integration; nothing in the theme reads this yet.
+            window.addonSelectedVariants = window.addonSelectedVariants || {};
+            window.addonSelectedVariants[this.productId] = variants;
+
+            if (!this.textEl || !this.totalEl) return;
+
+            if (checked.length === 0) {
+              this.textEl.textContent = {{ 'content.addons_none_selected' | t | json }};
+              this.totalEl.textContent = '';
+              return;
+            }
+
+            this.textEl.textContent = checked.length === 1
+              ? {{ 'content.addons_one_selected' | t | json }}
+              : {{ 'content.addons_many_selected' | t: count: '__COUNT__' | json }}.replace('__COUNT__', checked.length);
+            this.totalEl.textContent = '+' + this.formatMoney(total);
+          }
+
+          formatMoney(cents) {
+            if (typeof Shopify !== 'undefined' && Shopify.formatMoney) {
+              return Shopify.formatMoney(cents, {{ shop.money_format | json }});
+            }
+            return (cents / 100).toFixed(2);
+          }
+        }
+      );
+    }
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  .addons {
+    display: block;
+    width: 100%;
+  }
+
+  .addons__heading {
+    font-weight: 600;
+    margin-block-end: var(--margin-xs, 0.5rem);
+  }
+
+  .addons__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-3xs, 0.25rem);
+  }
+
+  .addons__item {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+    padding: var(--padding-3xs, 0.25rem) var(--padding-2xs, 0.375rem);
+    border-radius: var(--addons-corner-radius, 6px);
+  }
+
+  .addons__thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 54px;
+    height: 54px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--addons-corner-radius, 6px);
+  }
+
+  .addons__thumb img,
+  .addons__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .addons__placeholder {
+    opacity: 0.28;
+  }
+
+  .addons__name {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .addons__toggle {
+    position: relative;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .addons__toggle input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .addons__pill {
+    display: grid;
+    place-items: center;
+    width: 80px;
+    height: 38px;
+    border-radius: var(--addons-corner-radius, 6px);
+    background: var(--addons-accent-background);
+    border: 2px solid var(--addons-accent-background);
+    color: var(--addons-accent-text);
+    font-weight: 700;
+    transition: background-color var(--animation-speed, 0.2s) var(--animation-easing, ease),
+      color var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  /* Both states share the same grid cell so the pill never changes size when toggled. */
+  .addons__pill-price,
+  .addons__pill-check {
+    grid-area: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  .addons__pill-check {
+    opacity: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .addons__pill-check svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .addons__toggle input:checked + .addons__pill {
+    background: var(--addons-accent-text);
+    color: var(--addons-accent-background);
+  }
+
+  .addons__toggle input:checked + .addons__pill .addons__pill-price {
+    opacity: 0;
+  }
+
+  .addons__toggle input:checked + .addons__pill .addons__pill-check {
+    opacity: 1;
+  }
+
+  .addons__toggle input:focus-visible + .addons__pill {
+    outline: var(--focus-outline-width, 2px) solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .addons__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-xs);
+    min-height: 1.25rem;
+    margin-block-start: var(--margin-xs, 0.5rem);
+    color: var(--color-foreground-muted, var(--color-foreground));
+  }
+
+  .addons__summary-total {
+    font-weight: 700;
+  }
+
+  /*
+   * Mobile: one add-on per view, swiped natively with scroll snapping.
+   * No slider script — the browser handles momentum, snapping and accessibility.
+   */
+  @media screen and (max-width: 749px) {
+    .addons__list {
+      flex-direction: row;
+      gap: 0;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      overscroll-behavior-x: contain;
+    }
+
+    .addons__list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .addons__item {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      padding-block: var(--padding-2xs, 0.375rem);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Addons",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the products saved on this product's `custom.addons` metafield."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "Choose add-ons:"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "color",
+      "id": "accent_background",
+      "label": "t:settings.background",
+      "default": "{{ settings.color_palette.color3 }}"
+    },
+    {
+      "type": "color",
+      "id": "accent_text",
+      "label": "t:settings.text",
+      "default": "{{ settings.color_palette.color4 }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Addons",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

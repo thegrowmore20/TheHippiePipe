@@ -231,6 +231,7 @@
     "checkout_buttons": "Allows buyers to check out faster and can improve conversion. [Learn more](https://help.shopify.com/manual/online-store/dynamic-checkout)",
     "custom_class": "Add a custom CSS class to this block for advanced styling.",
     "custom_heading": "Custom heading",
+    "custom_id": "Add a unique ID to this section so it can be linked to or targeted with custom CSS.",
     "custom_liquid": "Add app snippets or other code to create advanced customizations. [Learn more](https://shopify.dev/docs/api/liquid)",
     "edit_button_style_in_theme_settings": "Edit primary and secondary button styles in [theme settings](/editor?context=theme&category=buttons)",
     "edit_input_field_in_theme_settings": "Edit input field in [theme settings](/editor?context=theme&category=input%20fields)",
@@ -250,7 +251,9 @@
     "video_autoplay": "Videos will be muted by default",
     "video_external": "Use a YouTube or Vimeo URL",
     "pills_usage": "Used for applied filters, discount codes, and search suggestions",
-    "media_type_info": "Features are populated from your menu links"
+    "media_type_info": "Features are populated from your menu links",
+    "used_when_source_is_collection": "Used when Product source is set to Collection.",
+    "used_when_source_is_product_list": "Used when Product source is set to Product list."
   },
   "names": {
     "column": "Column",
@@ -471,15 +474,20 @@
     "circle": "Circle",
     "classic": "Classic",
     "clipboard": "Clipboard",
+    "collection": "Collection",
     "collection_images": "Collection images",
     "color": "Color",
     "compact": "Compact",
     "complementary": "Complementary",
     // CSS object-fit property: scale media to fit container
     "contain": "Contain",
+    // Constrains content to the page content width instead of the full viewport
+    "container": "Container",
     // Pagination control showing current/total slide numbers (e.g. 1/5)
     "counter": "Counter",
     "cover": "Cover",
+    // Unit suffix on business-day range settings
+    "days_unit": "days",
     "crop_to_fit": "Crop to fit",
     "custom": "Custom",
     // Icon option representing dairy products
@@ -617,6 +625,8 @@
     "paw_print": "Paw print",
     "pepper": "Pepper",
     "percent": "Percent",
+    // Product source option: pick individual products rather than a whole collection
+    "product_list": "Product list",
     "perfume": "Perfume",
     "pill": "Pill",
     "pills": "Pills",
@@ -683,6 +693,7 @@
     "social_youtube": "Social: YouTube",
     // Uniform style option for borders and overlays
     "solid": "Solid",
+    "same_as_desktop": "Same as desktop",
     "space_between": "Space between",
     "spotify": "Spotify",
     "spotlight": "Spotlight",
@@ -822,6 +833,7 @@
     "currency_code": "Currency code",
     "custom_class": "Custom class",
     "custom_height": "Custom height",
+    "custom_id": "Custom ID",
     "custom_minimum_height": "Custom minimum height",
     // Checkbox to enable separate size settings for mobile devices
     "custom_mobile_size": "Custom mobile size",
@@ -1014,6 +1026,7 @@
     "product_templates": "Product templates",
     // Setting label for text capitalization of product titles
     "product_title_case": "Product title case",
+    "product_source": "Product source",
     "product_type": "Product type",
     "products": "Products",
     "products_per_page": "Products per page",
@@ -1076,6 +1089,7 @@
     "show_as_accordion": "Show as accordion on mobile",
     "show_author": "Author",
     "show_alignment": "Show alignment",
+    "show_comments": "Comment count",
     "show_count": "Show count",
     "show_date": "Date",
     "show_filter_label": "Text labels for applied filters",

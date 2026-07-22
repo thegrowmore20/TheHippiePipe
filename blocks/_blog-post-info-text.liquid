@@ -13,7 +13,9 @@
 {% assign display_author = author | default: article.author %}
 {% assign display_date = date | default: article.published_at %}
 
-{%- if block_settings.show_date or block_settings.show_author -%}
+{% assign display_comment_count = article.comments_count | default: 0 %}
+
+{%- if block_settings.show_date or block_settings.show_author or block_settings.show_comments -%}
   <div
     class="
       blog-post-details
@@ -34,6 +36,10 @@
 
     {%- if block_settings.show_author -%}
       <span>{{ display_author }}</span>
+    {%- endif -%}
+
+    {%- if block_settings.show_comments -%}
+      <span>{{ 'blogs.article.comments_heading' | t: count: display_comment_count }}</span>
     {%- endif -%}
   </div>
 {% endif %}
@@ -69,6 +75,12 @@
       "id": "show_author",
       "label": "t:settings.show_author",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_comments",
+      "label": "t:settings.show_comments",
+      "default": false
     },
     {
       "type": "header",

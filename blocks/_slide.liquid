@@ -11,6 +11,33 @@
       assign preview_image = block_settings.video_1.preview_image
     endif
 
+    # Optional mobile-specific media. 'none' means the desktop media is used at every width,
+    # which keeps the markup identical to before this setting existed.
+    assign media_mobile = 'none'
+    if block_settings.custom_mobile_media
+      if block_settings.media_type_mobile == 'image' and block_settings.image_mobile != blank
+        assign media_mobile = 'image'
+      elsif block_settings.media_type_mobile == 'video' and block_settings.video_mobile != blank
+        assign media_mobile = 'video'
+      endif
+    endif
+
+    # Only tag elements as desktop/mobile-only when there is actually a mobile alternative.
+    assign desktop_only_class = ''
+    if media_mobile != 'none'
+      assign desktop_only_class = ' slide__media--desktop'
+    endif
+    assign desktop_image_class = 'slide__image' | append: desktop_only_class
+    assign desktop_video_class = 'slide__video' | append: desktop_only_class
+    assign desktop_poster_class = 'slide__video-poster' | append: desktop_only_class
+
+    # Desktop image + mobile image is art direction, so a single <picture> covers both and the
+    # browser downloads only the matching source. Mixed types need two separate elements.
+    assign use_picture = false
+    if media_mobile == 'image' and block_settings.media_type_1 == 'image' and block_settings.image_1 != blank
+      assign use_picture = true
+    endif
+
     assign rounded_image_corners = false
     if block_settings.background_color == blank or section.settings.background_color == block_settings.background_color
       assign rounded_image_corners = true
@@ -66,11 +93,39 @@
         endif
       -%}
 
-      {%- if block_settings.media_type_1 == 'image' -%}
+      {%- if use_picture -%}
+        {%- liquid
+          assign mobile_widths_array = '416, 600, 800, 1200, 1600' | split: ', '
+        -%}
+        <picture class="slide__image">
+          <source
+            media="(max-width: 749px)"
+            srcset="
+              {%- for mobile_width in mobile_widths_array -%}
+                {{ block_settings.image_mobile | image_url: width: mobile_width }} {{ mobile_width }}w{% unless forloop.last %},{% endunless %}
+              {%- endfor -%}
+            "
+            sizes="100vw"
+            width="{{ block_settings.image_mobile.width }}"
+            height="{{ block_settings.image_mobile.height }}"
+          >
+          {{
+            block_settings.image_1
+            | image_url: width: 3840
+            | image_tag: height: height, sizes: sizes, widths: widths, class: 'slide__image', loading: loading, fetchpriority: fetchpriority
+          }}
+        </picture>
+      {%- elsif block_settings.media_type_1 == 'image' -%}
         {{
           block_settings.image_1
           | image_url: width: 3840
-          | image_tag: height: height, sizes: sizes, widths: widths, class: 'slide__image', loading: loading, fetchpriority: fetchpriority
+          | image_tag:
+            height: height,
+            sizes: sizes,
+            widths: widths,
+            class: desktop_image_class,
+            loading: loading,
+            fetchpriority: fetchpriority
         }}
       {%- else -%}
         {%- if block_settings.video_1.preview_image -%}
@@ -83,13 +138,13 @@
               sizes: sizes,
               widths: widths,
               loading: loading,
-              class: 'slide__video-poster',
+              class: desktop_poster_class,
               fetchpriority: fetchpriority
           }}
         {%- endif -%}
         {{
           block_settings.video_1
-          | video_tag: poster: nil, autoplay: true, loop: true, controls: false, muted: true, class: 'slide__video'
+          | video_tag: poster: nil, autoplay: true, loop: true, controls: false, muted: true, class: desktop_video_class
         }}
       {%- endif -%}
     {%- else -%}
@@ -98,7 +153,47 @@
         assign placeholder_variant = 2 | minus: modulo_result
         assign placeholder_name = 'hero-apparel-' | append: placeholder_variant
       -%}
-      {{ placeholder_name | placeholder_svg_tag: 'slide__image' }}
+      {{ placeholder_name | placeholder_svg_tag: desktop_image_class }}
+    {%- endif -%}
+
+    {%- comment -%}
+      Mobile-only media. Skipped when <picture> already handled it (image -> image), so this
+      only renders when the mobile media is a different type from the desktop media.
+    {%- endcomment -%}
+    {%- if media_mobile != 'none' and use_picture == false -%}
+      {%- if media_mobile == 'image' -%}
+        {{
+          block_settings.image_mobile
+          | image_url: width: 1600
+          | image_tag:
+            widths: '416, 600, 800, 1200, 1600',
+            sizes: '100vw',
+            class: 'slide__image slide__media--mobile',
+            loading: 'lazy'
+        }}
+      {%- else -%}
+        {%- if block_settings.video_mobile.preview_image -%}
+          {{
+            block_settings.video_mobile.preview_image
+            | image_url: width: 1600
+            | image_tag:
+              widths: '416, 600, 800, 1200, 1600',
+              sizes: '100vw',
+              class: 'slide__video-poster slide__media--mobile',
+              loading: 'lazy'
+          }}
+        {%- endif -%}
+        {{
+          block_settings.video_mobile
+          | video_tag:
+            poster: nil,
+            autoplay: true,
+            loop: true,
+            controls: false,
+            muted: true,
+            class: 'slide__video slide__media--mobile'
+        }}
+      {%- endif -%}
     {%- endif -%}
   </div>
   <div
@@ -111,7 +206,15 @@
       layout-panel-flex
       layout-panel-flex--{{ block_settings.content_direction }}
       {% if block_settings.vertical_on_mobile %}mobile-column{% endif %}"
-      style="{% render 'layout-panel-style', settings: block_settings %}"
+      style="
+        {% render 'layout-panel-style', settings: block_settings %}
+        {%- if block_settings.horizontal_alignment_mobile != 'inherit' and block_settings.horizontal_alignment_mobile != blank -%}
+          --slide-horizontal-alignment-mobile: {{ block_settings.horizontal_alignment_mobile }};
+        {%- endif -%}
+        {%- if block_settings.vertical_alignment_mobile != 'inherit' and block_settings.vertical_alignment_mobile != blank -%}
+          --slide-vertical-alignment-mobile: {{ block_settings.vertical_alignment_mobile }};
+        {%- endif -%}
+      "
     >
       {% content_for 'blocks' %}
     </div>
@@ -185,6 +288,55 @@
   slideshow-slide .slide__image-container--rounded {
     border-radius: var(--corner-radius, 0);
   }
+
+  /*
+   * <picture> is the direct child when desktop and mobile media are both images, so it takes
+   * the sizing rules above; the <img> inside it needs them applied explicitly.
+   */
+  .slide__image-container > picture.slide__image {
+    display: block;
+  }
+
+  .slide__image-container > picture.slide__image > .slide__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  /* Mobile media override: only one of the two elements is ever displayed. */
+  .slide__media--mobile {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .slide__media--desktop {
+      display: none;
+    }
+
+    .slide__media--mobile {
+      display: block;
+    }
+
+    /*
+     * Per-slide mobile content position. Falls back to the desktop alignment when the slide
+     * leaves the mobile settings on "Same as desktop".
+     */
+    .slide__content .layout-panel-flex--column {
+      align-items: var(--slide-horizontal-alignment-mobile, var(--horizontal-alignment));
+      justify-content: var(--slide-vertical-alignment-mobile, var(--vertical-alignment));
+    }
+
+    .slide__content .layout-panel-flex--row {
+      justify-content: var(--slide-horizontal-alignment-mobile, var(--horizontal-alignment));
+      align-items: var(--slide-vertical-alignment-mobile, var(--vertical-alignment));
+    }
+
+    .slide__content .layout-panel-flex--row.mobile-column {
+      align-items: var(--slide-horizontal-alignment-mobile, var(--horizontal-alignment));
+      justify-content: var(--slide-vertical-alignment-mobile, var(--vertical-alignment-mobile));
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -251,6 +403,45 @@
       "id": "video_1",
       "label": "t:settings.video",
       "visible_if": "{{ block.settings.media_type_1 == 'video' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.mobile_media"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_mobile_media",
+      "label": "t:settings.custom_mobile_media",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "media_type_mobile",
+      "label": "t:settings.type",
+      "options": [
+        {
+          "value": "image",
+          "label": "t:options.image"
+        },
+        {
+          "value": "video",
+          "label": "t:options.video"
+        }
+      ],
+      "default": "image",
+      "visible_if": "{{ block.settings.custom_mobile_media }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "t:settings.image",
+      "visible_if": "{{ block.settings.custom_mobile_media and block.settings.media_type_mobile == 'image' }}"
+    },
+    {
+      "type": "video",
+      "id": "video_mobile",
+      "label": "t:settings.video",
+      "visible_if": "{{ block.settings.custom_mobile_media and block.settings.media_type_mobile == 'video' }}"
     },
     {
       "type": "header",
@@ -387,6 +578,62 @@
       "step": 1,
       "unit": "px",
       "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:content.mobile_layout"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_mobile",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "t:options.same_as_desktop"
+        },
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment_mobile",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "t:options.same_as_desktop"
+        },
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "inherit"
     },
     {
       "type": "header",
