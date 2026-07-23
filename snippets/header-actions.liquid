@@ -83,7 +83,7 @@
       endif
     %}
     <div
-      class="account-button header-actions__action hover-color hover-icon-scale{% if display_style == 'text' %} account-button--text{% endif %} color-custom-popover"
+      class="account-button header-actions__action hover-icon-scale{% if display_style == 'text' %} account-button--text{% endif %} color-custom-popover"
     >
       <shopify-account
         menu="{{ customer_account_menu }}"
@@ -258,16 +258,16 @@
   }
 
   .header-actions__cart-icon {
-    --cart-bubble-size: 20px;
-    --cart-bubble-top: 4.5px;
-    --cart-bubble-right: 2.5px;
+    --cart-bubble-size: 15px;
+    --cart-bubble-top: 8px;
+    --cart-bubble-right: 3px;
 
     position: relative;
   }
 
   .header-actions__cart-icon .cart-bubble {
     position: absolute;
-    width: var(--cart-bubble-size, 20px);
+    width: var(--cart-bubble-size, 15px);
     top: var(--cart-bubble-top);
     right: var(--cart-bubble-right);
   }

@@ -157,3 +157,17 @@
 #powrIframeLoader {
     display: none;
 }
+
+
+.xb-wishlist-header-auto-container button.xb-wishlist-header-auto {
+    transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+}
+
+.xb-wishlist-header-auto-container:hover button.xb-wishlist-header-auto  {
+    transform: scale(1.1);
+}
+
+.xb-wishlist-header-auto-container:hover button.xb-wishlist-header-auto .xb-wishlist-header-auto__svg + span  {
+    background-color: var(--color-primary-button-text) !important;
+    color: var(--color-primary-button-background) !important;
+}

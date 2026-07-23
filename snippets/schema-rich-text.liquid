@@ -1,0 +1,23 @@
+{% if page.handle contains 'faqs' %}
+    {%- assign faqs_items = product.metafields.custom.faqs.value -%}
+    {% if faqs_items %}
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+            {%- for faq in faqs_items -%}
+                {
+                "@type": "Question",
+                "name": "{{- faq.question.value | escape -}}",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "{{- faq.answer | metafield_text | escape -}}"
+                }
+                }{%- if forloop.last == false %},{% endif -%}
+            {%- endfor -%}
+            ]
+        }
+        </script>
+    {% endif %}
+{% endif %}

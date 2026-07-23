@@ -1,0 +1,41 @@
+{%- doc -%}
+  Decides whether an option may render swatches built from variant images.
+
+  Shopify only populates `option_value.swatch` when a swatch is configured in
+  admin (Settings > Products > Options). When there is none, each variant's own
+  image can stand in, unless the `swatch_source` theme setting is set to
+  "Theme swatch only".
+
+  Echoes the string "true" or "false". Capture the result and test it with
+  `contains`, since captured output carries surrounding whitespace.
+
+  @param {object} product_option - The option being rendered.
+  @param {object} product_resource - The product the option belongs to.
+
+  @example
+  {% capture fallback %}
+    {% render 'swatch-fallback-check', product_option: option, product_resource: product %}
+  {% endcapture %}
+  {% if fallback contains 'true' %}...{% endif %}
+{%- enddoc -%}
+
+{%- liquid
+  assign result = false
+  assign swatch_source = settings.swatch_source | default: 'variant_image'
+
+  # 'swatch' means swatch data only, so variant images may never stand in.
+  unless swatch_source == 'swatch'
+    assign swatch_count = product_option.values | map: 'swatch' | compact | size
+
+    # Only stand in where there is no swatch data to render.
+    # Limited to the first option, as that is the one variant images track.
+    if swatch_count == 0 and product_option.position == 1
+      assign image_count = product_resource.variants | map: 'featured_media' | compact | size
+      if image_count > 0
+        assign result = true
+      endif
+    endif
+  endunless
+
+  echo result
+-%}

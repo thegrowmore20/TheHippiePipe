@@ -2046,10 +2046,25 @@
     "name": "t:names.swatches",
     "settings": [
       {
-        "type": "checkbox",
-        "id": "show_variant_image",
-        "label": "t:settings.variant_images",
-        "default": false
+        "type": "select",
+        "id": "swatch_source",
+        "label": "Swatch source",
+        "options": [
+          {
+            "value": "variant_image",
+            "label": "Variant image"
+          },
+          {
+            "value": "swatch",
+            "label": "Theme swatch only"
+          },
+          {
+            "value": "auto",
+            "label": "Theme swatch, fall back to variant image"
+          }
+        ],
+        "default": "variant_image",
+        "info": "What to show inside each swatch on product cards and the product page. \"Variant image\" uses each variant's own photo. \"Theme swatch only\" uses the colour or pattern set in Shopify (Settings > Products > Options) and shows nothing if none is set."
       },
       {
         "type": "range",

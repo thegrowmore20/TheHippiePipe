@@ -669,10 +669,24 @@
                 }
               },
               "block_order": []
+            },
+            "swatches_card_gallery_4": {
+              "type": "swatches",
+              "settings": {
+                "product_swatches_alignment": "flex-start",
+                "product_swatches_alignment_mobile": "flex-start",
+                "hide_padding": false,
+                "product_swatches_padding_top": 4,
+                "product_swatches_padding_bottom": 0,
+                "product_swatches_padding_left": 0,
+                "product_swatches_padding_right": 0
+              },
+              "blocks": {}
             }
           },
           "block_order": [
             "product_card_gallery_677WP3",
+            "swatches_card_gallery_4",
             "product_title_YXxMTj",
             "text_MKt9xx",
             "loox_rating_Eyaqmw",
@@ -1730,10 +1744,24 @@
                 }
               },
               "block_order": []
+            },
+            "swatches_card_gallery_5": {
+              "type": "swatches",
+              "settings": {
+                "product_swatches_alignment": "flex-start",
+                "product_swatches_alignment_mobile": "flex-start",
+                "hide_padding": false,
+                "product_swatches_padding_top": 4,
+                "product_swatches_padding_bottom": 0,
+                "product_swatches_padding_left": 0,
+                "product_swatches_padding_right": 0
+              },
+              "blocks": {}
             }
           },
           "block_order": [
             "product_card_gallery_3jjgjK",
+            "swatches_card_gallery_5",
             "product_title_fP8YzY",
             "text_63cR9E",
             "loox_rating_7TBqXG",

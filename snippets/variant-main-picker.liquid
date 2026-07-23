@@ -58,12 +58,31 @@
           assign swatch_count = product_option.values | map: 'swatch' | compact | size
           assign variant_style = block_settings.variant_style
 
-          if swatch_count > 0 and block_settings.show_swatches
+          # Allow variant images to stand in when Shopify supplies no swatch data.
+          assign can_swatch = false
+          if swatch_count > 0
+            assign can_swatch = true
+          else
+            capture swatch_image_fallback
+              render 'swatch-fallback-check', product_option: product_option, product_resource: product_resource
+            endcapture
+            if swatch_image_fallback contains 'true'
+              assign can_swatch = true
+            endif
+          endif
+
+          if can_swatch and block_settings.show_swatches
             if block_settings.variant_style == 'dropdown'
               assign variant_style = 'swatch_dropdown'
             else
               assign variant_style = 'swatch'
             endif
+          endif
+
+          # Swatch labels are square, so the strikethrough has to stretch rather than slice.
+          assign strikethrough_stretch = false
+          if variant_style == 'swatch'
+            assign strikethrough_stretch = true
           endif
 
           if variant_style == 'buttons' and settings.variant_button_width == 'equal-width-buttons'
@@ -162,7 +181,7 @@
                     {{- product_option_value | escape -}}
                   </span>
                 {% endif %}
-                {% render 'strikethrough-variant', product_option: product_option_value %}
+                {% render 'strikethrough-variant', product_option: product_option_value, stretch: strikethrough_stretch %}
               </label>
             {%- endfor -%}
             {% if option_id_attribute %}

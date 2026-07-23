@@ -101,9 +101,18 @@
     {%- for product_option in product_resource.options_with_values -%}
       {%- liquid
         assign swatch_count = product_option.values | map: 'swatch' | compact | size
+
+        # Allow variant images to stand in when Shopify supplies no swatch data.
+        assign has_image_fallback = false
+        capture swatch_image_fallback
+          render 'swatch-fallback-check', product_option: product_option, product_resource: product_resource
+        endcapture
+        if swatch_image_fallback contains 'true'
+          assign has_image_fallback = true
+        endif
       -%}
 
-      {% if swatch_count == 0 %}
+      {% if swatch_count == 0 and has_image_fallback == false %}
         {% continue %}
       {% endif %}
 
@@ -203,7 +212,7 @@
                   swatch: product_option_value.swatch,
                   variant_image: featured_media,
                 %}
-                {% render 'strikethrough-variant', product_option: product_option_value %}
+                {% render 'strikethrough-variant', product_option: product_option_value, stretch: true %}
               </label>
             </li>
           {%- endfor -%}

@@ -2,6 +2,8 @@
 
 {%- liquid
   assign block_settings = block.settings
+  assign product_has_swatches = false
+
   for product_option in closest.product.options_with_values
     assign swatch_count = product_option.values | map: 'swatch' | compact | size
 
@@ -9,6 +11,19 @@
       assign product_has_swatches = true
     endif
   endfor
+
+  # No swatch data from Shopify: fall back to variant images where possible.
+  unless product_has_swatches
+    assign first_option = closest.product.options_with_values.first
+
+    capture swatch_image_fallback
+      render 'swatch-fallback-check', product_option: first_option, product_resource: closest.product
+    endcapture
+
+    if swatch_image_fallback contains 'true'
+      assign product_has_swatches = true
+    endif
+  endunless
 -%}
 
 {% stylesheet %}

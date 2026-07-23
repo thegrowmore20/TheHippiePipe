@@ -70,3 +70,8 @@
 .custom-wishlist-button svg {
   display: block;
 }
+
+
+.shopify-section.section-wrapper:has(comparison-table.hidden) {
+  display: none 
+}

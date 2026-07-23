@@ -1870,7 +1870,7 @@
           "type": "pdp-comparison-table",
           "name": "Aplus comparison",
           "settings": {
-            "footnote": "Pure flavor. Big clouds. Modern hookah sessions without coal, flame, or the mess",
+            "footnote": "",
             "border_color": "{{ settings.color_palette.color2 }}",
             "attribute_background": "{{ settings.color_palette.color6 }}",
             "column_width": 230,
@@ -2014,6 +2014,132 @@
         "border_radius": 0,
         "padding-block-start": 0,
         "padding-block-end": 0,
+        "margin_top": 0,
+        "margin_bottom": 0
+      }
+    },
+    "pdp_custom_slider_nEcBxH": {
+      "type": "pdp-custom-slider",
+      "blocks": {
+        "slide_xGYb7r": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/TURN_ON._TUNE_OUT._TORCH_UP._Mobile.webp",
+            "caption": "",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "slide_zN6KAC": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/NO_BATTERIES._NO_BUTTONS._NO_WAITING._Mobile.webp",
+            "caption": "",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "slide_6EYDLx": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/World_s_first_Ultra-Portable_keychain_WaxPen_Mobile.webp",
+            "caption": "",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "slide_Vhpxdc": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/Hero_Banner_Mobile.webp",
+            "caption": "",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "slide_a3jp8T": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/World_s_first_Ultra-Portable_keychain_WaxPen_Mobile.webp",
+            "caption": "",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "slide_xGYb7r",
+        "slide_zN6KAC",
+        "slide_6EYDLx",
+        "slide_Vhpxdc",
+        "slide_a3jp8T"
+      ],
+      "name": "Custom Image slider",
+      "settings": {
+        "heading": "Image slider",
+        "heading_tag": "h2",
+        "heading_type_preset": "h2",
+        "heading_font": "var(--font-heading--family)",
+        "heading_font_size": 0,
+        "heading_font_size_mobile": 0,
+        "heading_line_height": 0,
+        "heading_letter_spacing": 0,
+        "heading_case": "none",
+        "heading_color": "",
+        "heading_alignment": "left",
+        "heading_alignment_mobile": "left",
+        "heading_width": "100%",
+        "heading_max_width": "none",
+        "heading_padding_block_start": 0,
+        "heading_padding_block_end": 0,
+        "heading_padding_inline_start": 0,
+        "heading_padding_inline_end": 0,
+        "heading_margin_top": 0,
+        "heading_margin_bottom": 16,
+        "data_source": "metafield",
+        "metafield_namespace": "custom",
+        "metafield_key": "user_guide",
+        "aspect_ratio": "auto",
+        "slides_desktop": 4,
+        "slides_tablet": 3,
+        "slides_mobile": 2,
+        "slide_gap": 16,
+        "slide_border_radius": 12,
+        "caption_color": "#000000",
+        "show_arrows": true,
+        "show_dots": true,
+        "arrow_color": "#000000",
+        "arrow_background": "#FFFFFF",
+        "dot_color": "#000000",
+        "autoplay": false,
+        "autoplay_speed": 3000,
+        "infinite_loop": true,
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 48,
+        "padding-block-end": 48,
         "margin_top": 0,
         "margin_bottom": 0
       }
@@ -2249,10 +2375,24 @@
                 }
               },
               "block_order": []
+            },
+            "swatches_card_gallery_6": {
+              "type": "swatches",
+              "settings": {
+                "product_swatches_alignment": "flex-start",
+                "product_swatches_alignment_mobile": "flex-start",
+                "hide_padding": false,
+                "product_swatches_padding_top": 4,
+                "product_swatches_padding_bottom": 0,
+                "product_swatches_padding_left": 0,
+                "product_swatches_padding_right": 0
+              },
+              "blocks": {}
             }
           },
           "block_order": [
             "product_card_gallery_DNizbJ",
+            "swatches_card_gallery_6",
             "product_title_M7MJkb",
             "loox_rating_M7MJkb",
             "price_gLWgA6",
@@ -2293,6 +2433,7 @@
     "section_Uw3BW8",
     "section_kGD9tY",
     "section_x6ryXq",
+    "pdp_custom_slider_nEcBxH",
     "product_recommendations_qggXJq"
   ]
 }

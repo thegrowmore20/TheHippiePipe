@@ -13,7 +13,24 @@
 {% liquid
   assign swatch_value = null
   assign extra_classes = ''
-  if settings.show_variant_image and variant_image
+
+  # Theme setting decides what fills the swatch. See 'swatch_source' in settings_schema.
+  assign swatch_source = settings.swatch_source | default: 'variant_image'
+  assign use_variant_image = false
+
+  case swatch_source
+    when 'variant_image'
+      if variant_image
+        assign use_variant_image = true
+      endif
+    when 'auto'
+      # Prefer real swatch data; only stand in with the variant image when there is none.
+      if variant_image and swatch == blank
+        assign use_variant_image = true
+      endif
+  endcase
+
+  if use_variant_image
     assign swatch_image_width = settings.variant_swatch_width | times: 2
     assign swatch_image_url = variant_image | image_url: width: swatch_image_width
     assign swatch_value = 'url(' | append: swatch_image_url | append: ')'
@@ -43,7 +60,7 @@
   "
   style="
     --swatch-background: {{ swatch_value }};
-    {% if swatch.image and settings.show_variant_image == false %} --swatch-focal-point: {{ swatch.image.presentation.focal_point }};{% endif %}
+    {% if swatch.image and use_variant_image == false %} --swatch-focal-point: {{ swatch.image.presentation.focal_point }};{% endif %}
   "
 >
 </span>

@@ -16,7 +16,7 @@
   assign features = product.metafields.custom.comparison_features.value
   assign compare_products = product.metafields.custom.comparison_products.value
 
-  assign current_key = product.metafields.custom.compare_key.value
+  assign current_key = product.metafields.custom.compare_key.value | handle | replace: '-', '_'
   if current_key == blank
     assign current_key = product.handle | replace: '-', '_'
   endif
@@ -29,8 +29,9 @@
   assign card_sizes = '(min-width: 750px) 230px, 200px'
 -%}
 
+
 <comparison-table
-  class="comparison{% unless use_metafields %} comparison--fallback{% endunless %} spacing-style"
+  class="comparison {% if compare_products == blank %}hidden {% endif %}{% unless use_metafields %} comparison--fallback{% endunless %} spacing-style"
   style="
     {%- render 'spacing-style', settings: block_settings -%}
     --comparison-border: {{ block_settings.border_color }};
@@ -109,14 +110,14 @@
               </th>
 
               {%- assign current_value = entry[current_key] | metafield_tag | strip_html | strip -%}
-              <td class="comparison__cell comparison__cell--current">
+              <td class="comparison__cell comparison__cell--current" data-current-value="{{ current_key }}--{{ entry[current_key].value | json }}">
                 {{ current_value | default: '—' }}
               </td>
 
               {%- for cp in compare_products -%}
                 {%- unless cp.id == product.id -%}
                   {%- liquid
-                    assign cp_key = cp.metafields.custom.compare_key.value
+                    assign cp_key = cp.metafields.custom.compare_key.value | handle | replace: '-', '_'
                     if cp_key == blank
                       assign cp_key = cp.handle | replace: '-', '_'
                     endif
@@ -208,6 +209,8 @@
     );
   }
 </script>
+
+
 
 {% stylesheet %}
   .comparison {
@@ -320,7 +323,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Reads `custom.comparison_features` and `custom.comparison_products`. Without them, a built-in fallback comparison is shown."
+      "content": "Reads `custom.comparison_features` and `custom.comparison_products`."
     },
     {
       "type": "text",

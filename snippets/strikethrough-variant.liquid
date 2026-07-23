@@ -2,12 +2,17 @@
   Renders a strikethrough line SVG for unavailable product options.
 
   @param {object} product_option - The product option object. Renders the strikethrough when product_option.available is false.
+  @param {boolean} [stretch] - Set on square labels (swatches). The viewBox is a wide
+    100x46, so "slice" scales it to cover a square and 54% of the line is clipped away —
+    tolerable on a 55px PDP swatch, illegible on a 26px card swatch. "none" maps the
+    viewBox to the box exactly, giving a true corner-to-corner diagonal at any size.
+    `vector-effect="non-scaling-stroke"` keeps the stroke even despite the distortion.
 {% enddoc %}
 
 {% unless product_option.available %}
   <svg
     viewBox="0 0 100 46"
-    preserveAspectRatio="xMidYMid slice"
+    preserveAspectRatio="{% if stretch %}none{% else %}xMidYMid slice{% endif %}"
     class="variant-option__strikethrough"
     aria-hidden="true"
   >
