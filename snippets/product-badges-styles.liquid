@@ -35,6 +35,9 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+    /* Hug the text: the inherited body line-height (~1.6) left the label sitting high
+       inside the padded badge. line-height:1 lets align-items:center do its job. */
+    line-height: 1;
     color: var(--color-foreground);
     background: var(--color-background);
     font-size: var(--badge-font-size);

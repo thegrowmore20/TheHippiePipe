@@ -1934,6 +1934,12 @@
         "visible_if": "{{ settings.quick_add == true }}"
       },
       {
+        "type": "checkbox",
+        "id": "show_card_swatches",
+        "label": "Show swatches on cards",
+        "default": true
+      },
+      {
         "type": "color",
         "id": "quick_add_background",
         "label": "t:settings.background",

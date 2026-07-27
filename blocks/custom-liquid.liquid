@@ -1,6 +1,6 @@
 
 
-<div>
+<div class="custom-liquid-block{% if block.settings.custom_class != blank %} {{ block.settings.custom_class | escape }}{% endif %}">
   {{ block.settings.custom_liquid }}
 </div>
 
@@ -14,6 +14,16 @@
       "id": "custom_liquid",
       "label": "t:settings.custom_liquid",
       "info": "t:info.custom_liquid"
+    },
+    {
+      "type": "header",
+      "content": "t:content.advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "t:settings.custom_class",
+      "info": "t:info.custom_class"
     }
   ],
   "presets": [

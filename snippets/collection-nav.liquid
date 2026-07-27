@@ -1,0 +1,276 @@
+{%- doc -%}
+  Renders a collection navigation link list with the same markup and styling
+  as a facets filter (accordion-custom-component + details/summary + floating panel),
+  but with plain redirect links instead of filter inputs.
+
+  @param {object} menu - The linklist to render (e.g. section.settings.collection_nav)
+  @param {string} filter_style - The filter style ('horizontal' | 'vertical')
+  @param {number} sectionId - The section ID
+  @param {boolean} [in_drawer] - Whether the nav is rendered inside the filter drawer
+  @param {string} [nav_label] - Optional heading label. Defaults to the menu title.
+{%- enddoc -%}
+
+{% comment %} Category links reuse the filter checkbox visual, so pull in its base styles. {% endcomment %}
+{% render 'checkbox-styles' %}
+
+{%- liquid
+  assign is_horizontal = false
+  assign is_vertical = false
+  if filter_style == 'horizontal'
+    assign is_horizontal = true
+  elsif filter_style == 'vertical'
+    assign is_vertical = true
+  endif
+
+  assign nav_param_name = 'collection-nav'
+
+  # Unique id suffix so desktop horizontal + mobile drawer don't produce duplicate ids
+  assign id_suffix = filter_style
+  if in_drawer
+    assign id_suffix = id_suffix | append: '-drawer'
+  endif
+
+  assign heading = nav_label | default: menu.title
+
+  # Label of the link matching the current page, shown in the summary status
+  # on horizontal filters (same behavior as a single active facet value).
+  assign current_link_label = ''
+  for link in menu.links
+    if link.current or link.active
+      assign current_link_label = link.title
+      break
+    endif
+    for child_link in link.links
+      if child_link.current or child_link.active
+        assign current_link_label = child_link.title
+        break
+      endif
+    endfor
+    if current_link_label != ''
+      break
+    endif
+  endfor
+
+  assign initial_visible_values = 10
+  assign max_visible_values = initial_visible_values | plus: 1
+  assign render_show_more = false
+  if menu.links.size > max_visible_values
+    assign render_show_more = true
+  endif
+-%}
+
+{%- if menu != blank and menu.links.size > 0 -%}
+  {% capture accordion_children %}
+    <details
+      id="Facet-Details-{{ sectionId }}-{{ nav_param_name }}-{{ id_suffix }}"
+      class="facets__panel"
+      {% if is_horizontal %}
+        data-auto-close-details="desktop"
+      {% endif %}
+      {% if is_vertical %}
+        open
+      {% endif %}
+    >
+      <summary class="facets__summary">
+        <span class="facets__label">{{ heading }}</span>
+
+        <div class="facets__status-wrapper">
+          <span class="facets__status">
+            <span class="hide-when-empty">
+              {%- if is_horizontal -%}
+                {{- current_link_label -}}
+              {%- endif -%}
+            </span>
+          </span>
+          <span class="svg-wrapper icon-caret icon-animated">
+            {{- 'icon-caret.svg' | inline_asset_content -}}
+          </span>
+        </div>
+      </summary>
+      <floating-panel-component
+        {% unless filter_style == 'vertical' %}
+          data-close-on-resize
+        {% endunless %}
+        class="facets__inputs facets__panel-content details-content{% if is_horizontal %} color-custom-popover{% endif %}"
+        id="facet-inputs-{{ sectionId }}-{{ nav_param_name }}-{{ id_suffix }}"
+      >
+        {% liquid
+          if render_show_more
+            if is_horizontal
+              echo '<show-more-component class="show-more" data-expanded="false" data-disable-on-desktop="true" data-skip-node-update="true">'
+            else
+              echo '<show-more-component class="show-more" data-expanded="false" data-skip-node-update="true">'
+            endif
+          endif
+        %}
+
+        <div class="facets__inputs-wrapper" ref="showMoreContent">
+          <ul
+            id="collection-nav-list-{{ sectionId }}-{{ id_suffix }}"
+            class="facets__inputs-list facets__nav-list list-unstyled"
+            name="{{ heading }}"
+          >
+            {%- for link in menu.links -%}
+              {% liquid
+                assign hidden_class = null
+                if forloop.index > initial_visible_values and render_show_more
+                  assign hidden_class = 'hidden'
+                  if is_horizontal
+                    assign hidden_class = 'mobile:hidden'
+                  endif
+                endif
+
+                assign is_current = false
+                if link.current or link.active
+                  assign is_current = true
+                endif
+              %}
+              <li
+                data-skip-node-update="true"
+                class="facets__inputs-list-item{% if hidden_class %} {{ hidden_class }}{% endif %}"
+                {% if hidden_class %}
+                  ref="showMoreItems[]"
+                {% endif %}
+              >
+                <a
+                  href="{{ link.url }}"
+                  class="facets__nav-link facets__nav-link--checkbox checkbox{% if is_current %} facets__nav-link--current{% endif %}"
+                  {% if is_current %}
+                    aria-current="page"
+                  {% endif %}
+                >
+                  {% comment %} Decorative checkbox: reflects the current category, never toggles (the link navigates). {% endcomment %}
+                  <input
+                    type="checkbox"
+                    class="checkbox__input"
+                    tabindex="-1"
+                    aria-hidden="true"
+                    {% if is_current %}checked{% endif %}
+                  >
+                  <span class="checkbox__label">
+                    {{ 'icon-checkmark.svg' | inline_asset_content }}
+                    <span class="checkbox__label-text">{{- link.title -}}</span>
+                  </span>
+                </a>
+
+                {%- if link.links.size > 0 -%}
+                  <ul class="facets__inputs-list facets__nav-list facets__nav-list--child list-unstyled">
+                    {%- for child_link in link.links -%}
+                      {% liquid
+                        assign is_child_current = false
+                        if child_link.current or child_link.active
+                          assign is_child_current = true
+                        endif
+                      %}
+                      <li class="facets__inputs-list-item" data-skip-node-update="true">
+                        <a
+                          href="{{ child_link.url }}"
+                          class="facets__nav-link facets__nav-link--checkbox checkbox{% if is_child_current %} facets__nav-link--current{% endif %}"
+                          {% if is_child_current %}
+                            aria-current="page"
+                          {% endif %}
+                        >
+                          <input
+                            type="checkbox"
+                            class="checkbox__input"
+                            tabindex="-1"
+                            aria-hidden="true"
+                            {% if is_child_current %}checked{% endif %}
+                          >
+                          <span class="checkbox__label">
+                            {{ 'icon-checkmark.svg' | inline_asset_content }}
+                            <span class="checkbox__label-text">{{- child_link.title -}}</span>
+                          </span>
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+
+        {% if render_show_more %}
+          <button
+            class="show-more__button button-unstyled button-unstyled--with-icon{% if is_horizontal %} desktop:hidden{% endif %}"
+            ref="showMoreButton"
+            on:click="/toggle"
+            aria-expanded="false"
+            aria-controls="collection-nav-list-{{ sectionId }}-{{ id_suffix }}"
+          >
+            <span class="svg-wrapper icon-plus">
+              {{- 'icon-plus.svg' | inline_asset_content -}}
+            </span>
+            <span class="show-more__label show-more__label--more">
+              {{- 'actions.show_more' | t -}}
+            </span>
+            <span class="show-more__label show-more__label--less">
+              {{- 'actions.show_less' | t -}}
+            </span>
+          </button>
+          {% echo '</show-more-component>' %}
+        {% endif %}
+      </floating-panel-component>
+    </details>
+  {% endcapture %}
+
+  {% render 'accordion-custom-component',
+    children: accordion_children,
+    class: 'facets__item',
+    open: is_vertical,
+    open_by_default_on_desktop: is_vertical,
+    open_by_default_on_mobile: is_vertical,
+    disable_animation_on_desktop: is_horizontal,
+    close_with_escape: is_horizontal,
+    data_filter_param_name: nav_param_name
+  %}
+{%- endif -%}
+
+{% stylesheet %}
+  /* Category links rendered as filter-style checkboxes: the whole row is the link, the
+     checkbox box is decorative, and the current category shows checked. The link keeps its
+     redirect behaviour because the (non-toggling) input ignores pointer events. */
+  .facets__nav-link--checkbox {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-block: 2px;
+    text-decoration: none;
+    font-family: var(--font-paragraph--family);
+    font-size: var(--font-size--body-md);
+  }
+
+  .facets__nav-link--checkbox .checkbox__input {
+    pointer-events: none;
+  }
+
+  /* Same hover treatment as the Availability filter checkboxes. */
+  .facets .facets__nav-link--checkbox .icon-checkmark {
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .facets .facets__nav-link--checkbox:hover .icon-checkmark {
+    border-color: rgb(var(--color-foreground-rgb) / var(--opacity-40-60));
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-5));
+  }
+
+  .facets .facets__nav-link--checkbox:hover .checkbox__input:checked + .checkbox__label .icon-checkmark {
+    background-color: var(--color-foreground-subdued);
+  }
+
+  .facets .facets__nav-link--checkbox .checkbox__label-text {
+    color: var(--color-foreground-subdued);
+    transition: color 0.2s ease, font-weight 0.2s ease;
+  }
+
+  .facets .facets__nav-link--checkbox:hover .checkbox__label-text,
+  .facets__nav-link--checkbox.facets__nav-link--current .checkbox__label-text {
+    color: rgb(var(--color-foreground-rgb));
+  }
+
+  .facets__nav-list--child {
+    padding-inline-start: var(--padding-md, 16px);
+    margin-block-start: var(--gap-3xs, 4px);
+  }
+{% endstylesheet %}

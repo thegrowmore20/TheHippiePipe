@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "section": {
       "type": "main-blog-post",
@@ -18,13 +19,16 @@
             "text": "<h1>{{ article.title }}</h1>",
             "width": "100%",
             "max_width": "normal",
+            "max_width_custom": 600,
             "alignment": "center",
             "type_preset": "h2",
             "font": "var(--font-body--family)",
+            "font_size": "1rem",
             "line_height": "normal",
             "letter_spacing": "normal",
             "case": "none",
             "wrap": "pretty",
+            "text_color": "",
             "background": false,
             "background_color": "#00000026",
             "corner_radius": 0,
@@ -40,11 +44,16 @@
           "name": "t:names.details",
           "settings": {
             "show_date": true,
-            "show_author": false,
+            "show_author": true,
+            "show_comments": true,
+            "type_preset": "",
             "alignment": "center",
+            "text_color": "",
             "show_alignment": true,
             "padding-block-start": 0,
-            "padding-block-end": 0
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
           },
           "blocks": {}
         },
@@ -53,6 +62,8 @@
           "name": "t:names.featured_image",
           "settings": {
             "image": "{{ article.image }}",
+            "link": "",
+            "image_ratio": "adapt",
             "width": "fill",
             "custom_width": 100,
             "width_mobile": "fill",
@@ -61,6 +72,7 @@
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
+            "border_color": "",
             "border_radius": 0,
             "padding-block-start": 0,
             "padding-block-end": 0,
@@ -71,7 +83,9 @@
         },
         "blog-post-content": {
           "type": "_blog-post-content",
-          "settings": {},
+          "settings": {
+            "text_color": ""
+          },
           "blocks": {}
         }
       },
@@ -85,8 +99,10 @@
         "content_direction": "column",
         "gap": 32,
         "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 40,
-        "padding-block-end": 80
+        "padding-block-start": 64,
+        "padding-block-end": 64,
+        "margin-block-start": 0,
+        "margin-block-end": 0
       }
     }
   },

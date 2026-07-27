@@ -10,7 +10,7 @@
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
 <div
-  class="section section--{{ section.settings.section_width }} spacing-style{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+  class="section section--{{ section.settings.section_width }} spacing-style{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.settings.custom_class != blank %} {{ section.settings.custom_class | escape }}{% endif %}"
   style="{% render 'spacing-padding', settings: section.settings %}"
 >
   {{ section.settings.custom_liquid }}
@@ -47,6 +47,16 @@
         }
       ],
       "default": "page-width"
+    },
+    {
+      "type": "header",
+      "content": "t:content.advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "t:settings.custom_class",
+      "info": "t:info.custom_class"
     },
     {
       "type": "header",

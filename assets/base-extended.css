@@ -1,3 +1,8 @@
+.shopify-policy__container{
+    max-width: var(--extra-narrow-page-width);
+    padding-top: 64px;
+    padding-bottom: 64px;
+}
 
 .gap-2xs {
   gap: var(--gap-2xs);
@@ -61,6 +66,21 @@
   height: var(--icon-size-md);
 }
 
+.icon-size--lg{
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
+}
+
+.icon-size--xl{
+  width: var(--icon-size-xl);
+  height: var(--icon-size-xl);
+}
+
+.icon-size--2xl{
+  width: var(--icon-size-2xl);
+  height: var(--icon-size-2xl);
+}
+
 .icon-size--sm,
 .icon-chevron{
   width: var(--icon-size-sm);
@@ -100,13 +120,6 @@
   justify-content: space-between;
 }
 
-/* --- Generic hover interactions -------------------------------------- *
- * Drive the color from the block: set --link-hover-color on the element
- * (or an ancestor) via a theme-editor color setting. The scale defaults to
- * 1.1 and can be overridden per element with --hover-scale.
- * -------------------------------------------------------------------- */
-
-/* Per-link hover color. Add .hover-links to a container that holds <a>s. */
 .hover-links a {
   transition: color var(--hover-transition-duration) var(--hover-transition-timing);
 }
@@ -116,10 +129,6 @@
   color: var(--link-hover-color, currentColor);
 }
 
-/* Element-level hover color (e.g. a group that is itself a link, or an icon
- * button). Propagates to nested text and icons: this theme's icons use
- * stroke/fill: currentColor, so setting color recolors the svg; nested text
- * that carries its own color is overridden by the higher-specificity selector. */
 .hover-color,
 .hover-color :is(a, rte-formatter,span, p, li, strong, em, h1, h2, h3, h4, h5, h6, svg, .svg-wrapper, [class*='icon']) {
   transition: color var(--hover-transition-duration) var(--hover-transition-timing);
@@ -132,9 +141,15 @@
   color: var(--link-hover-color, currentColor);
 }
 
-/* Scale an icon (svg) on hover. Add .hover-icon-scale to the link/element
- * that contains the icon. Icons drawn with currentColor also follow the
- * hover color set above. */
+.cart-bubble {
+  transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+  will-change: transform;
+}
+
+.header-actions__cart-icon:hover .cart-bubble {
+  transform: scale(var(--hover-scale, 1.1));
+}
+
 .hover-icon-scale svg {
   transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
   transform-origin: center;
@@ -158,16 +173,10 @@
     display: none;
 }
 
-
 .xb-wishlist-header-auto-container button.xb-wishlist-header-auto {
     transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
 }
 
 .xb-wishlist-header-auto-container:hover button.xb-wishlist-header-auto  {
     transform: scale(1.1);
-}
-
-.xb-wishlist-header-auto-container:hover button.xb-wishlist-header-auto .xb-wishlist-header-auto__svg + span  {
-    background-color: var(--color-primary-button-text) !important;
-    color: var(--color-primary-button-background) !important;
 }

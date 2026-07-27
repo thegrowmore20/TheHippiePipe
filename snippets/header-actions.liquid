@@ -115,7 +115,7 @@
 
   {% if settings.cart_type == 'drawer' and template.name != 'cart' %}
     <button
-      class="header-actions__action button-unstyled hover-color hover-icon-scale{% if display_style == 'text' %} header-actions__text-style{% endif %}"
+      class="header-actions__action button-unstyled hover-icon-scale {% if display_style == 'text' %} header-actions__text-style{% endif %}"
       on:click="#cart-drawer/toggle"
       aria-haspopup="dialog"
       aria-expanded="false"
@@ -129,7 +129,7 @@
   {% else %}
     <a
       href="{{ routes.cart_url }}"
-      class="header-actions__action action__cart hover-color hover-icon-scale{% if display_style == 'text' %} header-actions__text-style{% endif %}"
+      class="header-actions__action action__cart hover-icon-scale {% if display_style == 'text' %} header-actions__text-style{% endif %}"
       aria-label="{{ 'accessibility.cart' | t }}"
       aria-describedby="cart-bubble-text"
     >
@@ -264,6 +264,20 @@
 
     position: relative;
   }
+
+  .xb-wishlist-header-auto__svg + span {
+     --cart-bubble-size: 15px;
+    color: var(--color-primary-button-background) !important;
+    background: var(--color-primary-button-text) !important;
+    width: var(--cart-bubble-size, 15px) !important;
+    height: var(--cart-bubble-size, 15px) !important;
+    top: 0.45rem !important;
+}
+
+.xb-wishlist-header-auto-container--general{
+  height: 44px;
+  width: 44px;
+}
 
   .header-actions__cart-icon .cart-bubble {
     position: absolute;

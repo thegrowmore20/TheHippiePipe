@@ -35,10 +35,36 @@
     gap: 0;
     flex-shrink: 0;
   }
+
+  /*
+   * Overlay mode. The swatches are reparented into the card's .card-gallery (which is
+   * already position:relative + overflow:hidden — the same container the theme floats the
+   * sale badge over), so these rules only take effect once that move has happened. Until
+   * then the element stays in .product-card__content and renders in normal flow, which is
+   * the graceful fallback when JS is off.
+   */
+  .card-gallery > product-swatches.product-swatches--overlay {
+    position: absolute;
+    inset-block-end: var(--product-swatches-overlay-inset, 0.5rem);
+    inset-inline-start: var(--product-swatches-overlay-inset, 0.5rem);
+    z-index: 2;
+    width: auto;
+    max-width: calc(100% - var(--product-swatches-overlay-inset, 0.5rem) * 2);
+    margin: 0;
+    overflow: visible;
+    /* Empty regions of the strip must not swallow clicks meant for the product link. */
+    pointer-events: none;
+  }
+
+  .card-gallery > product-swatches.product-swatches--overlay :is(label, button, input, a) {
+    pointer-events: auto;
+  }
 {% endstylesheet %}
 
-{% if product_has_swatches %}
+{% if product_has_swatches and settings.show_card_swatches %}
   <product-swatches
+    class="{% if block_settings.overlay_on_media %}product-swatches--overlay{% endif %}"
+    {% if block_settings.overlay_on_media %}data-overlay-on-media{% endif %}
     data-product-id="{{ closest.product.id }}"
     data-product-url="{{ closest.product.url }}"
     style="
@@ -55,6 +81,30 @@
   >
     {% render 'variant-swatches', product_resource: closest.product %}
   </product-swatches>
+
+  {%- if block_settings.overlay_on_media -%}
+    <script>
+      if (!customElements.get('product-swatches')) {
+        customElements.define(
+          'product-swatches',
+          class ProductSwatches extends HTMLElement {
+            connectedCallback() {
+              if (!this.hasAttribute('data-overlay-on-media') || this.dataset.placed) return;
+
+              // Move into the card's media so absolute positioning is measured against the
+              // image, not the whole card column. Runs during parse, before paint, so the
+              // swatches never flash in their in-flow position first.
+              const gallery = this.closest('.product-card__content')?.querySelector('.card-gallery');
+              if (gallery && !gallery.contains(this)) {
+                gallery.appendChild(this);
+                this.dataset.placed = 'true';
+              }
+            }
+          }
+        );
+      }
+    </script>
+  {%- endif -%}
 {% endif %}
 
 {% schema %}
@@ -65,6 +115,13 @@
     {
       "type": "paragraph",
       "content": "t:content.resource_reference_product_swatches"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_on_media",
+      "label": "Overlay on image",
+      "default": true,
+      "info": "Places the swatches in the bottom-left corner of the product image instead of below it."
     },
     {
       "type": "select",

@@ -175,6 +175,12 @@
       style="{% render 'spacing-style', settings: block_settings %}{% if block_settings.text_label_case == 'uppercase' %} --facet-label-transform: uppercase;{% endif %}"
       aria-label="{{ 'accessibility.filters' | t }}"
     >
+      {% render 'collection-nav',
+        menu: block_settings.collection_nav,
+        filter_style: block_settings.filter_style,
+        sectionId: section.id,
+        in_drawer: in_drawer
+      %}
       <facets-form-component
         class="facets__form-wrapper"
         section-id="{{ section.id }}"
@@ -794,7 +800,7 @@
 
   .facets:not(.facets--drawer) .facets__filters-wrapper {
     @media screen and (min-width: 750px) {
-      margin-inline-end: var(--margin-md);
+      /* margin-inline-end: var(--margin-md); */
     }
   }
 
@@ -1372,6 +1378,11 @@
       "label": "t:settings.show_filter_label",
       "default": false,
       "visible_if": "{{ block.settings.enable_filtering == true }}"
+    },
+    {
+      "type": "link_list",
+      "id": "collection_nav",
+      "label": "Filters Navigation"
     },
     {
       "type": "checkbox",

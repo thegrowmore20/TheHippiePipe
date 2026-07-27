@@ -17,6 +17,9 @@
     style="
       {%- render 'spacing-style', settings: block_settings -%}
       --product-faqs-max-width: {{ block_settings.max_width | default: 800 }}px;
+      {%- if block_settings.divider_color != blank -%}
+        --product-faqs-divider: {{ block_settings.divider_color }};
+      {%- endif -%}
     "
     {{ block.shopify_attributes }}
   >
@@ -80,7 +83,7 @@
     justify-content: space-between;
     gap: var(--gap-sm);
     padding-block: var(--padding-sm);
-    border-block-end: 1px solid var(--color-border);
+    border-block-end: 1px solid var(--product-faqs-divider, var(--color-border));
     cursor: pointer;
   }
 
@@ -133,6 +136,16 @@
       "unit": "px",
       "default": 800,
       "info": "The block is centered within the column it sits in."
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "t:settings.divider_color",
+      "placeholder": "t:settings.default"
     },
     {
       "type": "header",

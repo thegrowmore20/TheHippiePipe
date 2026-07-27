@@ -5,8 +5,11 @@
 
 {% assign product = closest.product %}
 
-{% comment %} Only show quick add for available products — sold-out shows no button (task 4). {% endcomment %}
-{% if product != blank and product.available %}
+{% comment %}
+  Only show quick add for available products — sold-out shows no button. The global
+  Product cards > Quick add toggle (settings.quick_add) gates it across every listing.
+{% endcomment %}
+{% if product != blank and product.available and settings.quick_add %}
   {% render 'button-custom-styles', block_settings: block.settings, block_id: block.id %}
   <div
     class="quick-add-block spacing-style {{ block.settings.custom_class | escape }}"

@@ -1,13 +1,23 @@
-
-
 {% assign block_settings = block.settings %}
 {% assign icon_block_class = 'icon-block__media icon-block-' | append: block.id %}
 
-{% if block_settings.icon_color != blank %}
+{% comment %} CHANGED: outer condition + number styles added. Was previously wrapped only in icon_color check. {% endcomment %}
+{% if block_settings.icon_color != blank or block_settings.number_text != blank %}
   {% style %}
-    .icon-block-{{ block.id }} {
-      color: {{ block_settings.icon_color }};
-    }
+    {% if block_settings.icon_color != blank %}
+      .icon-block-{{ block.id }} {
+        color: {{ block_settings.icon_color }};
+      }
+    {% endif %}
+
+    {% if block_settings.number_text != blank %}
+      .icon-block-{{ block.id }}.icon-block__number {
+        font-size: {{ block_settings.number_font_size | default: 24 }}px;
+        {% if block_settings.number_color != blank %}
+          color: {{ block_settings.number_color }};
+        {% endif %}
+      }
+    {% endif %}
   {% endstyle %}
 {% endif %}
 
@@ -15,6 +25,7 @@
   {% render 'icon-or-image',
     icon: block_settings.icon,
     image_upload: block_settings.image_upload,
+    number_text: block_settings.number_text,
     width: block_settings.width,
     class_name: icon_block_class,
     attributes: block.shopify_attributes
@@ -43,6 +54,14 @@
 
   .icon-block__media {
     height: auto;
+  }
+
+  .icon-block__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-weight: 600;
   }
 {% endstylesheet %}
 
@@ -299,6 +318,30 @@
       "type": "image_picker",
       "id": "image_upload",
       "label": "t:settings.image_icon"
+    },
+    {
+      "type": "text",
+      "id": "number_text",
+      "label": "Number",
+      "info": "Shows only when Icon is set to None and no image is uploaded. Ideal for step numbers (1, 2, 3)."
+    },
+    {
+      "type": "range",
+      "id": "number_font_size",
+      "label": "Number size",
+      "min": 12,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ block.settings.number_text != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "number_color",
+      "label": "Number color",
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ block.settings.number_text != blank }}"
     },
     {
       "type": "range",

@@ -1,10 +1,16 @@
 {%- doc -%}
-  Renders either an SVG icon or an uploaded image based on block settings.
+  Renders an SVG icon, an uploaded image, or a plain number text based on block settings.
+
+  Priority:
+  1. SVG icon — when icon is not 'none' and no image is uploaded
+  2. Uploaded image — always wins over the icon
+  3. Number text — only when icon is 'none' AND no image is uploaded AND number_text is set
 
   @param {string} icon - The icon name from block.settings.icon
   @param {object} image_upload - The uploaded image from block.settings.image_upload
   @param {number} width - The width setting from block.settings.width
   @param {string} class_name - CSS class name for the rendered element
+  @param {string} [number_text] - Optional number/step text from block.settings.number_text
   @param {object} [attributes] - Additional HTML attributes to add to the element
 {%- enddoc -%}
 
@@ -37,4 +43,13 @@
     | image_url: width: 1200
     | image_tag: widths: widths, class: class_name, style: image_style, sizes: sizes
   }}
+{%- elsif number_text != blank -%}
+  <span
+    class="{{ class_name | append: ' icon-block__number' | strip }}"
+    {% if attributes %}
+      {{ attributes }}
+    {% endif %}
+  >
+    {{- number_text | escape -}}
+  </span>
 {%- endif -%}

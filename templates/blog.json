@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "main": {
       "type": "main-blog",
@@ -18,17 +19,20 @@
             "text": "<h1>{{ closest.blog.title }}</h1>",
             "width": "fit-content",
             "max_width": "narrow",
+            "max_width_custom": 600,
             "alignment": "left",
             "type_preset": "h2",
             "font": "var(--font-body--family)",
+            "font_size": "1rem",
             "line_height": "normal",
             "letter_spacing": "normal",
             "case": "none",
             "wrap": "pretty",
+            "text_color": "",
             "background": false,
             "background_color": "#00000026",
             "corner_radius": 0,
-            "padding-block-start": 48,
+            "padding-block-start": 0,
             "padding-block-end": 48,
             "padding-inline-start": 0,
             "padding-inline-end": 0
@@ -39,9 +43,23 @@
           "type": "_blog-post-card",
           "static": true,
           "settings": {
-            "alignment": "left"
+            "alignment": "left",
+            "background_color": ""
           },
           "blocks": {
+            "image": {
+              "type": "_blog-post-image",
+              "static": true,
+              "settings": {
+                "height": "large",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 12
+              },
+              "blocks": {}
+            },
             "heading": {
               "type": "_heading",
               "name": "t:names.title",
@@ -49,13 +67,16 @@
               "settings": {
                 "type_preset": "h4",
                 "font": "var(--font-body--family)",
+                "font_size": "1rem",
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
+                "text": "",
                 "read_only": true,
                 "alignment": "left",
                 "show_alignment": false,
+                "text_color": "",
                 "padding-block-start": 0,
                 "padding-block-end": 10,
                 "padding-inline-start": 0,
@@ -70,22 +91,34 @@
               "settings": {
                 "show_date": true,
                 "show_author": false,
+                "show_comments": true,
+                "type_preset": "",
                 "alignment": "left",
+                "text_color": "",
                 "show_alignment": false,
                 "padding-block-start": 0,
-                "padding-block-end": 0
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
               },
               "blocks": {}
             },
-            "image": {
-              "type": "_blog-post-image",
+            "content": {
+              "type": "_blog-post-description",
               "static": true,
               "settings": {
-                "height": "large",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_radius": 4
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "padding-block-start": 16,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
               },
               "blocks": {}
             }
@@ -98,8 +131,10 @@
       ],
       "settings": {
         "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 0,
-        "padding-block-end": 48
+        "padding-block-start": 64,
+        "padding-block-end": 64,
+        "margin-block-start": 0,
+        "margin-block-end": 0
       }
     }
   },

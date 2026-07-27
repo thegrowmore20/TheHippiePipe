@@ -1,0 +1,13 @@
+{%- doc -%}
+  Emits the `--section-custom-width` CSS variable for a section whose width is set to
+  "custom", so `.section--custom` (in base.css) can size its centre column from it.
+  Renders nothing for any other width. Meant to be dropped inside a section root's `style="…"`.
+
+  @param {object} settings - The section settings (e.g. `section.settings`).
+
+  @example
+  style="{% render 'section-custom-width', settings: section.settings %}"
+{%- enddoc -%}
+{%- if settings.section_width == 'custom' -%}
+  --section-custom-width: {{ settings.custom_width | default: 800 }}px;
+{%- endif -%}

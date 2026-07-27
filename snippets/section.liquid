@@ -44,6 +44,7 @@
     {%- comment -%} Margin on the OUTER element; inner content wrapper uses spacing-style, so distinct ids avoid double-applying (task 10) {%- endcomment -%}
     margin-block-start: {{ section.settings.margin_top | default: 0 }}px;
     margin-block-end: {{ section.settings.margin_bottom | default: 0 }}px;
+    {% render 'section-custom-width', settings: section.settings %}
   "
 >
   <div class="custom-section-background">

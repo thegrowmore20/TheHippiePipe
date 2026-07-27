@@ -1,0 +1,1287 @@
+{%- doc -%}
+  Product Shorts — Horizon-structured section (converted from a theme block).
+
+  Renders the product's short-form videos as a carousel of click-to-play facades.
+  Reads a list-of-URLs metafield (YouTube or Vimeo) and renders a thumbnail per video.
+  The thumbnail is a facade: no iframe is created until the viewer clicks, so the section
+  costs one image per slide instead of an embedded player each.
+
+  The carousel is still the theme's slideshow component, so drag, keyboard, arrows and
+  pagination behave like every other carousel in the theme.
+
+  ---------------------------------------------------------------------------
+  CONVERSION NOTES (block -> section)
+  ---------------------------------------------------------------------------
+   - Outer shell is Horizon default: content is captured into `children` and handed to
+     the `section` snippet, so background media, overlay, borders, width, height,
+     padding, margin and contrast-override all behave natively.
+   - Heading moved from the `_heading` THEME BLOCK to SECTION SETTINGS, with full
+     type-preset, font, per-device size, alignment, padding and margin controls.
+     `{% content_for 'block' %}` is gone; the section declares no blocks.
+   - Metafield namespace/key moved from block.settings to section.settings.
+     Resolution logic is unchanged: product.metafields[namespace][key].value.
+   - Padding moved to the Horizon wrapper. The inner `spacing-style` render was
+     removed so padding is not applied twice — `spacing-style` on Horizon's content
+     wrapper reads the same four padding-* ids, so merchants keep all four controls.
+   - Inner DOM (.shorts-block > heading + product-shorts) is byte-identical to the
+     block version, so any custom CSS you have targeting these classes still matches.
+
+  ---------------------------------------------------------------------------
+  RENDER GUARDS
+  ---------------------------------------------------------------------------
+   1. Slides are captured and counted BEFORE anything is output. Zero valid videos =
+      the entire section is skipped: no wrapper, no preconnect, no markup, no script.
+      Exception: `request.design_mode` renders a placeholder so the section stays
+      selectable in the theme editor. That branch never runs on the storefront.
+   2. A URL that parses to no video id is skipped, not rendered as an empty slide.
+   3. The preconnect to i.ytimg.com is emitted only when a YouTube thumbnail is
+      actually requested — i.e. at least one YouTube slide AND no cover image
+      overriding it. (Was previously emitted whenever the metafield was non-empty.)
+   4. fetchpriority tracks the first RENDERED slide, not the first URL in the list.
+   5. Heading renders only when non-blank after strip; its CSS is only emitted when
+      it renders.
+   6. Arrows/pagination are dropped per breakpoint when the slides already fit —
+      unchanged from the block version.
+{%- enddoc -%}
+
+{%- liquid
+  assign uid = section.id | replace: '_', '' | replace: '-', '' | downcase
+  assign s = section.settings
+
+  assign namespace = s.metafield_namespace | default: 'custom'
+  assign key = s.metafield_key | default: 'product_short_videos'
+  assign video_links = product.metafields[namespace][key].value
+
+  assign heading_tag = s.heading_tag | default: 'h2'
+  assign heading_text = s.heading | strip
+  assign has_heading = false
+  if heading_text != blank
+    assign has_heading = true
+  endif
+
+  # Matches the slides-per-view breakpoints in the stylesheet below.
+  assign shorts_sizes = '(min-width: 990px) 22vw, (min-width: 750px) 30vw, 45vw'
+
+  assign rendered = 0
+  assign uses_yt_thumbs = false
+-%}
+
+{%- comment -%}
+  theme-check-disable RemoteAsset
+  The thumbnails are YouTube's own stills, fetched from i.ytimg.com. They cannot be served
+  from the Shopify CDN without re-uploading every frame, so the preconnect below is the
+  cheapest way to shorten that handshake.
+{%- endcomment -%}
+
+{%- capture slides -%}
+  {%- if video_links != blank and video_links.size > 0 -%}
+    {%- for video_url in video_links -%}
+      {%- liquid
+        assign video_id = ''
+        assign video_type = ''
+        assign is_short = false
+
+        if video_url contains 'youtube.com' or video_url contains 'youtu.be'
+          assign video_type = 'youtube'
+          if video_url contains 'youtu.be/'
+            assign video_id = video_url | split: 'youtu.be/' | last | split: '?' | first
+          elsif video_url contains 'watch?v='
+            assign video_id = video_url | split: 'watch?v=' | last | split: '&' | first
+          elsif video_url contains 'embed/'
+            assign video_id = video_url | split: 'embed/' | last | split: '?' | first
+          elsif video_url contains 'shorts/'
+            assign video_id = video_url | split: 'shorts/' | last | split: '?' | first
+            assign is_short = true
+          endif
+        elsif video_url contains 'vimeo.com'
+          assign video_type = 'vimeo'
+          assign video_id = video_url | split: 'vimeo.com/' | last | split: '/' | first | split: '?' | first
+        endif
+      -%}
+
+      {%- if video_id != blank -%}
+        {%- liquid
+          # rendered is still the count of PREVIOUS slides here, so 0 marks the first
+          # slide that actually made it through parsing.
+          assign is_first_rendered = false
+          if rendered == 0
+            assign is_first_rendered = true
+          endif
+          assign slide_number = rendered | plus: 1
+
+          if s.cover_image == blank and video_type == 'youtube'
+            assign uses_yt_thumbs = true
+          endif
+        -%}
+
+        {%- capture slide_children -%}
+          <button
+            type="button"
+            class="shorts__facade"
+            data-video-id="{{ video_id }}"
+            data-video-type="{{ video_type }}"
+            aria-label="{{ 'content.shorts_play_video' | t: index: slide_number }}"
+          >
+            {%- if s.cover_image != blank -%}
+              {{
+                s.cover_image
+                | image_url: width: 720
+                | image_tag:
+                  widths: '405, 540, 720',
+                  sizes: shorts_sizes,
+                  class: 'shorts__thumb',
+                  loading: 'lazy',
+                  alt: ''
+              }}
+            {%- elsif video_type == 'youtube' -%}
+              {%- comment -%}
+                Shorts are 9:16, so try the portrait still (oar2) before the 4:3 hqdefault —
+                that avoids cropping a landscape frame into a portrait slide.
+              {%- endcomment -%}
+              <img
+                class="shorts__thumb"
+                src="https://i.ytimg.com/vi/{{ video_id }}/{% if is_short %}oar2{% else %}hqdefault{% endif %}.jpg"
+                onerror="if(!this.dataset.f){this.dataset.f='1';this.src='https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg';}"
+                width="405"
+                height="720"
+                loading="lazy"
+                decoding="async"
+                fetchpriority="{% if is_first_rendered %}high{% else %}low{% endif %}"
+                sizes="{{ shorts_sizes }}"
+                draggable="false"
+                alt=""
+              >
+            {%- endif -%}
+            <span class="shorts__play" aria-hidden="true">
+              <svg viewBox="0 0 68 48" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z"
+                  fill="{{ s.play_button_color }}"
+                ></path>
+                <path d="M45 24 27 14v20z" fill="#ffffff"></path>
+              </svg>
+            </span>
+          </button>
+        {%- endcapture -%}
+
+        {%- render 'slideshow-slide',
+          index: rendered,
+          children: slide_children,
+          class: 'shorts__slide',
+          slide_id: video_id
+        -%}
+        {%- assign rendered = rendered | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%} theme-check-enable RemoteAsset {%- endcomment -%}
+
+{%- if rendered > 0 -%}
+
+  {%- if uses_yt_thumbs -%}
+    <link rel="preconnect" href="https://i.ytimg.com" crossorigin>
+  {%- endif -%}
+
+  {%- if has_heading -%}
+    {% style %}
+      .shorts-heading-{{ uid }} {
+        display: block;
+        margin: 0;
+        width: {{ s.heading_width }};
+        margin-block-start: {{ s.heading_margin_top }}px;
+        margin-block-end: {{ s.heading_margin_bottom }}px;
+        padding-block-start: {{ s.heading_padding_block_start }}px;
+        padding-block-end: {{ s.heading_padding_block_end }}px;
+        padding-inline-start: {{ s.heading_padding_inline_start }}px;
+        padding-inline-end: {{ s.heading_padding_inline_end }}px;
+        text-align: {{ s.heading_alignment }};
+        text-wrap: pretty;
+        font-family: {{ s.heading_font }};
+        {% if s.heading_case != 'none' %}
+          text-transform: {{ s.heading_case }};
+        {% endif %}
+        {% if s.heading_font_size > 0 %}
+          font-size: {{ s.heading_font_size }}px;
+        {% endif %}
+        {% if s.heading_line_height > 0 %}
+          line-height: {{ s.heading_line_height }};
+        {% endif %}
+        {% if s.heading_letter_spacing != 0 %}
+          letter-spacing: {{ s.heading_letter_spacing }}px;
+        {% endif %}
+        {% if s.heading_color != blank %}
+          color: {{ s.heading_color }};
+        {% endif %}
+      }
+
+      {% if s.heading_max_width == 'narrow' %}
+        .shorts-heading-{{ uid }} { max-width: 45ch; }
+      {% elsif s.heading_max_width == 'normal' %}
+        .shorts-heading-{{ uid }} { max-width: 75ch; }
+      {% endif %}
+
+      {% if s.heading_alignment == 'center' %}
+        .shorts-heading-{{ uid }} { margin-inline: auto; }
+      {% elsif s.heading_alignment == 'right' %}
+        .shorts-heading-{{ uid }} { margin-inline-start: auto; }
+      {% endif %}
+
+      @media screen and (max-width: 749px) {
+        .shorts-heading-{{ uid }} {
+          text-align: {{ s.heading_alignment_mobile }};
+          {% if s.heading_font_size_mobile > 0 %}
+            font-size: {{ s.heading_font_size_mobile }}px;
+          {% endif %}
+          {% if s.heading_alignment_mobile == 'center' %}
+            margin-inline: auto;
+          {% elsif s.heading_alignment_mobile == 'right' %}
+            margin-inline-start: auto;
+            margin-inline-end: 0;
+          {% else %}
+            margin-inline-start: 0;
+            margin-inline-end: auto;
+          {% endif %}
+        }
+      }
+    {% endstyle %}
+  {%- endif -%}
+
+  {%- liquid
+    # Arrows and pagination only earn their place when the slides actually overflow. The
+    # slide count is known here, so each breakpoint gets a flag rather than a JS measure.
+    assign fits_classes = ''
+    if rendered <= s.slides_mobile
+      assign fits_classes = fits_classes | append: ' shorts--fits-mobile'
+    endif
+    if rendered <= s.slides_medium
+      assign fits_classes = fits_classes | append: ' shorts--fits-tablet'
+    endif
+    if rendered <= s.slides_desktop
+      assign fits_classes = fits_classes | append: ' shorts--fits-desktop'
+    endif
+  -%}
+
+  {%- capture controls -%}
+    {%- render 'slideshow-controls',
+      style: s.pagination_style,
+      item_count: rendered,
+      show_arrows: false,
+      pagination_position: 'center'
+    -%}
+  {%- endcapture -%}
+
+  {%- capture children -%}
+    <div class="shorts-block">
+      {%- if has_heading -%}
+        <{{ heading_tag }} class="shorts-heading-{{ uid }} {{ s.heading_type_preset }}">
+          {{ s.heading }}
+        </{{ heading_tag }}>
+      {%- endif -%}
+
+      <product-shorts
+        class="shorts{{ fits_classes }}"
+        style="
+        --shorts-columns: {{ s.slides_desktop }};
+        --shorts-columns-tablet: {{ s.slides_medium }};
+        --shorts-columns-mobile: {{ s.slides_mobile }};
+        --shorts-gap: {{ s.slide_gap }}px;
+        --slideshow-gap: {{ s.slide_gap }}px;
+        --shorts-radius: {{ s.video_border_radius }}px;
+        --shorts-play-size: {{ s.play_button_size }}px;
+        --shorts-muted: {{ s.muted }};
+        "
+      >
+        {%- render 'slideshow',
+          class: 'shorts__slideshow',
+          slides: slides,
+          slide_count: rendered,
+          controls: controls,
+          show_arrows: s.show_arrows,
+          icon_style: s.icons_style,
+          icon_shape: s.icons_shape,
+          infinite: false
+        -%}
+      </product-shorts>
+    </div>
+  {%- endcapture -%}
+
+  {% render 'section',
+    section: section,
+    children: children,
+    section_id: section.id,
+    background_color: s.background_color
+  %}
+
+  <script>
+    if (!customElements.get('product-shorts')) {
+      customElements.define(
+        'product-shorts',
+        class ProductShorts extends HTMLElement {
+          connectedCallback() {
+            this.muted = this.style.getPropertyValue('--shorts-muted').trim() === 'true';
+            this.addEventListener('click', (event) => {
+              const facade = event.target.closest('.shorts__facade');
+              if (facade) this.play(facade);
+            });
+          }
+
+          play(facade) {
+            const id = facade.dataset.videoId;
+            if (!id) return;
+
+            // Only one video plays per carousel; opening another tears the previous one down.
+            this.stop();
+
+            const params = this.muted ? 'autoplay=1&mute=1&muted=1&' : 'autoplay=1&';
+            const src =
+              facade.dataset.videoType === 'vimeo'
+                ? 'https://player.vimeo.com/video/' + id + '?' + params
+                : 'https://www.youtube.com/embed/' + id + '?' + params + 'playsinline=1&rel=0&modestbranding=1';
+
+            const iframe = document.createElement('iframe');
+            iframe.className = 'shorts__player';
+            iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+            iframe.allowFullscreen = true;
+            iframe.title = facade.getAttribute('aria-label') || '';
+            iframe.src = src;
+
+            facade.hidden = true;
+            facade.parentElement.appendChild(iframe);
+            this.activeFacade = facade;
+          }
+
+          stop() {
+            if (!this.activeFacade) return;
+            const player = this.activeFacade.parentElement.querySelector('.shorts__player');
+            if (player) player.remove();
+            this.activeFacade.hidden = false;
+            this.activeFacade = null;
+          }
+
+          disconnectedCallback() {
+            this.stop();
+          }
+        }
+      );
+    }
+  </script>
+
+{%- elsif request.design_mode -%}
+
+  {%- comment -%}
+    Editor-only placeholder so the section stays selectable while it has no content.
+    Never renders on the storefront. Delete this branch to hide it in the editor too.
+  {%- endcomment -%}
+  {%- capture children -%}
+    <div class="shorts-block shorts-placeholder">
+      {%- if product == blank -%}
+        Product Shorts reads a product metafield, so it only has content on a product
+        template. This section is hidden on the storefront.
+      {%- elsif video_links == blank -%}
+        Product Shorts: no videos found in <b>{{ namespace }}.{{ key }}</b> for this product.
+        This section is hidden on the storefront.
+      {%- else -%}
+        Product Shorts: <b>{{ namespace }}.{{ key }}</b> has entries, but none are recognisable
+        YouTube or Vimeo URLs. This section is hidden on the storefront.
+      {%- endif -%}
+    </div>
+  {%- endcapture -%}
+
+  {% render 'section',
+    section: section,
+    children: children,
+    section_id: section.id,
+    background_color: s.background_color
+  %}
+
+{%- endif -%}
+
+{% stylesheet %}
+  .shorts-block {
+    display: block;
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .shorts-placeholder {
+    padding: 32px;
+    text-align: center;
+    border: 1px dashed currentcolor;
+    border-radius: 8px;
+    opacity: 0.65;
+  }
+
+  .shorts {
+    display: block;
+    width: 100%;
+  }
+
+  /*
+   * Nothing to navigate to when every slide is already on screen, so drop the arrows and
+   * the pagination, and centre the slides in the track instead of leaving them packed
+   * against the start. The .shorts--fits-* flags come from comparing the slide count
+   * against the columns configured for each breakpoint.
+   *
+   * Centring is deliberately scoped to the fits case: `justify-content: center` on a
+   * scroll container makes the overflowing start unreachable, which would break the
+   * carousel the moment the slides no longer fit.
+   */
+  @media screen and (max-width: 749px) {
+    .shorts--fits-mobile slideshow-arrows,
+    .shorts--fits-mobile slideshow-controls {
+      display: none;
+    }
+
+    .shorts--fits-mobile slideshow-slides {
+      justify-content: center;
+    }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .shorts--fits-tablet slideshow-arrows,
+    .shorts--fits-tablet slideshow-controls {
+      display: none;
+    }
+
+    .shorts--fits-tablet slideshow-slides {
+      justify-content: center;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .shorts--fits-desktop slideshow-arrows,
+    .shorts--fits-desktop slideshow-controls {
+      display: none;
+    }
+
+    .shorts--fits-desktop slideshow-slides {
+      justify-content: center;
+    }
+  }
+
+  /*
+   * Slides-per-view is driven by --slide-width, which the theme's slideshow-slide
+   * already reads. Subtracting the gaps keeps the requested column count exact.
+   */
+  .shorts__slide {
+    --slide-width: calc(
+      (100% - (var(--shorts-columns-mobile) - 1) * var(--shorts-gap)) / var(--shorts-columns-mobile)
+    );
+
+    aspect-ratio: 9 / 16;
+    border-radius: var(--shorts-radius);
+    background-color: var(--palette-darkest, #000);
+    overflow: hidden;
+  }
+
+  @media screen and (min-width: 750px) {
+    .shorts__slide {
+      --slide-width: calc(
+        (100% - (var(--shorts-columns-tablet) - 1) * var(--shorts-gap)) / var(--shorts-columns-tablet)
+      );
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .shorts__slide {
+      --slide-width: calc((100% - (var(--shorts-columns) - 1) * var(--shorts-gap)) / var(--shorts-columns));
+    }
+  }
+
+  .shorts__facade {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .shorts__thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+  }
+
+  .shorts__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: var(--shorts-play-size);
+    aspect-ratio: 1;
+    opacity: 0.95;
+    pointer-events: none;
+    transition: scale var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  .shorts__play svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: drop-shadow(0 1px 4px rgb(0 0 0 / 0.45));
+  }
+
+  .shorts__facade:hover .shorts__play {
+    scale: 1.08;
+  }
+
+  .shorts__player {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product Shorts",
+  "class": "section-wrapper",
+  "tag": "section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Leave empty to hide the heading.",
+      "default": "Watch it in action"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "HTML tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "p", "label": "Paragraph" },
+        { "value": "div", "label": "Div" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_type_preset",
+      "label": "Type preset",
+      "info": "Uses the theme's typography presets.",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "paragraph", "label": "Paragraph" },
+        { "value": "rte", "label": "Rich text" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_font",
+      "label": "Font",
+      "options": [
+        { "value": "var(--font-heading--family)", "label": "Heading" },
+        { "value": "var(--font-body--family)", "label": "Body" },
+        { "value": "var(--font-subheading--family)", "label": "Subheading" },
+        { "value": "var(--font-accent--family)", "label": "Accent" }
+      ],
+      "default": "var(--font-heading--family)"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Font size (desktop)",
+      "info": "0 = use type preset.",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_mobile",
+      "label": "Font size (mobile)",
+      "info": "0 = use type preset.",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Line height",
+      "info": "0 = use type preset.",
+      "min": 0,
+      "max": 2.5,
+      "step": 0.1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "heading_letter_spacing",
+      "label": "Letter spacing",
+      "min": -2,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "heading_case",
+      "label": "Text case",
+      "options": [
+        { "value": "none", "label": "Default" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "info": "Leave empty to inherit the section color scheme."
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Alignment (desktop)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment_mobile",
+      "label": "Alignment (mobile)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "heading_width",
+      "label": "Width",
+      "options": [
+        { "value": "100%", "label": "Full width" },
+        { "value": "fit-content", "label": "Fit content" }
+      ],
+      "default": "100%"
+    },
+    {
+      "type": "select",
+      "id": "heading_max_width",
+      "label": "Max width",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "narrow", "label": "Narrow" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "heading_padding_block_start",
+      "label": "Heading padding top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "heading_padding_block_end",
+      "label": "Heading padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "heading_padding_inline_start",
+      "label": "Heading padding left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "heading_padding_inline_end",
+      "label": "Heading padding right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "heading_margin_top",
+      "label": "Heading margin top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "heading_margin_bottom",
+      "label": "Heading margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+
+    {
+      "type": "header",
+      "content": "Metafield"
+    },
+    {
+      "type": "text",
+      "id": "metafield_namespace",
+      "label": "Metafield namespace",
+      "info": "The whole section is hidden when this resolves to no usable videos.",
+      "default": "custom"
+    },
+    {
+      "type": "text",
+      "id": "metafield_key",
+      "label": "Metafield key",
+      "default": "product_short_videos"
+    },
+
+    {
+      "type": "header",
+      "content": "t:content.media"
+    },
+    {
+      "type": "image_picker",
+      "id": "cover_image",
+      "label": "Fallback cover image",
+      "info": "Used for Vimeo videos. YouTube thumbnails are fetched automatically per video. Setting this overrides every thumbnail, including YouTube's."
+    },
+    {
+      "type": "checkbox",
+      "id": "muted",
+      "label": "Start muted",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "play_button_size",
+      "label": "Play button size",
+      "min": 40,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 68
+    },
+    {
+      "type": "color",
+      "id": "play_button_color",
+      "label": "Play button color",
+      "default": "#FF0000"
+    },
+    {
+      "type": "range",
+      "id": "video_border_radius",
+      "label": "t:settings.corner_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+
+    {
+      "type": "header",
+      "content": "Slider layout"
+    },
+    {
+      "type": "range",
+      "id": "slides_desktop",
+      "label": "Slides on desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "slides_medium",
+      "label": "Slides on tablet",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "slides_mobile",
+      "label": "Slides on mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "slide_gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+
+    {
+      "type": "header",
+      "content": "t:content.navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show arrows",
+      "info": "Arrows and pagination are hidden automatically at any breakpoint where every slide already fits.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "icons_style",
+      "label": "t:settings.icons",
+      "options": [
+        { "value": "arrow", "label": "t:options.arrows" },
+        { "value": "chevron", "label": "t:options.chevrons" },
+        { "value": "arrows_large", "label": "t:options.large_arrows" },
+        { "value": "chevron_large", "label": "t:options.large_chevrons" }
+      ],
+      "default": "arrow",
+      "visible_if": "{{ section.settings.show_arrows }}"
+    },
+    {
+      "type": "select",
+      "id": "icons_shape",
+      "label": "t:settings.icon_background",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "circle", "label": "t:options.circle" },
+        { "value": "square", "label": "t:options.square" }
+      ],
+      "default": "circle",
+      "visible_if": "{{ section.settings.show_arrows }}"
+    },
+    {
+      "type": "select",
+      "id": "pagination_style",
+      "label": "t:settings.pagination",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "dots", "label": "t:options.dots" },
+        { "value": "counter", "label": "t:options.counter" }
+      ],
+      "default": "dots"
+    },
+
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "content_direction",
+      "label": "t:settings.direction",
+      "options": [
+        { "value": "column", "label": "t:options.vertical" },
+        { "value": "row", "label": "t:options.horizontal" }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "checkbox",
+      "id": "vertical_on_mobile",
+      "label": "t:settings.vertical_on_mobile",
+      "default": true,
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        { "value": "flex-start", "label": "t:options.left" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "flex-end", "label": "t:options.right" },
+        { "value": "space-between", "label": "t:options.space_between" }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:settings.position",
+      "options": [
+        { "value": "flex-start", "label": "t:options.top" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "flex-end", "label": "t:options.bottom" }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "align_baseline",
+      "label": "t:settings.align_baseline",
+      "default": false,
+      "visible_if": "{{ section.settings.vertical_alignment == 'flex-end' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_flex_direction_column",
+      "label": "t:settings.alignment",
+      "options": [
+        { "value": "flex-start", "label": "t:options.left" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "flex-end", "label": "t:options.right" }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction != 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment_flex_direction_column",
+      "label": "t:settings.position",
+      "options": [
+        { "value": "flex-start", "label": "t:options.top" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "flex-end", "label": "t:options.bottom" },
+        { "value": "space-between", "label": "t:options.space_between" }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'column' }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        { "value": "page-width", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "t:settings.height",
+      "options": [
+        { "value": "", "label": "t:options.auto" },
+        { "value": "small", "label": "t:options.small" },
+        { "value": "medium", "label": "t:options.medium" },
+        { "value": "large", "label": "t:options.large" },
+        { "value": "full-screen", "label": "t:options.full_screen" },
+        { "value": "custom", "label": "t:options.custom" }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "section_height_custom",
+      "label": "t:settings.custom_height",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "unit": "%",
+      "visible_if": "{{ section.settings.section_height == 'custom' }}"
+    },
+
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "select",
+      "id": "background_media",
+      "label": "t:settings.background_media",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "image", "label": "t:options.image" },
+        { "value": "video", "label": "t:options.video" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ section.settings.background_media == 'none' }}"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:settings.video",
+      "visible_if": "{{ section.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "select",
+      "id": "video_position",
+      "label": "t:settings.video_position",
+      "options": [
+        { "value": "cover", "label": "t:options.cover" },
+        { "value": "contain", "label": "t:options.contain" }
+      ],
+      "default": "cover",
+      "visible_if": "{{ section.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:settings.image",
+      "visible_if": "{{ section.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "background_image_position",
+      "label": "t:settings.image_position",
+      "options": [
+        { "value": "cover", "label": "t:options.cover" },
+        { "value": "fit", "label": "t:options.fit" }
+      ],
+      "default": "cover",
+      "visible_if": "{{ section.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "toggle_overlay",
+      "label": "t:settings.background_overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:settings.overlay_color",
+      "alpha": true,
+      "default": "#00000026",
+      "visible_if": "{{ section.settings.toggle_overlay }}"
+    },
+    {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "t:settings.overlay_style",
+      "options": [
+        { "value": "solid", "label": "t:options.solid" },
+        { "value": "gradient", "label": "t:options.gradient" }
+      ],
+      "default": "solid",
+      "visible_if": "{{ section.settings.toggle_overlay }}"
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "t:settings.gradient_direction",
+      "options": [
+        { "value": "to top", "label": "t:options.up" },
+        { "value": "to bottom", "label": "t:options.down" }
+      ],
+      "default": "to top",
+      "visible_if": "{{ section.settings.toggle_overlay and section.settings.overlay_style == 'gradient' }}"
+    },
+
+    {
+      "type": "header",
+      "content": "t:content.borders"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.style",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "solid", "label": "t:options.solid" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.thickness",
+      "default": 1,
+      "visible_if": "{{ section.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.opacity",
+      "default": 100,
+      "visible_if": "{{ section.settings.border != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "t:settings.color",
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ section.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+
+    {
+      "type": "header",
+      "content": "Margin"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Shorts",
+      "category": "t:categories.product",
+      "settings": {
+        "content_direction": "column",
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    }
+  ]
+}
+{% endschema %}

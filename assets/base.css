@@ -400,6 +400,17 @@ p:empty {
   grid-column: 1 / -1;
 }
 
+/* Narrow / custom width: override the page width the grid's centre column is sized from.
+   Narrow is the theme's extra-narrow tier (~1000px); custom reads a per-section value the
+   section sets inline (falls back to narrow if unset). */
+.section--narrow {
+  --page-width: var(--extra-narrow-page-width);
+}
+
+.section--custom {
+  --page-width: var(--section-custom-width, var(--extra-narrow-page-width));
+}
+
 @media screen and (max-width: 749px) {
   .section--mobile-full-width > * {
     grid-column: 1 / -1;
@@ -1198,7 +1209,7 @@ summary {
   align-items: center;
   cursor: pointer;
   list-style: none;
-  padding-block: var(--padding-sm);
+  padding-block: var(--padding-lg);
 }
 
 summary:hover {

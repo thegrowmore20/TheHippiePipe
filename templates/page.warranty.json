@@ -1,0 +1,753 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero_X78i63": {
+      "type": "hero",
+      "blocks": {
+        "text_hwDJc9": {
+          "type": "text",
+          "settings": {
+            "text": "<h1>{{ closest.page.title }}</h1>",
+            "width": "fit-content",
+            "max_width": "narrow",
+            "max_width_custom": 600,
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "{{ settings.color_palette.background }}",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "text_hwDJc9"
+      ],
+      "name": "t:names.hero",
+      "settings": {
+        "media_type_1": "image",
+        "image_1": "shopify://shop_images/Warranty_Banner_Desktop.webp",
+        "media_type_2": "image",
+        "stack_media_on_mobile": false,
+        "custom_mobile_media": true,
+        "media_type_1_mobile": "image",
+        "image_1_mobile": "shopify://shop_images/Warranty_Banner_Mobile.webp",
+        "media_type_2_mobile": "image",
+        "link": "",
+        "open_in_new_tab": false,
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 16,
+        "section_width": "page-width",
+        "section_height": "small",
+        "section_height_custom": 50,
+        "background_color": "",
+        "toggle_overlay": true,
+        "overlay_color": "#00000026",
+        "overlay_style": "gradient",
+        "gradient_direction": "to top",
+        "blurred_reflection": false,
+        "reflection_opacity": 75,
+        "padding-block-start": 40,
+        "padding-block-end": 40,
+        "margin-block-start": 0,
+        "margin-block-end": 0
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "t:names.title",
+          "settings": {
+            "text": "<h1>{{ closest.page.title }}</h1>",
+            "width": "100%",
+            "max_width": "normal",
+            "max_width_custom": 600,
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "page-content": {
+          "type": "page-content",
+          "settings": {
+            "text_color": ""
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "heading",
+        "page-content"
+      ],
+      "disabled": true,
+      "settings": {
+        "content_direction": "column",
+        "gap": 32,
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 40,
+        "padding-block-end": 80,
+        "margin-block-start": 0,
+        "margin-block-end": 0
+      }
+    },
+    "section_8Em89h": {
+      "type": "section",
+      "blocks": {
+        "group_qjrGX8": {
+          "type": "group",
+          "name": "t:names.group",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "center",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 12,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "background_media": "none",
+            "background_color": "",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "toggle_overlay": false,
+            "overlay_color": "#00000026",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "link": "",
+            "open_in_new_tab": false,
+            "placeholder": "",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0,
+            "custom_class": ""
+          },
+          "blocks": {
+            "text_CRaaP3": {
+              "type": "text",
+              "name": "t:names.heading",
+              "settings": {
+                "text": "<h2>Registration Form</h2>",
+                "width": "fit-content",
+                "max_width": "narrow",
+                "max_width_custom": 600,
+                "alignment": "left",
+                "type_preset": "h3",
+                "font": "var(--font-body--family)",
+                "font_size": "",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "text_CRaaP3"
+          ]
+        },
+        "custom_liquid_K9cN7p": {
+          "type": "custom-liquid",
+          "name": "t:names.custom_liquid",
+          "settings": {
+            "custom_liquid": "<div style=\"margin:0 auto;\" class=\"pxFormGenerator\" id=\"XRaOP_voFXCAAFZzt79sVw\"></div>",
+            "custom_class": ""
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "group_qjrGX8",
+        "custom_liquid_K9cN7p"
+      ],
+      "name": "t:names.custom_section",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "custom_width": 800,
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 64,
+        "padding-block-end": 64,
+        "margin_top": 0,
+        "margin_bottom": 0
+      }
+    },
+    "section_Xfcjtw": {
+      "type": "section",
+      "blocks": {
+        "group_8HMaXM": {
+          "type": "group",
+          "name": "t:names.group",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "center",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 12,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "background_media": "none",
+            "background_color": "",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "toggle_overlay": false,
+            "overlay_color": "#00000026",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "link": "",
+            "open_in_new_tab": false,
+            "placeholder": "",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0,
+            "custom_class": ""
+          },
+          "blocks": {
+            "text_jj7kPn": {
+              "type": "text",
+              "name": "t:names.heading",
+              "settings": {
+                "text": "<h2>Warranty Terms & Details</h2>",
+                "width": "fit-content",
+                "max_width": "narrow",
+                "max_width_custom": 600,
+                "alignment": "left",
+                "type_preset": "h3",
+                "font": "var(--font-body--family)",
+                "font_size": "",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "text_jj7kPn"
+          ]
+        },
+        "accordion_dfmjGr": {
+          "type": "accordion",
+          "name": "t:names.accordion",
+          "settings": {
+            "icon": "caret",
+            "dividers": true,
+            "divider_color": "{{ settings.color_palette.color2 }}",
+            "type_preset": "h5",
+            "background_color": "",
+            "text_color": "",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "accordion_row_QA6Rpw": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Warranty Overview & Period",
+                "open_by_default": true,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_QNyqNa": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>This Limited Warranty does not affect your legal (statutory) rights under your applicable national laws relating to the sale of consumer products. The Hippie Pipe provides this Limited Warranty to the purchaser of The Hippie Pipe product(s) included in the sales package (\"Product\"). The Hippie Pipe warrants that during the warranty period The Hippie Pipe will in a commercially reasonable time remedy defects in materials, design or workmanship, free of charge by repairing or, should The Hippie Pipe at its discretion deem it necessary, replacing the product in accordance with this Limited Warranty (unless otherwise required by law). This Limited Warranty is only valid and enforceable in the country where you have purchased the product provided that The Hippie Pipe have intended the product for sale in that country.</p><h6><strong>Warranty Period</strong></h6><p>The warranty period starts at the time of Product's original purchase by the first end-user. The Product may consist of several different parts and different parts may be covered by a different warranty period (hereinafter \"Warranty Period\"). The Warranty Period is Two (2) Years for the The Hippie Pipe product. As far as your national laws permit, the Warranty Period will not be extended or renewed or otherwise affected due to subsequent resale, or replacement of the Product. However, part(s) repaired or replacement product during the Warranty Period will be warranted for the remainder of the original Warranty Period or for Ninety (90) days from the date of repair or replacement, whichever is longer.</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "max_width_custom": 600,
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_QNyqNa"
+              ]
+            },
+            "accordion_row_AY89m7": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "How To Receive Warranty Service?",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_UnmJnd": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>To make a claim under this Limited Warranty, return your Product (or the affected part, if the issue isn't with the entire Product) to The Hippie Pipe. Contact our customer service team for instructions on filing a claim.</p><p>You must notify us of the alleged defect within a reasonable time of discovering it, and no later than the expiry of the Warranty Period. When filing a claim, you'll need to provide:</p><ol><li>The Product (or affected part)</li><li>Original proof of purchase, clearly showing the seller's name and address, the date and place of purchase, and the product type</li></ol>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "max_width_custom": 600,
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_UnmJnd"
+              ]
+            },
+            "accordion_row_eWBxXA": {
+              "type": "_accordion-row",
+              "name": "t:names.accordion_row",
+              "settings": {
+                "heading": "What Is Not Covered?",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_Hig9Hw": {
+                  "type": "text",
+                  "name": "t:names.text",
+                  "settings": {
+                    "text": "<p>This Limited Warranty does <strong>not</strong> cover:</p><ol><li>User manuals or third-party manuals, however acquired.</li><li>Normal wear and tear.</li><li>Defects caused by rough handling, including damage from sharp items, prolonged sun exposure, water, bending, compressing, or dropping.</li><li>Defects or damage caused by misuse, including use contrary to the instructions in the Product's user guide.</li><li>Defects caused by use with any accessory, product, or service not manufactured or supplied by The Hippie Pipe, or use outside the Product's intended purpose.</li><li>Damage from opening, dismantling, modifying, or repairing the Product outside an authorized Hippie Pipe service center, or using unauthorized spare parts.</li><li>Damage from a removed, erased, defaced, altered, or illegible product date code.</li><li>Exposure to moisture, dampness, extreme thermal/environmental conditions, rapid condition changes, corrosion, oxidation, spilled food or liquid, or chemical exposure.</li><li>Products returned with plant material present in the device, spare parts, or accessories.</li><li>Products filled with incorrect fuel (e.g., petrol, diesel, propane, lighter fuel not intended for the device).</li><li>Damage caused by incorrect cleaning or maintenance.</li><li>Accessories and consumable spare parts, whether included in the original sales package or sold separately, unless otherwise stated.</li><li>Products purchased through an unauthorized reseller. All authorized resellers carry a unique seller code issued directly by The Hippie Pipe.</li></ol>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "max_width_custom": 600,
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_Hig9Hw"
+              ]
+            },
+            "accordion_row_gHyEpz": {
+              "type": "_accordion-row",
+              "name": "t:names.accordion_row",
+              "settings": {
+                "heading": "Other Important Notices",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_3gqC9i": {
+                  "type": "text",
+                  "name": "t:names.text",
+                  "settings": {
+                    "text": "<p>If a Product is found not to be covered under this Limited Warranty, The Hippie Pipe reserves the right to charge a handling fee. Repairs or replacements may use parts that are new, equivalent to new, or reconditioned. Products re-exported from their original destination country may contain country-specific elements not considered a defect under this warranty.</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "max_width_custom": 600,
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_3gqC9i"
+              ]
+            },
+            "accordion_row_jU9Ae9": {
+              "type": "_accordion-row",
+              "name": "t:names.accordion_row",
+              "settings": {
+                "heading": "Limitation of Liability",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_RgxcVB": {
+                  "type": "text",
+                  "name": "t:names.text",
+                  "settings": {
+                    "text": "<p>This Limited Warranty is your sole and exclusive remedy against The Hippie Pipe for defects in your Product, and replaces all other warranties or liabilities, oral, written, statutory, contractual, or otherwise, to the extent permitted by law. It does not exclude or limit </p><ol><li>your statutory legal rights, or </li><li>your rights against the seller of the Product.</li></ol><p>To the extent permitted by law, The Hippie Pipe does not assume liability for loss of profit, use, business, contracts, revenue, anticipated savings, or any indirect, consequential, or special loss or damage. Our liability is limited to the purchase value of the Product. These limitations do not apply in cases of gross negligence, intentional misuse by The Hippie Pipe, or personal injury resulting from The Hippie Pipe's proven negligence.</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "max_width_custom": 600,
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_RgxcVB"
+              ]
+            },
+            "accordion_row_i9KXN3": {
+              "type": "_accordion-row",
+              "name": "t:names.accordion_row",
+              "settings": {
+                "heading": "A Few More Things",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_CYkhnx": {
+                  "type": "text",
+                  "name": "t:names.text",
+                  "settings": {
+                    "text": "<ol><li>Your Product is a sophisticated device, please review the user guide and instructions before use.</li><li>The Hippie Pipe will comply with lawful requests from local, national, or international law enforcement regarding use of our products or services.</li></ol>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "max_width_custom": 600,
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_CYkhnx"
+              ]
+            }
+          },
+          "block_order": [
+            "accordion_row_QA6Rpw",
+            "accordion_row_AY89m7",
+            "accordion_row_eWBxXA",
+            "accordion_row_gHyEpz",
+            "accordion_row_jU9Ae9",
+            "accordion_row_i9KXN3"
+          ]
+        }
+      },
+      "block_order": [
+        "group_8HMaXM",
+        "accordion_dfmjGr"
+      ],
+      "name": "t:names.faq_section",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 20,
+        "section_width": "narrow",
+        "custom_width": 800,
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 64,
+        "padding-block-end": 64,
+        "margin_top": 0,
+        "margin_bottom": 0
+      }
+    },
+    "section_PGKfeR": {
+      "type": "section",
+      "blocks": {
+        "text_zUJRne": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<h2>Contact & Redemption</h2>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "max_width_custom": 600,
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 10,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "text_mnzLgy": {
+          "type": "text",
+          "name": "t:names.text",
+          "settings": {
+            "text": "<p>Register your warranty here: <strong>[Warranty Registration Link/form]</strong></p><p>To file a warranty claim, email us at <a href=\"mailto:support@thehippiepipe.com\" title=\"mailto:support@thehippiepipe.com\"><strong>support@thehippiepipe.com</strong></a> with your name and warranty registration date.</p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "max_width_custom": 600,
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "text_zUJRne",
+        "text_mnzLgy"
+      ],
+      "name": "t:names.rich_text_section",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 15,
+        "section_width": "page-width",
+        "custom_width": 800,
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "{{ settings.color_palette.color7 }}",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 64,
+        "padding-block-end": 64,
+        "margin_top": 0,
+        "margin_bottom": 0
+      }
+    }
+  },
+  "order": [
+    "hero_X78i63",
+    "main",
+    "section_8Em89h",
+    "section_Xfcjtw",
+    "section_PGKfeR"
+  ]
+}
