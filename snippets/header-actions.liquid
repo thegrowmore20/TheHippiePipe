@@ -17,7 +17,6 @@
   src="{{ 'cart-icon.js' | asset_url }}"
   fetchpriority="low"
 ></script>
-
 {% capture cart_icon %}
   <cart-icon
     class="header-actions__cart-icon{% if display_style == 'text' %} header-actions__cart-icon--text{% endif %}{% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}"
@@ -265,14 +264,54 @@
     position: relative;
   }
 
-  .xb-wishlist-header-auto__svg + span {
+  /* .xb-wishlist-header-auto__svg + span {
      --cart-bubble-size: 15px;
     color: var(--color-primary-button-background) !important;
     background: var(--color-primary-button-text) !important;
     width: var(--cart-bubble-size, 15px) !important;
     height: var(--cart-bubble-size, 15px) !important;
     top: 0.45rem !important;
-}
+} */
+
+  .header .xb-product-quantity.show {
+    color: var(--color-primary-button-background);
+    background-color: var(--color-primary-button-text);
+    height: 15px;
+    width: 15px;
+    font-size: var(--font-size--3xs);
+    /* Centre the count inside the badge (mirrors .cart-bubble__text) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  /* Match the cart bubble's hover: the badge scales smoothly alongside the icon */
+  .header .xb-product-quantity {
+    transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+    will-change: transform;
+    transform-origin: center;
+  }
+
+  .wishtlist-wrapper:hover .xb-product-quantity,
+  .wishtlist-wrapper:focus-within .xb-product-quantity {
+    transform: scale(var(--hover-scale, 1.1));
+  }
+
+  .wishtlist-wrapper-header{
+    height: 2.75rem;
+    width: 2.75rem;
+  }
+
+  .xb-product-quantity--default {
+    bottom: unset !important;
+    right: -6px !important;
+    top: -.25rem;
+  }
+
+  .header .xb-wishlist-header__icon svg{
+    fill: var(--color-primary-button-text);
+  }
 
 .xb-wishlist-header-auto-container--general{
   height: 44px;

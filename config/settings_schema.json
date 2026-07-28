@@ -1928,6 +1928,14 @@
       },
       {
         "type": "checkbox",
+        "id": "enable_quick_modal",
+        "label": "Enable Quick Modal",
+        "info": "When on, the Quick add button opens the quick-add modal. When off, clicking it adds the currently selected variant straight to the cart (no modal).",
+        "default": true,
+        "visible_if": "{{ settings.quick_add == true }}"
+      },
+      {
+        "type": "checkbox",
         "id": "mobile_quick_add",
         "label": "t:settings.mobile_quick_add",
         "default": false,

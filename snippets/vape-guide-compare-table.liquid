@@ -1,0 +1,224 @@
+{%- doc -%}
+  Renders the vaporizer comparison table.
+
+  Columns come from section.settings.column_1..column_5 — a blank column name
+  hides that column (and its values in every row).
+  Rows come from section blocks of type "row" (label + value_1..value_5).
+  Header colors come from --vc-head-bg / --vc-head-fg CSS variables set by the
+  parent section (from section.settings.table_header_background / _text).
+
+  @param {object} section - The section object (settings + blocks)
+
+  Usage:
+  {% render 'vape-guide-compare-table', section: section %}
+{%- enddoc -%}
+
+{% liquid
+  assign s = section.settings
+
+  # Build the list of visible column indexes (1-5). Blank name = hidden column.
+  assign visible_columns = ''
+  for i in (1..5)
+    assign col_key = 'column_' | append: i
+    if s[col_key] != blank
+      assign visible_columns = visible_columns | append: i | append: ','
+    endif
+  endfor
+  assign visible_columns = visible_columns | split: ','
+
+  assign table_label = s.heading | strip_html | default: 'Product comparison'
+%}
+
+{% if visible_columns.size > 0 and section.blocks.size > 0 %}
+  <div
+    class="vape-compare-table__wrap"
+    role="region"
+    aria-label="{{ table_label | escape }}"
+    tabindex="0"
+  >
+    <table class="vape-compare-table">
+      <thead>
+        <tr>
+          <th scope="col">{{ s.feature_column_label | default: 'Feature' | escape }}</th>
+          {% for i in visible_columns %}
+            {% assign col_key = 'column_' | append: i %}
+            <th scope="col">{{ s[col_key] | escape }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for block in section.blocks %}
+          {% if block.type == 'row' %}
+            <tr {{ block.shopify_attributes }}>
+              <th scope="row">{{ block.settings.label | escape }}</th>
+              {% for i in visible_columns %}
+                {% assign val_key = 'value_' | append: i %}
+                <td>{{ block.settings[val_key] | escape }}</td>
+              {% endfor %}
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% elsif request.design_mode %}
+  <p class="vape-compare-table__empty">
+    Add at least one product column name (section settings) and one "Table row" block to display the comparison table.
+  </p>
+{% endif %}
+
+{% stylesheet %}
+  /* ============ Vaporizer comparison table ============ */
+
+  .vape-compare-table__wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    border-radius: 12px;
+    background: var(--color-background, #fff);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  .vape-compare-table__wrap:focus-visible {
+    outline: 2px solid var(--color-foreground, #121212);
+    outline-offset: 2px;
+  }
+
+  .vape-compare-table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.95rem;
+  }
+
+  .vape-compare-table th,
+  .vape-compare-table td {
+    padding: 16px 18px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  /* --- Head row --- */
+  .vape-compare-table thead th {
+    background: var(--vc-head-bg, #22402f);
+    color: var(--vc-head-fg, #d9b36c);
+    font-family: var(--font-h4--family, inherit);
+    font-weight: 600;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  .vape-compare-table thead th:first-child {
+    border-top-left-radius: 12px;
+    text-align: left;
+  }
+
+  .vape-compare-table thead th:last-child {
+    border-top-right-radius: 12px;
+  }
+
+  /* --- Feature column (sticky so labels stay visible while scrolling) --- */
+  .vape-compare-table thead th:first-child,
+  .vape-compare-table tbody th {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 1;
+  }
+
+  .vape-compare-table tbody th {
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--color-foreground, #1a1a1a);
+    background: #faf7f7;
+    box-shadow: 1px 0 0 rgba(0, 0, 0, 0.05);
+  }
+
+  /* --- Body cells --- */
+  .vape-compare-table td {
+    color: #555;
+    color: color-mix(in srgb, var(--color-foreground, #1a1a1a) 75%, transparent);
+    background: #faf7f7;
+  }
+
+  /* --- Zebra striping (solid colors so sticky cells stay opaque) --- */
+  .vape-compare-table tbody tr:nth-child(even) td {
+    background: #f6f3f3;
+  }
+
+  .vape-compare-table tbody tr:nth-child(even) th {
+    background: #efe9e9;
+  }
+
+  /* --- Bottom corner rounding --- */
+  .vape-compare-table tbody tr:last-child th:first-child {
+    border-bottom-left-radius: 12px;
+  }
+
+  .vape-compare-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 12px;
+  }
+
+  /* --- Editor empty state --- */
+  .vape-compare-table__empty {
+    margin: 0;
+    padding: 24px;
+    text-align: center;
+    border: 1px dashed var(--color-foreground, #999);
+    border-radius: 12px;
+    opacity: 0.6;
+  }
+
+  /* ============ Responsive ============ */
+
+  @media screen and (max-width: 989px) {
+    .vape-compare-table {
+      min-width: 660px;
+    }
+
+    .vape-compare-table th,
+    .vape-compare-table td {
+      padding: 14px 14px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .vape-compare-table {
+      min-width: 600px;
+      font-size: 0.875rem;
+    }
+
+    .vape-compare-table thead th {
+      font-size: 0.9rem;
+    }
+
+    .vape-compare-table th,
+    .vape-compare-table td {
+      padding: 12px 12px;
+    }
+
+    /* Let long feature labels wrap and cap the sticky column so it
+       doesn't eat the viewport on phones. */
+    .vape-compare-table thead th:first-child,
+    .vape-compare-table tbody th {
+      white-space: normal;
+      min-width: 110px;
+      max-width: 42vw;
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .vape-compare-table {
+      min-width: 540px;
+      font-size: 0.85rem;
+    }
+
+    .vape-compare-table th,
+    .vape-compare-table td {
+      padding: 10px 10px;
+    }
+  }
+{% endstylesheet %}

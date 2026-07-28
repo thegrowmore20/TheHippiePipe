@@ -1,0 +1,971 @@
+{% liquid
+  assign skip_contrast = false
+  if section.settings.background_media != blank and section.settings.background_media != 'none'
+    assign skip_contrast = true
+  endif
+  assign section_id = section.id
+
+  case section.settings.content_alignment
+    when 'center'
+      assign vc_align = 'center'
+    when 'right'
+      assign vc_align = 'right'
+    else
+      assign vc_align = 'left'
+  endcase
+%}
+{% render 'contrast-override',
+  background_color: section.settings.background_color,
+  section_id: section_id,
+  skip_contrast: skip_contrast
+%}
+
+<div class="section-background color-custom-{{ section_id }}"></div>
+<div
+  class="section section--{{ section.settings.section_width }} color-custom-{{ section_id }}{% if section.settings.custom_css_class != blank %} {{ section.settings.custom_css_class }}{% endif %}"
+  data-testid="ui-test-section"
+  {% if section.settings.custom_id != blank %}
+    id="{{ section.settings.custom_id }}"
+  {% endif %}
+  {% if request.visual_preview_mode %}
+    data-shopify-visual-preview
+  {% endif %}
+  style="
+    {% if section.settings.section_height == 'custom' %}
+      --section-min-height: {{ section.settings.section_height_custom }}svh;
+    {% elsif section.settings.section_height == 'full-screen' %}
+      --section-min-height: 100svh;
+    {% elsif section.settings.section_height != '' %}
+      --section-min-height: var(--section-height-{{ section.settings.section_height }});
+    {% endif %}
+
+    {% if section.settings.section_height != '' %}
+      --section-preview-height: 600px;
+    {% endif %}
+
+    {%- comment -%} Margin on the OUTER element; inner content wrapper uses spacing-style, so distinct ids avoid double-applying (task 10) {%- endcomment -%}
+    margin-block-start: {{ section.settings.margin_top | default: 0 }}px;
+    margin-block-end: {{ section.settings.margin_bottom | default: 0 }}px;
+    {% render 'section-custom-width', settings: section.settings %}
+  "
+>
+  <div class="custom-section-background">
+    {% render 'background-media',
+      background_media: section.settings.background_media,
+      background_video: section.settings.video,
+      background_video_position: section.settings.video_position,
+      background_image: section.settings.background_image,
+      background_image_position: section.settings.background_image_position
+    %}
+  </div>
+
+  <div
+    class="border-style custom-section-content"
+    style="{% render 'border-override', settings: section.settings %}"
+  >
+    {% if section.settings.toggle_overlay %}
+      {% render 'overlay', settings: section.settings, layer: '0' %}
+    {% endif %}
+
+    <div
+      class="
+        spacing-style
+        layout-panel-flex
+        layout-panel-flex--{{ section.settings.content_direction }}
+        section-content-wrapper
+        {% if section.settings.vertical_on_mobile %} mobile-column{% endif %}
+      "
+      style="
+        {% render 'layout-panel-style', settings: section.settings %}
+        {% render 'spacing-style', settings: section.settings %}
+      "
+      data-testid="section-content"
+    >
+      <div
+        class="vape-compare"
+        style="
+          --vc-align: {{ vc_align }};
+          --vc-head-bg: {{ section.settings.table_header_background | default: '#22402f' }};
+          --vc-head-fg: {{ section.settings.table_header_text | default: '#d9b36c' }};
+          gap: {{ section.settings.gap | default: 12 }}px;
+        "
+      >
+        {%- comment -%} 1. Header: subheading / heading / description from section.settings.
+          Markup mirrors Horizon's text block (snippets/text.liquid) so the theme's
+          .text-block typography, spacing and preset classes apply natively. {%- endcomment -%}
+        {% if section.settings.subheading != blank
+          or section.settings.heading != blank
+          or section.settings.description != blank
+        %}
+          <div class="vape-compare__header">
+            {% if section.settings.subheading != blank %}
+              <p class="vape-compare__eyebrow">{{ section.settings.subheading | escape }}</p>
+            {% endif %}
+
+            {% if section.settings.heading != blank %}
+              <div
+                class="text-block {{ section.settings.heading_preset }}"
+                style="--width: 100%; --text-align: var(--vc-align);"
+              >
+                <h2 class="{{ section.settings.heading_preset }}">{{ section.settings.heading }}</h2>
+              </div>
+            {% endif %}
+
+            {% if section.settings.description != blank %}
+              <div
+                class="text-block rte paragraph"
+                style="--width: 100%; --text-align: var(--vc-align);"
+              >
+                {{ section.settings.description }}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {%- comment -%} 2. Table: columns from section.settings, rows from section blocks. {%- endcomment -%}
+        {% render 'vape-guide-compare-table', section: section %}
+
+        {%- comment -%} 3. Footer: note + button from section.settings. {%- endcomment -%}
+        {% if section.settings.note != blank or section.settings.button_label != blank %}
+          <div class="vape-compare__footer">
+            {% if section.settings.note != blank %}
+              <div class="vape-compare__note rte">{{ section.settings.note }}</div>
+            {% endif %}
+
+            {% if section.settings.button_label != blank %}
+              <div class="vape-compare__cta">
+                <a
+                  class="{{ section.settings.button_style | default: 'button' }}"
+                  href="{{ section.settings.button_link | default: '#' }}"
+                >
+                  {{- section.settings.button_label | escape -}}
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .section-wrapper {
+    --section-height-offset: 0px;
+  }
+
+  .section[data-shopify-visual-preview] {
+    min-height: var(--section-preview-height);
+    padding-top: 0;
+  }
+
+  .section[data-shopify-visual-preview] .custom-section-background {
+    display: none;
+  }
+
+  body:has(#header-group > .header-section > #header-component[transparent]):not(
+      :has(#header-group > .header-section + .shopify-section)
+    )
+    #MainContent
+    > .section-wrapper:first-child {
+    --section-height-offset: var(--header-group-height, 0);
+  }
+
+  .custom-section-background {
+    grid-column: 1 / -1;
+  }
+
+  .custom-section-content {
+    z-index: var(--layer-flat);
+  }
+
+  /* --- Vaporizer comparison: content layout (table styles live in the snippet) --- */
+  .vape-compare {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .vape-compare__header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: var(--vc-align, left);
+  }
+
+  .vape-compare__eyebrow {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .vape-compare__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .vape-compare__note {
+    font-size: 0.85rem;
+    font-style: italic;
+    opacity: 0.75;
+    text-align: var(--vc-align, left);
+  }
+
+  .vape-compare__note p {
+    margin: 0;
+  }
+
+  .vape-compare__cta {
+    text-align: var(--vc-align, center);
+  }
+  .vape-compare__cta .button {
+    margin: 0 auto;
+  }
+{% endstylesheet %}
+
+
+{% schema %}
+{
+  "name": "Vaporizer Comparison",
+  "class": "section-wrapper",
+  "max_blocks": 24,
+  "enabled_on": {
+    "templates": ["page"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header content"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Head To Head"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Compare The Lineup"
+    },
+    {
+      "type": "select",
+      "id": "heading_preset",
+      "label": "Heading style",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Five devices, two philosophies. Find the finish, feel, and format that fits your ritual.</p>"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "t:options.left" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "right", "label": "t:options.right" }
+      ],
+      "default": "center",
+      "info": "Applies to the header, note, and button."
+    },
+    {
+      "type": "header",
+      "content": "Table columns"
+    },
+    {
+      "type": "text",
+      "id": "feature_column_label",
+      "label": "First column label",
+      "default": "Feature"
+    },
+    {
+      "type": "text",
+      "id": "column_1",
+      "label": "Column 1 (product name)",
+      "default": "The Hippie Pipe",
+      "info": "Leave any column blank to hide it."
+    },
+    {
+      "type": "text",
+      "id": "column_2",
+      "label": "Column 2 (product name)",
+      "default": "Pipe X"
+    },
+    {
+      "type": "text",
+      "id": "column_3",
+      "label": "Column 3 (product name)",
+      "default": "OM Chrome"
+    },
+    {
+      "type": "text",
+      "id": "column_4",
+      "label": "Column 4 (product name)",
+      "default": "OM Gunmetal"
+    },
+    {
+      "type": "text",
+      "id": "column_5",
+      "label": "Column 5 (product name)",
+      "default": "OM Rose Gold"
+    },
+    {
+      "type": "color",
+      "id": "table_header_background",
+      "label": "Table header background",
+      "default": "#22402f"
+    },
+    {
+      "type": "color",
+      "id": "table_header_text",
+      "label": "Table header text",
+      "default": "#d9b36c"
+    },
+    {
+      "type": "header",
+      "content": "Below table"
+    },
+    {
+      "type": "richtext",
+      "id": "note",
+      "label": "Note",
+      "default": "<p>Specifications are approximate. See each product page for full details.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Explore All Devices"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "button", "label": "Primary" },
+        { "value": "button-secondary", "label": "Secondary" },
+        { "value": "link", "label": "Link" }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "content_direction",
+      "label": "t:settings.direction",
+      "options": [
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "checkbox",
+      "id": "vertical_on_mobile",
+      "label": "t:settings.vertical_on_mobile",
+      "default": true,
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "align_baseline",
+      "label": "t:settings.align_baseline",
+      "default": false,
+      "visible_if": "{{ section.settings.vertical_alignment == 'flex-end' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_flex_direction_column",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction != 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment_flex_direction_column",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'column' }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        },
+        {
+          "value": "narrow",
+          "label": "t:options.narrow"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 300,
+      "max": 1200,
+      "step": 20,
+      "unit": "px",
+      "default": 800,
+      "visible_if": "{{ section.settings.section_width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.auto"
+        },
+        {
+          "value": "small",
+          "label": "t:options.small"
+        },
+        {
+          "value": "medium",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "large",
+          "label": "t:options.large"
+        },
+        {
+          "value": "full-screen",
+          "label": "t:options.full_screen"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "section_height_custom",
+      "label": "t:settings.custom_height",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "unit": "%",
+      "visible_if": "{{ section.settings.section_height == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "select",
+      "id": "background_media",
+      "label": "t:settings.background_media",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "image",
+          "label": "t:options.image"
+        },
+        {
+          "value": "video",
+          "label": "t:options.video"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ section.settings.background_media == 'none' }}"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:settings.video",
+      "visible_if": "{{ section.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "select",
+      "id": "video_position",
+      "label": "t:settings.video_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "contain",
+          "label": "t:options.contain"
+        }
+      ],
+      "default": "cover",
+      "visible_if": "{{ section.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:settings.image",
+      "visible_if": "{{ section.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "background_image_position",
+      "label": "t:settings.image_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "fit",
+          "label": "t:options.fit"
+        }
+      ],
+      "default": "cover",
+      "visible_if": "{{ section.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "toggle_overlay",
+      "label": "t:settings.background_overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:settings.overlay_color",
+      "alpha": true,
+      "default": "#00000026",
+      "visible_if": "{{ section.settings.toggle_overlay }}"
+    },
+    {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "t:settings.overlay_style",
+      "options": [
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        },
+        {
+          "value": "gradient",
+          "label": "t:options.gradient"
+        }
+      ],
+      "default": "solid",
+      "visible_if": "{{ section.settings.toggle_overlay }}"
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "t:settings.gradient_direction",
+      "options": [
+        {
+          "value": "to top",
+          "label": "t:options.up"
+        },
+        {
+          "value": "to bottom",
+          "label": "t:options.down"
+        }
+      ],
+      "default": "to top",
+      "visible_if": "{{ section.settings.toggle_overlay and section.settings.overlay_style == 'gradient' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.borders"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.thickness",
+      "default": 1,
+      "visible_if": "{{ section.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.opacity",
+      "default": 100,
+      "visible_if": "{{ section.settings.border != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "t:settings.color",
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ section.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Margin"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_css_class",
+      "label": "t:settings.custom_css_class",
+      "info": "t:settings.custom_css_class_info"
+    },
+    {
+      "type": "text",
+      "id": "custom_id",
+      "label": "t:settings.custom_id",
+      "info": "t:settings.custom_id_info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Table row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Feature label",
+          "default": "Feature"
+        },
+        {
+          "type": "text",
+          "id": "value_1",
+          "label": "Column 1 value"
+        },
+        {
+          "type": "text",
+          "id": "value_2",
+          "label": "Column 2 value"
+        },
+        {
+          "type": "text",
+          "id": "value_3",
+          "label": "Column 3 value"
+        },
+        {
+          "type": "text",
+          "id": "value_4",
+          "label": "Column 4 value"
+        },
+        {
+          "type": "text",
+          "id": "value_5",
+          "label": "Column 5 value"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vaporizer Comparison",
+      "category": "Custom",
+      "settings": {
+        "content_alignment": "center",
+        "gap": 28,
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      },
+      "blocks": [
+        {
+          "type": "row",
+          "settings": {
+            "label": "Heating Method",
+            "value_1": "Manual torch",
+            "value_2": "Manual torch",
+            "value_3": "Manual torch (rapid convection)",
+            "value_4": "Rechargeable battery",
+            "value_5": "Rechargeable battery"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "label": "Chamber",
+            "value_1": "Telescopic, standard",
+            "value_2": "Telescopic, standard",
+            "value_3": "Telescopic, ~30% bigger",
+            "value_4": "510-thread atomizer",
+            "value_5": "510-thread atomizer"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "label": "Finish",
+            "value_1": "Chrome",
+            "value_2": "Blacked-out",
+            "value_3": "Chrome",
+            "value_4": "Gunmetal mirror",
+            "value_5": "Rose gold"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "label": "Charging Required",
+            "value_1": "No",
+            "value_2": "No",
+            "value_3": "No",
+            "value_4": "Yes (USB)",
+            "value_5": "Yes (USB)"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "label": "Heat-Up Time",
+            "value_1": "~15 seconds (torch)",
+            "value_2": "~15 seconds (torch)",
+            "value_3": "~15 seconds (torch)",
+            "value_4": "Seconds (battery)",
+            "value_5": "Seconds (battery)"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "label": "Portability",
+            "value_1": "Pocket-compact",
+            "value_2": "Pocket-compact",
+            "value_3": "Pocket-compact",
+            "value_4": "Ultra-compact / keychain",
+            "value_5": "Ultra-compact / keychain"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "label": "Best For",
+            "value_1": "Everyday analog ritual",
+            "value_2": "Bold, low-key style",
+            "value_3": "Bigger sessions, smoother pull",
+            "value_4": "Grab-and-go convenience",
+            "value_5": "Style-forward convenience"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

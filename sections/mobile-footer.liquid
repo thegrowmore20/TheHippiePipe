@@ -1,0 +1,178 @@
+<div class="mobile-bottom-nav">
+	<div class="mobile-bottom-nav-left mobile-bottom-nav-right">
+		<a href="{{ routes.root_url }}" class="nav-item">
+			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+				<path d="M3 10.5 12 3l9 7.5M5 9.4V20a1 1 0 0 0 1 1h3v-5.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V21h3a1 1 0 0 0 1-1V9.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+			</svg>
+			<span>Home</span>
+		</a>
+		<a href="{{ routes.all_products_collection_url }}" class="nav-item">
+			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+				<rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+				<rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+				<rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+				<path d="M17.5 2.6 21.4 6.5 17.5 10.4 13.6 6.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+			</svg>
+			<span>Products</span>
+		</a>
+		<a href="mailto:support@thehippiepipe.com" class="nav-item nav-item-email" target="_blank">
+			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M2 7L10.1649 12.7154C10.8261 13.1783 11.1567 13.4097 11.5163 13.4993C11.8339 13.5785 12.1661 13.5785 12.4837 13.4993C12.8433 13.4097 13.1739 13.1783 13.8351 12.7154L22 7M6.8 20H17.2C18.8802 20 19.7202 20 20.362 19.673C20.9265 19.3854 21.3854 18.9265 21.673 18.362C22 17.7202 22 16.8802 22 15.2V8.8C22 7.11984 22 6.27976 21.673 5.63803C21.3854 5.07354 20.9265 4.6146 20.362 4.32698C19.7202 4 18.8802 4 17.2 4H6.8C5.11984 4 4.27976 4 3.63803 4.32698C3.07354 4.6146 2.6146 5.07354 2.32698 5.63803C2 6.27976 2 7.11984 2 8.8V15.2C2 16.8802 2 17.7202 2.32698 18.362C2.6146 18.9265 3.07354 19.3854 3.63803 19.673C4.27976 20 5.11984 20 6.8 20Z" stroke="currentColor" stroke-width="var(--icon-stroke-width, 2)" stroke-linecap="var(--icon-stroke-linecap, round)" stroke-linejoin="var(--icon-stroke-linejoin, round)"/>
+			</svg>
+			<span>Email us</span>
+		</a>
+		<div class="nav-item">
+			<div class="new-header-wishharea-mob">
+			</div>
+			<span>Wishlist</span>
+		</div>
+	</div>
+</div>
+	<script>
+(function() {
+	if (window.innerWidth > 767) return;
+    const sourceSelector = '.wishtlist-wrapper';
+    const targetSelector = '.new-header-wishharea-mob';
+    const iconClass = '.xb-wishlist-header__icon';
+    const quantityClass = '.xb-product-quantity';
+
+    const observer = new MutationObserver((mutations, obs) => {
+        const source = document.querySelector(sourceSelector);
+        const target = document.querySelector(targetSelector);
+
+        // We check for the wrapper and the icon first
+        if (source && target && source.querySelector(iconClass)) {
+            
+            // Remove the hidden class so it's visible in the new spot
+            source.classList.remove('hidden--mobile');
+
+            // MOVE the elements instead of copying HTML
+            // This keeps the "live" link for the quantity to update
+            while (source.firstChild) {
+                target.appendChild(source.firstChild);
+            }
+
+            // Once moved, we check if the quantity is there. 
+            // If the app is slow, the observer will keep running until it sees it.
+            if (target.querySelector(quantityClass)) {
+                obs.disconnect(); // Task complete
+            }
+        }
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+})();
+	</script>
+
+<style>
+	.mobile-bottom-nav {
+		display: none;
+		justify-content: space-between;
+		align-items: center;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background-color: #fff;
+		border-top: 0.0625rem solid #ccc;
+		padding: 0.5rem 0 calc(0.125rem + env(safe-area-inset-bottom, 0rem)) 0;
+		z-index: 999;
+		box-shadow: 0 -0.0625rem 0.3125rem rgba(0, 0, 0, 0.1);
+	}
+
+	.mobile-bottom-nav-left,
+	.mobile-bottom-nav-right {
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+		width: 100%;
+	}
+
+	.nav-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.25rem;
+		font-size: 0.75rem;
+		text-decoration: none;
+		color: #333;
+	}
+
+	/* Icons in brand green (labels keep their own colour) */
+	.mobile-bottom-nav .nav-item svg {
+		display: block;
+		color: #285a46;
+	}
+
+	.nav-item-email svg path {
+		stroke-width: 1.5;
+	}
+
+	.nav-item svg,
+	.mobile-bottom-nav .xb-wishlist__header,
+	.new-header-wishharea-mob .xb-wishlist-header__btn,
+	.new-header-wishharea-mob .xb-wishlist-header__btn:hover,
+	.new-header-wishharea-mob {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+
+	.new-header-wishharea-mob .header-icon-btn {
+		padding: 0;
+	}
+
+	/* Centre the moved wishlist count inside its badge (mirrors the header/cart bubble) */
+	.new-header-wishharea-mob .xb-product-quantity {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+	}	
+
+
+	.new-header-wishharea-mob .xb-product-quantity--default {
+		top: 0;
+	}
+
+	.mobile-bottom-nav-right .xb-wishlist-header__icon svg {
+		stroke-width: 0.1875rem;
+		stroke: #285a46;
+	}
+
+	.mobile-bottom-nav .xb-wishlist-header__icon svg{
+		fill: var(--color-primary-button-background);
+	}
+
+	.mobile-bottom-nav .xb-product-quantity.show{
+		color: var(--color-primary-button-background);
+    	background-color: var(--color-primary-button-text);
+	}
+
+	/* Only show on mobile */
+	@media (max-width: 48rem) {
+		.mobile-bottom-nav {
+			display: flex;
+		}
+
+		body {
+			padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0rem));
+		}
+	}
+</style>
+
+{% schema %}
+{
+	"name": "Mobile Footer",
+	"settings": [],
+	"presets": [
+		{
+			"name": "Mobile Footer",
+			"category": "t:categories.footer"
+		}
+	]
+}
+{% endschema %}

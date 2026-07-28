@@ -100,6 +100,12 @@
     render 'header-actions', customer_account_menu: section.settings.customer_account_menu, display_style: section.settings.actions_display_style, section: section
   endcapture
 
+  # Wishlist rendered as its own header item (not inside actions) so it can sit before search.
+  # Keeps the .wishtlist-wrapper markup the mobile-footer script relocates on small screens.
+  capture wishlist
+    render 'header-wishlist'
+  endcapture
+
   if shop.customer_accounts_enabled
     assign search_class = 'search-action--hidden-on-drawer'
   endif
@@ -128,6 +134,10 @@
       endif
     endif
   endif
+  # Place the wishlist immediately before search in whichever order variant is active.
+  # ',search' only matches the standalone search token, never 'drawer_search'.
+  assign order = order | replace: ',search', ',wishlist,search'
+
   capture search
     render 'search', style: search_style, class: search_class, display_style: section.settings.actions_display_style
   endcapture
@@ -436,6 +446,7 @@
         logo: logo,
         menu: menu,
         actions: actions,
+        wishlist: wishlist,
         localization: localization_markup,
         search: search,
         drawer_search: drawer_search

@@ -117,8 +117,13 @@
   .slideshow-section {
     .slideshow--content-container .slide__content {
       width: 100%;
-      max-width: var(--page-content-width);
+      /* Match the page content column (respects --page-margin at every width) so the hero
+         content lines up with the sections below instead of only insetting on wide screens. */
+      max-width: min(var(--page-content-width), 100% - var(--page-margin) * 2);
       margin-inline: auto;
+      /* The clamp above already insets to the page margin; drop the slide's own inline padding
+         in container mode so the text aligns exactly with the page content column. */
+      padding-inline: 0;
     }
 
     slideshow-arrows .slideshow-control:first-of-type {

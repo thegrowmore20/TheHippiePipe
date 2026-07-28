@@ -59,6 +59,17 @@
     assign render_choose = true
   endif
 
+  # Global "Enable Quick Modal" toggle (Product cards settings). When explicitly off, a card never
+  # opens the quick-add modal: it renders only the Add button and adds the current selection directly.
+  # The add form's hidden variant input tracks swatch selection (product-form-component #onProductSelect),
+  # so the live variant is what gets added. Left as modal-on when the setting is nil/true. Selling plans
+  # are re-forced to Choose -> PDP just below, since subscriptions can only be configured on the PDP.
+  if settings.enable_quick_modal == false
+    assign initial_button = 'add'
+    assign render_add = true
+    assign render_choose = false
+  endif
+
   if uses_selling_plans
     assign initial_button = 'choose'
     assign render_add = false

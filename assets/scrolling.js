@@ -73,6 +73,29 @@ export class Scroller {
   #isScrolling = false;
 
   /**
+   * Cached scroll axis. getScrollAxis() reads layout geometry, and the `axis` getter is accessed
+   * many times per slide transition (interleaved with DOM/style writes from the loop-reorder trick
+   * and snap toggling), which forced synchronous reflows / layout thrashing. The axis only changes
+   * when the element resizes, so it's memoized here and invalidated by #resizeObserver.
+   * @type {'x' | 'y' | undefined}
+   */
+  #axis;
+
+  /**
+   * Cached scroll-padding-start (px). calculatePaddingStart() calls getComputedStyle(), which forces
+   * a style recalc; it's read on every to(element) call (repeatedly during the loop-reorder trick),
+   * so it's memoized here and invalidated by #resizeObserver alongside #axis.
+   * @type {number | undefined}
+   */
+  #paddingStart;
+
+  /**
+   * Invalidates #axis / #paddingStart when the element resizes.
+   * @type {ResizeObserver | undefined}
+   */
+  #resizeObserver;
+
+  /**
    * Creates a Scroller instance.
    *
    * @param {HTMLElement} element - The element to apply scrolling to.
@@ -90,6 +113,13 @@ export class Scroller {
 
     this.element = element;
     this.element.addEventListener('scroll', this.#handleScroll);
+
+    // Recompute the cached axis / padding only when the element resizes (see #axis, #paddingStart).
+    this.#resizeObserver = new ResizeObserver(() => {
+      this.#axis = undefined;
+      this.#paddingStart = undefined;
+    });
+    this.#resizeObserver.observe(this.element);
   }
 
   /**
@@ -102,7 +132,7 @@ export class Scroller {
     let value;
 
     if (input instanceof HTMLElement) {
-      const paddingStart = calculatePaddingStart(this.element, this.axis);
+      const paddingStart = (this.#paddingStart ??= calculatePaddingStart(this.element, this.axis));
       value = input[`offset${this.#edge}`] - paddingStart;
     } else {
       value = input;
@@ -168,7 +198,7 @@ export class Scroller {
    * @readonly
    */
   get axis() {
-    return getScrollAxis(this.element);
+    return (this.#axis ??= getScrollAxis(this.element));
   }
 
   /**
@@ -266,6 +296,7 @@ export class Scroller {
    */
   destroy() {
     this.element.removeEventListener('scroll', this.#handleScroll);
+    this.#resizeObserver?.disconnect();
   }
 }
 

@@ -24,6 +24,11 @@
             "horizontal_alignment_flex_direction_column": "flex-start",
             "vertical_alignment_flex_direction_column": "center",
             "gap": 12,
+            "flex_wrap": "nowrap",
+            "content_direction_mobile": "inherit",
+            "horizontal_alignment_mobile": "inherit",
+            "vertical_alignment_mobile": "inherit",
+            "flex_wrap_mobile": "auto",
             "width": "fit-content",
             "custom_width": 100,
             "width_mobile": "fit-content",
@@ -91,15 +96,15 @@
           "static": true,
           "settings": {
             "placement": "below_image",
-            "horizontal_alignment": "flex-start",
+            "horizontal_alignment": "center",
             "vertical_alignment": "flex-start",
             "collection_card_gap": 8,
             "background_color": "",
-            "border": "none",
+            "border": "solid",
             "border_width": 1,
             "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0
+            "border_color": "{{ settings.color_palette.color7 }}",
+            "border_radius": 12
           },
           "blocks": {
             "collection_title_7YgBPU": {
@@ -121,7 +126,7 @@
                 "text_color": "{{ settings.color_palette.foreground }}",
                 "corner_radius": 0,
                 "padding-block-start": 0,
-                "padding-block-end": 0,
+                "padding-block-end": 10,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
               },
@@ -158,19 +163,19 @@
       "settings": {
         "layout_type": "grid",
         "carousel_on_mobile": false,
-        "columns": 3,
+        "columns": 5,
         "mobile_columns": "2",
         "columns_gap": 12,
         "bento_gap": 8,
-        "rows_gap": 24,
+        "rows_gap": 12,
         "max_collections": 4,
         "icons_style": "arrow",
         "icons_shape": "none",
         "section_width": "page-width",
         "gap": 12,
         "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 48,
-        "padding-block-end": 48,
+        "padding-block-start": 64,
+        "padding-block-end": 64,
         "margin-block-start": 0,
         "margin-block-end": 0
       }

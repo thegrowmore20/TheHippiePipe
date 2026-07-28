@@ -1,0 +1,1180 @@
+{% liquid
+  assign skip_contrast = false
+  if section.settings.background_media != blank and section.settings.background_media != 'none'
+    assign skip_contrast = true
+  endif
+  assign section_id = section.id
+
+  case section.settings.content_alignment
+    when 'center'
+      assign uc_align = 'center'
+    when 'right'
+      assign uc_align = 'right'
+    else
+      assign uc_align = 'left'
+  endcase
+
+  assign align_class = ''
+  if uc_align == 'center'
+    assign align_class = 'text-block--align-center'
+  elsif uc_align == 'right'
+    assign align_class = 'text-block--align-right'
+  endif
+%}
+{% render 'contrast-override',
+  background_color: section.settings.background_color,
+  section_id: section_id,
+  skip_contrast: skip_contrast
+%}
+
+<div class="section-background color-custom-{{ section_id }}"></div>
+<div
+  class="section section--{{ section.settings.section_width }} color-custom-{{ section_id }}{% if section.settings.custom_css_class != blank %} {{ section.settings.custom_css_class }}{% endif %}"
+  data-testid="ui-test-section"
+  {% if section.settings.custom_id != blank %}
+    id="{{ section.settings.custom_id }}"
+  {% endif %}
+  {% if request.visual_preview_mode %}
+    data-shopify-visual-preview
+  {% endif %}
+  style="
+    {% if section.settings.section_height == 'custom' %}
+      --section-min-height: {{ section.settings.section_height_custom }}svh;
+    {% elsif section.settings.section_height == 'full-screen' %}
+      --section-min-height: 100svh;
+    {% elsif section.settings.section_height != '' %}
+      --section-min-height: var(--section-height-{{ section.settings.section_height }});
+    {% endif %}
+
+    {% if section.settings.section_height != '' %}
+      --section-preview-height: 600px;
+    {% endif %}
+
+    {%- comment -%} Margin on the OUTER element; inner content wrapper uses spacing-style, so distinct ids avoid double-applying (task 10) {%- endcomment -%}
+    margin-block-start: {{ section.settings.margin_top | default: 0 }}px;
+    margin-block-end: {{ section.settings.margin_bottom | default: 0 }}px;
+    {% render 'section-custom-width', settings: section.settings %}
+  "
+>
+  <div class="custom-section-background">
+    {% render 'background-media',
+      background_media: section.settings.background_media,
+      background_video: section.settings.video,
+      background_video_position: section.settings.video_position,
+      background_image: section.settings.background_image,
+      background_image_position: section.settings.background_image_position
+    %}
+  </div>
+
+  <div
+    class="border-style custom-section-content"
+    style="{% render 'border-override', settings: section.settings %}"
+  >
+    {% if section.settings.toggle_overlay %}
+      {% render 'overlay', settings: section.settings, layer: '0' %}
+    {% endif %}
+
+    <div
+      class="
+        spacing-style
+        layout-panel-flex
+        layout-panel-flex--{{ section.settings.content_direction }}
+        section-content-wrapper
+        {% if section.settings.vertical_on_mobile %} mobile-column{% endif %}
+      "
+      style="
+        {% render 'layout-panel-style', settings: section.settings %}
+        {% render 'spacing-style', settings: section.settings %}
+      "
+      data-testid="section-content"
+    >
+      <div
+        class="usage-choice"
+        style="
+          --uc-align: {{ uc_align }};
+          --uc-accent: {{ section.settings.accent_color | default: '#22402f' }};
+          --uc-accent-contrast: {{ section.settings.accent_contrast | default: '#d9b36c' }};
+          --uc-pill-bg: {{ section.settings.pill_background | default: '#f4c95d' }};
+          --uc-pill-fg: {{ section.settings.pill_text | default: '#000000' }};
+          gap: {{ section.settings.gap | default: 12 }}px;
+        "
+      >
+        {%- comment -%} 1. Header: subheading / heading / description from section.settings.
+          Markup mirrors Horizon's text block (snippets/text.liquid) so the theme's
+          .text-block typography, spacing and preset classes apply natively. {%- endcomment -%}
+        {% if section.settings.subheading != blank
+          or section.settings.heading != blank
+          or section.settings.description != blank
+        %}
+          <div class="usage-choice__header">
+            {% if section.settings.subheading != blank %}
+              <p class="usage-choice__eyebrow">{{ section.settings.subheading | escape }}</p>
+            {% endif %}
+
+            {% if section.settings.heading != blank %}
+              <div
+                class="text-block {{ section.settings.heading_preset }} {{ align_class }}"
+                style="--width: 100%; --text-align: var(--uc-align);"
+              >
+                <h2 class="{{ section.settings.heading_preset }}">{{ section.settings.heading }}</h2>
+              </div>
+            {% endif %}
+
+            {% if section.settings.description != blank %}
+              <div
+                class="text-block rte paragraph {{ align_class }}"
+                style="--width: 100%; --text-align: var(--uc-align); --max-width: 44rem;"
+              >
+                {{ section.settings.description }}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {%- comment -%} 2. Match list: rows from section blocks of type "row". {%- endcomment -%}
+        {% if section.blocks.size > 0 %}
+          <div class="usage-choice__list">
+            {% if section.settings.want_label != blank or section.settings.go_label != blank %}
+              <div class="usage-choice__list-head" aria-hidden="true">
+                <span>{{ section.settings.want_label | escape }}</span>
+                <span class="usage-choice__spacer"></span>
+                <span>{{ section.settings.go_label | escape }}</span>
+              </div>
+            {% endif %}
+
+            {% for block in section.blocks %}
+              {% if block.type == 'row' %}
+                <div class="usage-choice__row" {{ block.shopify_attributes }}>
+                  <div class="usage-choice__want">{{ block.settings.want | escape }}</div>
+
+                  <div class="usage-choice__arrow" aria-hidden="true">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M5 12h14M13 6l6 6-6 6"/>
+                    </svg>
+                  </div>
+
+                  <div class="usage-choice__go">
+                    <div class="usage-choice__device">
+                      <span class="usage-choice__model">
+                        {{ block.settings.model | escape }}
+                        {% if block.settings.tag != blank %}
+                          <span class="usage-choice__tag">{{ block.settings.tag | escape }}</span>
+                        {% endif %}
+                      </span>
+                    </div>
+
+                    {% if block.settings.link != blank %}
+                      <a class="usage-choice__pill" href="{{ block.settings.link }}">
+                        {{- section.settings.pill_label | default: 'Shop' | escape -}}
+                        <span class="usage-choice__sr">&nbsp;{{ block.settings.model | escape }}</span>
+                      </a>
+                    {% elsif request.design_mode %}
+                      <span class="usage-choice__pill usage-choice__pill--placeholder">
+                        {{- section.settings.pill_label | default: 'Shop' | escape -}}
+                      </span>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% elsif request.design_mode %}
+          <p class="usage-choice__empty">
+            Add "Match row" blocks to build the guided chooser.
+          </p>
+        {% endif %}
+
+        {%- comment -%} 3. Footer: note line + button from section.settings, Horizon button classes. {%- endcomment -%}
+        {% if section.settings.note != blank or section.settings.button_label != blank %}
+          <div class="usage-choice__footer">
+            {% if section.settings.note != blank %}
+              <div class="usage-choice__note rte">{{ section.settings.note }}</div>
+            {% endif %}
+
+            {% if section.settings.button_label != blank %}
+              <div class="usage-choice__cta">
+                <a
+                  class="{{ section.settings.button_style | default: 'button' }}"
+                  href="{{ section.settings.button_link | default: '#' }}"
+                >
+                  {{- section.settings.button_label | escape -}}
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .section-wrapper {
+    --section-height-offset: 0px;
+  }
+
+  .section[data-shopify-visual-preview] {
+    min-height: var(--section-preview-height);
+    padding-top: 0;
+  }
+
+  .section[data-shopify-visual-preview] .custom-section-background {
+    display: none;
+  }
+
+  body:has(#header-group > .header-section > #header-component[transparent]):not(
+      :has(#header-group > .header-section + .shopify-section)
+    )
+    #MainContent
+    > .section-wrapper:first-child {
+    --section-height-offset: var(--header-group-height, 0);
+  }
+
+  .custom-section-background {
+    grid-column: 1 / -1;
+  }
+
+  .custom-section-content {
+    z-index: var(--layer-flat);
+  }
+
+  /* ============ Usage Choice (all classes scoped, no global overrides) ============ */
+
+  .usage-choice {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .usage-choice__header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: var(--uc-align, left);
+  }
+
+  .usage-choice__eyebrow {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--uc-accent, var(--color-foreground, #1a1a1a));
+  }
+
+  /* --- Match list --- */
+  .usage-choice__list {
+    width: 100%;
+    max-width: 56rem;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .usage-choice__list-head {
+    display: grid;
+    grid-template-columns: 1fr auto 1.1fr;
+    align-items: center;
+    gap: 20px;
+    padding: 0 30px 4px;
+  }
+
+  .usage-choice__list-head span {
+    font-family: var(--font-h6--family, inherit);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--uc-accent, var(--color-foreground, #1a1a1a));
+    text-align: left;
+  }
+
+  .usage-choice__spacer {
+    width: 44px;
+  }
+
+  .usage-choice__row {
+    display: grid;
+    grid-template-columns: 1fr auto 1.1fr;
+    align-items: center;
+    gap: 20px;
+    background: var(--color-background, #fff);
+    border: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+    border-radius: 16px;
+    padding: 22px 30px;
+    transition:
+      transform 0.25s ease-out,
+      box-shadow 0.25s ease-out,
+      border-color 0.25s ease-out;
+  }
+
+  .usage-choice__row:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(40, 90, 70, 0.12);
+    border-color: var(--uc-accent, currentColor);
+  }
+
+  .usage-choice__want {
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--color-foreground, #1a1a1a);
+  }
+
+  .usage-choice__arrow {
+    width: 44px;
+    height: 44px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--uc-accent, #22402f);
+    color: var(--uc-accent-contrast, #d9b36c);
+  }
+
+  .usage-choice__arrow svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .usage-choice__go {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .usage-choice__device {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .usage-choice__model {
+    font-family: var(--font-h5--family, inherit);
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.2;
+    color: var(--uc-accent, var(--color-foreground, #1a1a1a));
+  }
+
+  .usage-choice__tag {
+    display: block;
+    font-family: var(--font-paragraph--family, inherit);
+    font-weight: 400;
+    font-size: 0.82rem;
+    color: var(--color-foreground, #1a1a1a);
+    opacity: 0.65;
+    margin-top: 2px;
+  }
+
+  .usage-choice__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 9px 18px;
+    border-radius: 999px;
+    background: var(--uc-pill-bg, #f4c95d);
+    color: var(--uc-pill-fg, #000);
+    border: 1px solid var(--uc-pill-bg, #f4c95d);
+    white-space: nowrap;
+    text-decoration: none;
+    transition: filter 0.25s ease-out;
+  }
+
+  .usage-choice__pill:hover {
+    filter: brightness(0.94);
+    color: var(--uc-pill-fg, #000);
+    text-decoration: none;
+  }
+
+  .usage-choice__pill--placeholder {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  /* --- Footer: note + button --- */
+  .usage-choice__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .usage-choice__note {
+    font-size: 0.85rem;
+    font-style: italic;
+    opacity: 0.75;
+    text-align: var(--uc-align, left);
+  }
+
+  .usage-choice__note p {
+    margin: 0;
+  }
+
+  .usage-choice__cta {
+    text-align: var(--uc-align, left);
+  }
+
+  .usage-choice__empty {
+    margin: 0;
+    padding: 24px;
+    text-align: center;
+    border: 1px dashed var(--color-foreground, #999);
+    border-radius: 12px;
+    opacity: 0.6;
+  }
+
+  .usage-choice__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .usage-choice__row,
+    .usage-choice__pill {
+      transition: none;
+    }
+
+    .usage-choice__row:hover {
+      transform: none;
+    }
+  }
+
+  /* ============ Responsive (scoped — no global .section overrides) ============ */
+
+  @media screen and (max-width: 749px) {
+    .usage-choice__list-head {
+      display: none;
+    }
+
+    .usage-choice__row {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      text-align: center;
+      padding: 24px 20px;
+    }
+
+    .usage-choice__arrow {
+      transform: rotate(90deg);
+      margin-inline: auto;
+    }
+
+    .usage-choice__go {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .usage-choice__device {
+      align-items: center;
+      text-align: center;
+    }
+  }
+{% endstylesheet %}
+
+
+{% schema %}
+{
+  "name": "Usage Choice",
+  "class": "section-wrapper",
+  "max_blocks": 12,
+  "disabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header content"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Find Your Fit"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Choose Based on Your Style"
+    },
+    {
+      "type": "select",
+      "id": "heading_preset",
+      "label": "Heading style",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Tell us how you like to session and we'll point you to the device built for it. Match the way you want to smoke on the left with the Hippie Pipe made for it on the right.</p>"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "t:options.left" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "right", "label": "t:options.right" }
+      ],
+      "default": "center",
+      "info": "Applies to the header, note, and button."
+    },
+    {
+      "type": "header",
+      "content": "Match list"
+    },
+    {
+      "type": "text",
+      "id": "want_label",
+      "label": "Left column label",
+      "default": "If you want…"
+    },
+    {
+      "type": "text",
+      "id": "go_label",
+      "label": "Right column label",
+      "default": "Go with…"
+    },
+    {
+      "type": "text",
+      "id": "pill_label",
+      "label": "Row link label",
+      "default": "Shop",
+      "info": "Shown on each row when the row has a link."
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#22402f"
+    },
+    {
+      "type": "color",
+      "id": "accent_contrast",
+      "label": "Accent contrast (arrow icon)",
+      "default": "#d9b36c"
+    },
+    {
+      "type": "color",
+      "id": "pill_background",
+      "label": "Row link background",
+      "default": "#f4c95d"
+    },
+    {
+      "type": "color",
+      "id": "pill_text",
+      "label": "Row link text",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Below list"
+    },
+    {
+      "type": "richtext",
+      "id": "note",
+      "label": "Note",
+      "info": "Optional line shown above the button."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Explore All Devices"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "button", "label": "Primary" },
+        { "value": "button-secondary", "label": "Secondary" },
+        { "value": "link", "label": "Link" }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "content_direction",
+      "label": "t:settings.direction",
+      "options": [
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "checkbox",
+      "id": "vertical_on_mobile",
+      "label": "t:settings.vertical_on_mobile",
+      "default": true,
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "align_baseline",
+      "label": "t:settings.align_baseline",
+      "default": false,
+      "visible_if": "{{ section.settings.vertical_alignment == 'flex-end' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_flex_direction_column",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction != 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment_flex_direction_column",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'column' }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        },
+        {
+          "value": "narrow",
+          "label": "t:options.narrow"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 300,
+      "max": 1200,
+      "step": 20,
+      "unit": "px",
+      "default": 800,
+      "visible_if": "{{ section.settings.section_width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.auto"
+        },
+        {
+          "value": "small",
+          "label": "t:options.small"
+        },
+        {
+          "value": "medium",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "large",
+          "label": "t:options.large"
+        },
+        {
+          "value": "full-screen",
+          "label": "t:options.full_screen"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "section_height_custom",
+      "label": "t:settings.custom_height",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "unit": "%",
+      "visible_if": "{{ section.settings.section_height == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "select",
+      "id": "background_media",
+      "label": "t:settings.background_media",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "image",
+          "label": "t:options.image"
+        },
+        {
+          "value": "video",
+          "label": "t:options.video"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ section.settings.background_media == 'none' }}"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:settings.video",
+      "visible_if": "{{ section.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "select",
+      "id": "video_position",
+      "label": "t:settings.video_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "contain",
+          "label": "t:options.contain"
+        }
+      ],
+      "default": "cover",
+      "visible_if": "{{ section.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:settings.image",
+      "visible_if": "{{ section.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "background_image_position",
+      "label": "t:settings.image_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "fit",
+          "label": "t:options.fit"
+        }
+      ],
+      "default": "cover",
+      "visible_if": "{{ section.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "toggle_overlay",
+      "label": "t:settings.background_overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:settings.overlay_color",
+      "alpha": true,
+      "default": "#00000026",
+      "visible_if": "{{ section.settings.toggle_overlay }}"
+    },
+    {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "t:settings.overlay_style",
+      "options": [
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        },
+        {
+          "value": "gradient",
+          "label": "t:options.gradient"
+        }
+      ],
+      "default": "solid",
+      "visible_if": "{{ section.settings.toggle_overlay }}"
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "t:settings.gradient_direction",
+      "options": [
+        {
+          "value": "to top",
+          "label": "t:options.up"
+        },
+        {
+          "value": "to bottom",
+          "label": "t:options.down"
+        }
+      ],
+      "default": "to top",
+      "visible_if": "{{ section.settings.toggle_overlay and section.settings.overlay_style == 'gradient' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.borders"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.thickness",
+      "default": 1,
+      "visible_if": "{{ section.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.opacity",
+      "default": 100,
+      "visible_if": "{{ section.settings.border != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "t:settings.color",
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ section.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Margin"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_css_class",
+      "label": "t:settings.custom_css_class",
+      "info": "t:settings.custom_css_class_info"
+    },
+    {
+      "type": "text",
+      "id": "custom_id",
+      "label": "t:settings.custom_id",
+      "info": "t:settings.custom_id_info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Match row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "want",
+          "label": "\"If you want\" text",
+          "default": "Describe the use case"
+        },
+        {
+          "type": "text",
+          "id": "model",
+          "label": "Device name",
+          "default": "Device name"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Device tagline"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "The row link is hidden until a link is set."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Usage Choice",
+      "category": "Custom",
+      "settings": {
+        "content_alignment": "center",
+        "gap": 32,
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      },
+      "blocks": [
+        {
+          "type": "row",
+          "settings": {
+            "want": "The classic everyday analog ritual",
+            "model": "The Hippie Pipe",
+            "tag": "Original"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "want": "A bolder, blacked-out attitude",
+            "model": "Pipe X",
+            "tag": "Analog, blacked-out"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "want": "Bigger sessions, smoother pulls",
+            "model": "OM Chrome",
+            "tag": "~30% bigger chamber"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "want": "Grab-and-go rechargeable convenience",
+            "model": "OM Gunmetal",
+            "tag": "Rechargeable · 510-thread"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "want": "Style-forward rechargeable convenience",
+            "model": "OM Rose Gold",
+            "tag": "Rechargeable · standout finish"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
