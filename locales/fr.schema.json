@@ -171,6 +171,12 @@
     "disclosures": "Divulgations"
   },
   "settings": {
+    "flex_wrap_desktop": "Retour à la ligne flex sur ordinateur",
+    "flex_wrap_mobile": "Retour à la ligne flex sur mobile",
+    "custom_css_class": "Classe CSS personnalisée",
+    "custom_css_class_info": "Ajoutez une ou plusieurs classes CSS personnalisées séparées par des espaces.",
+    "custom_id": "ID personnalisé",
+    "custom_id_info": "Ajoutez un ID HTML unique sans le symbole #.",
     "autoplay": "Lecture automatique",
     "background": "Arrière-plan",
     "border_radius": "Rayon de la bordure",
@@ -586,6 +592,9 @@
     "title_preset": "Préréglage du titre"
   },
   "options": {
+    "same_as_existing_behavior": "Identique au comportement actuel",
+    "same_as_desktop": "Identique à la version ordinateur",
+    "automatic": "Automatique",
     "apple": "Pomme",
     "arrow": "Flèche",
     "banana": "Banane",

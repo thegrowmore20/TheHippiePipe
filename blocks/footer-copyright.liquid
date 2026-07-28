@@ -49,11 +49,19 @@
   /* Center the copyright, overriding the section's left-align for grid cells. */
   .utilities .footer-utilities__group-copyright {
     text-align: center;
+
+    @media screen and (max-width: 600px){
+      flex-wrap: wrap;
+    }
   }
 
   .footer-utilities__group-copyright .footer-utilities__text {
     /* Keep the whole credit on one line; never break onto a second row. */
     white-space: nowrap;
+
+    @media screen and (max-width: 600px){
+      white-space: normal;
+    }
   }
 
   /* Flow the GrowMore link inline with the text instead of as its own block. */
@@ -73,10 +81,17 @@
     vertical-align: middle;
   }
 
-  /* Hover color + icon scale are handled by the generic .hover-links /
-     .hover-icon-scale utilities in base-extended.css, driven by the
-     "Link hover color" setting (--link-hover-color). The GrowMore icon uses
-     stroke: currentColor above, so it follows the hover color automatically. */
+  .footer-utilities__group-copyright {
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+
+.footer-utilities__group-copyright .footer-utilities__text {
+  white-space: normal;
+  text-align: center;
+}
+
 {% endstylesheet %}
 
 {% schema %}

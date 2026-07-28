@@ -66,7 +66,7 @@
         "section_height": "small",
         "section_height_custom": 50,
         "background_color": "",
-        "toggle_overlay": true,
+        "toggle_overlay": false,
         "overlay_color": "#00000026",
         "overlay_style": "gradient",
         "gradient_direction": "to top",
@@ -431,7 +431,9 @@
         "padding-block-start": 64,
         "padding-block-end": 20,
         "margin_top": 0,
-        "margin_bottom": 0
+        "margin_bottom": 0,
+        "custom_css_class": "",
+        "custom_id": ""
       }
     },
     "section_r9Kyac": {
@@ -734,7 +736,9 @@
         "padding-block-start": 20,
         "padding-block-end": 20,
         "margin_top": 0,
-        "margin_bottom": 0
+        "margin_bottom": 0,
+        "custom_css_class": "",
+        "custom_id": ""
       }
     },
     "section_ygEDhP": {
@@ -1037,7 +1041,9 @@
         "padding-block-start": 20,
         "padding-block-end": 20,
         "margin_top": 0,
-        "margin_bottom": 0
+        "margin_bottom": 0,
+        "custom_css_class": "",
+        "custom_id": ""
       }
     },
     "section_VKHCin": {
@@ -1340,7 +1346,129 @@
         "padding-block-start": 20,
         "padding-block-end": 64,
         "margin_top": 0,
-        "margin_bottom": 0
+        "margin_bottom": 0,
+        "custom_css_class": "",
+        "custom_id": ""
+      }
+    },
+    "section_fC4Vdq": {
+      "type": "section",
+      "blocks": {
+        "text_9NgcEQ": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<h2>Couldn’t Find Your Answer?</h2>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "max_width_custom": 600,
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 10,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "text_mGpkWV": {
+          "type": "text",
+          "name": "t:names.text",
+          "settings": {
+            "text": "<p>We’re here to help. If you couldn’t find the information you were looking for, contact our support team and we’ll guide you through the next step.</p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "max_width_custom": 600,
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "button_JGWKe8": {
+          "type": "button",
+          "name": "t:names.button",
+          "settings": {
+            "label": "Contact Us Now",
+            "link": "shopify://pages/get-in-touch",
+            "open_in_new_tab": false,
+            "style_class": "button",
+            "custom_button_background": "{{ settings.color_palette.foreground }}",
+            "custom_button_text": "{{ settings.color_palette.background }}",
+            "custom_button_border": "{{ settings.color_palette.background }}",
+            "custom_button_hover_background": "",
+            "custom_button_hover_text": "",
+            "custom_button_hover_border": "",
+            "link_text_color": "",
+            "width": "fit-content",
+            "custom_width": 100,
+            "width_mobile": "fit-content",
+            "custom_width_mobile": 100
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "text_9NgcEQ",
+        "text_mGpkWV",
+        "button_JGWKe8"
+      ],
+      "name": "t:names.rich_text_section",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 15,
+        "section_width": "page-width",
+        "custom_width": 800,
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "{{ settings.color_palette.color7 }}",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 64,
+        "padding-block-end": 64,
+        "margin_top": 0,
+        "margin_bottom": 0,
+        "custom_css_class": "",
+        "custom_id": ""
       }
     }
   },
@@ -1350,6 +1478,7 @@
     "section_dmkPxU",
     "section_r9Kyac",
     "section_ygEDhP",
-    "section_VKHCin"
+    "section_VKHCin",
+    "section_fC4Vdq"
   ]
 }

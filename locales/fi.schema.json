@@ -171,6 +171,12 @@
     "disclosures": "Ilmoitukset"
   },
   "settings": {
+    "flex_wrap_desktop": "Flex-rivitys tietokoneella",
+    "flex_wrap_mobile": "Flex-rivitys mobiilissa",
+    "custom_css_class": "Mukautettu CSS-luokka",
+    "custom_css_class_info": "Lisää yksi tai useampi mukautettu CSS-luokka välilyönneillä eroteltuna.",
+    "custom_id": "Mukautettu tunnus",
+    "custom_id_info": "Lisää yksilöllinen HTML-tunnus ilman #-merkkiä.",
     "alignment": "Tasaus",
     "autoplay": "Automaattinen toisto",
     "background": "Tausta",
@@ -586,6 +592,9 @@
     "title_preset": "Otsikon esiasetus"
   },
   "options": {
+    "same_as_existing_behavior": "Sama kuin nykyinen toiminta",
+    "same_as_desktop": "Sama kuin tietokoneella",
+    "automatic": "Automaattinen",
     "apple": "Omena",
     "arrow": "Nuoli",
     "auto": "Automaattinen",

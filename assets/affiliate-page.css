@@ -1,0 +1,5 @@
+@media (max-width: 989px) {
+    .affiliate-how-it-works-steps > .layout-panel-flex {
+        flex-direction: column
+    }
+}

@@ -171,6 +171,12 @@
     "disclosures": "開示情報"
   },
   "settings": {
+    "flex_wrap_desktop": "デスクトップのFlex折り返し",
+    "flex_wrap_mobile": "モバイルのFlex折り返し",
+    "custom_css_class": "カスタムCSSクラス",
+    "custom_css_class_info": "1つ以上のカスタムCSSクラスをスペースで区切って追加します。",
+    "custom_id": "カスタムID",
+    "custom_id_info": "#記号を付けずに一意のHTML IDを追加します。",
     "alignment": "配置",
     "autoplay": "自動再生",
     "background": "背景",
@@ -586,6 +592,9 @@
     "title_preset": "タイトルプリセット"
   },
   "options": {
+    "same_as_existing_behavior": "現在の動作と同じ",
+    "same_as_desktop": "デスクトップと同じ",
+    "automatic": "自動",
     "apple": "Apple",
     "arrow": "矢印",
     "auto": "自動",

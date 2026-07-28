@@ -15,6 +15,7 @@
         font-size: {{ block_settings.number_font_size | default: 24 }}px;
         {% if block_settings.number_color != blank %}
           color: {{ block_settings.number_color }};
+          background-color: {{ block_settings.number_background_color }};
         {% endif %}
       }
     {% endif %}
@@ -62,6 +63,9 @@
     justify-content: center;
     line-height: 1;
     font-weight: 600;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
   }
 {% endstylesheet %}
 
@@ -341,6 +345,13 @@
       "id": "number_color",
       "label": "Number color",
       "placeholder": "t:settings.default",
+      "visible_if": "{{ block.settings.number_text != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "number_background_color",
+      "label": "Background color",
+      "placeholder": "#285A46",
       "visible_if": "{{ block.settings.number_text != blank }}"
     },
     {

@@ -171,6 +171,12 @@
     "disclosures": "Upplysningar"
   },
   "settings": {
+    "flex_wrap_desktop": "Flexbrytning på dator",
+    "flex_wrap_mobile": "Flexbrytning på mobil",
+    "custom_css_class": "Anpassad CSS-klass",
+    "custom_css_class_info": "Lägg till en eller flera anpassade CSS-klasser avgränsade med blanksteg.",
+    "custom_id": "Anpassat ID",
+    "custom_id_info": "Lägg till ett unikt HTML-ID utan #-symbolen.",
     "alignment": "Justering",
     "autoplay": "Autouppspelning",
     "background": "Bakgrund",
@@ -586,6 +592,9 @@
     "title_preset": "Förinställning för rubrik"
   },
   "options": {
+    "same_as_existing_behavior": "Samma som befintligt beteende",
+    "same_as_desktop": "Samma som på dator",
+    "automatic": "Automatiskt",
     "apple": "Apple",
     "arrow": "Pil",
     "auto": "Auto",

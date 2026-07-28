@@ -171,6 +171,12 @@
     "disclosures": "Pflichtangaben"
   },
   "settings": {
+    "flex_wrap_desktop": "Flex-Umbruch auf Desktop",
+    "flex_wrap_mobile": "Flex-Umbruch auf Mobilgeräten",
+    "custom_css_class": "Benutzerdefinierte CSS-Klasse",
+    "custom_css_class_info": "Füge eine oder mehrere benutzerdefinierte CSS-Klassen durch Leerzeichen getrennt hinzu.",
+    "custom_id": "Benutzerdefinierte ID",
+    "custom_id_info": "Füge eine eindeutige HTML-ID ohne das #-Symbol hinzu.",
     "autoplay": "Autoplay",
     "background": "Hintergrund",
     "border_radius": "Eckenradius",
@@ -586,6 +592,9 @@
     "title_preset": "Titelvoreinstellung"
   },
   "options": {
+    "same_as_existing_behavior": "Wie bisheriges Verhalten",
+    "same_as_desktop": "Wie auf Desktop",
+    "automatic": "Automatisch",
     "apple": "Apfel",
     "arrow": "Pfeil",
     "banana": "Banane",

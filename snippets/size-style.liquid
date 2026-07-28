@@ -28,6 +28,6 @@
   {{- settings.custom_width_mobile }}%;
 {%- elsif settings.width_mobile == 'fill' -%}
   --size-style-width-mobile: 100%; --size-style-width-mobile-min: 5rem;
-{%- elsif settings.width_mobile == 'fit-content' -%}
-  --size-style-width-mobile: {{ settings.width_mobile }}; --size-style-width-mobile-min: {{ settings.width_mobile }};
+{%- elsif settings.width_mobile == 'fit-content' or settings.width_mobile == 'fit' -%}
+  --size-style-width-mobile: fit-content; --size-style-width-mobile-min: fit-content;
 {%- endif -%}

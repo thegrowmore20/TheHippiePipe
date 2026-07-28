@@ -171,6 +171,12 @@
     "disclosures": "Prohlášení"
   },
   "settings": {
+    "flex_wrap_desktop": "Zalamování na počítači",
+    "flex_wrap_mobile": "Zalamování na mobilu",
+    "custom_css_class": "Vlastní třída CSS",
+    "custom_css_class_info": "Přidejte jednu nebo více vlastních tříd CSS oddělených mezerami.",
+    "custom_id": "Vlastní ID",
+    "custom_id_info": "Přidejte jedinečné HTML ID bez symbolu #.",
     "alignment": "Zarovnání",
     "autoplay": "Automatické přehrávání",
     "background": "Pozadí",
@@ -586,6 +592,9 @@
     "title_preset": "Předvolba nadpisu"
   },
   "options": {
+    "same_as_existing_behavior": "Stejné jako stávající chování",
+    "same_as_desktop": "Stejné jako na počítači",
+    "automatic": "Automaticky",
     "apple": "Apple",
     "arrow": "Šipka",
     "auto": "Automaticky",

@@ -73,6 +73,10 @@
       layout-panel-flex
       layout-panel-flex--{{ settings.content_direction | default: 'column' }}
       {% if settings.vertical_on_mobile %} mobile-column{% endif %}
+      {% if settings.content_direction_mobile != blank and settings.content_direction_mobile != 'inherit' %}
+        mobile-layout-override
+        mobile-layout-{{ settings.content_direction_mobile }}
+      {% endif %}
     "
     style="{% render 'layout-panel-style', settings: settings %}"
   >

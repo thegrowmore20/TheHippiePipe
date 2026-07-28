@@ -171,6 +171,12 @@
     "disclosures": "Informative"
   },
   "settings": {
+    "flex_wrap_desktop": "A capo flex su desktop",
+    "flex_wrap_mobile": "A capo flex su dispositivo mobile",
+    "custom_css_class": "Classe CSS personalizzata",
+    "custom_css_class_info": "Aggiungi una o più classi CSS personalizzate separate da spazi.",
+    "custom_id": "ID personalizzato",
+    "custom_id_info": "Aggiungi un ID HTML univoco senza il simbolo #.",
     "alignment": "Allineamento",
     "autoplay": "Riproduzione automatica",
     "background": "Sfondo",
@@ -586,6 +592,9 @@
     "title_preset": "Preimpostazione titolo"
   },
   "options": {
+    "same_as_existing_behavior": "Come il comportamento esistente",
+    "same_as_desktop": "Come su desktop",
+    "automatic": "Automatico",
     "apple": "Mela",
     "arrow": "Freccia",
     "auto": "Automatico",

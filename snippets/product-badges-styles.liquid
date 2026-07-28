@@ -29,7 +29,7 @@
   }
 
   .product-badges__badge {
-    --badge-font-size: var(--font-size--xs);
+    --badge-font-size: var(--font-size--2xs);
 
     display: flex;
     align-items: center;
@@ -45,6 +45,11 @@
     font-weight: var(--badge-font-weight);
     text-transform: var(--badge-text-transform);
     border-radius: var(--badge-border-radius);
+
+    @media screen and (min-width: 750px) {
+      --badge-font-size: var(--font-size--xs);
+    }
+
   }
 
   .product-badges__badge--rectangle {

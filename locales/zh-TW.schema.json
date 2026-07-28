@@ -171,6 +171,12 @@
     "disclosures": "資訊揭露"
   },
   "settings": {
+    "flex_wrap_desktop": "桌面版 Flex 換行",
+    "flex_wrap_mobile": "行動版 Flex 換行",
+    "custom_css_class": "自訂 CSS 類別",
+    "custom_css_class_info": "新增一個或多個自訂 CSS 類別，並以空格分隔。",
+    "custom_id": "自訂 ID",
+    "custom_id_info": "新增不含 # 符號的唯一 HTML ID。",
     "alignment": "對齊",
     "autoplay": "自動播放",
     "background": "背景",
@@ -586,6 +592,9 @@
     "title_preset": "標題預設設定"
   },
   "options": {
+    "same_as_existing_behavior": "與現有行為相同",
+    "same_as_desktop": "與桌面版相同",
+    "automatic": "自動",
     "apple": "Apple",
     "arrow": "箭頭",
     "auto": "自動",

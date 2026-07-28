@@ -171,6 +171,12 @@
     "disclosures": "Informacje prawne"
   },
   "settings": {
+    "flex_wrap_desktop": "Zawijanie flex na komputerze",
+    "flex_wrap_mobile": "Zawijanie flex na urządzeniu mobilnym",
+    "custom_css_class": "Niestandardowa klasa CSS",
+    "custom_css_class_info": "Dodaj co najmniej jedną niestandardową klasę CSS, oddzielając je spacjami.",
+    "custom_id": "Niestandardowy identyfikator",
+    "custom_id_info": "Dodaj unikalny identyfikator HTML bez symbolu #.",
     "autoplay": "Autoodtwarzanie",
     "background": "Tło",
     "border_radius": "Promień narożnika",
@@ -586,6 +592,9 @@
     "title_preset": "Gotowe ustawienie tytułu"
   },
   "options": {
+    "same_as_existing_behavior": "Tak samo jak dotychczas",
+    "same_as_desktop": "Tak samo jak na komputerze",
+    "automatic": "Automatycznie",
     "apple": "Apple",
     "arrow": "Strzałka",
     "banana": "Banan",

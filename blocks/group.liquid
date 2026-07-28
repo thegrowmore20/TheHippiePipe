@@ -165,6 +165,122 @@
       "default": 12
     },
     {
+      "type": "select",
+      "id": "flex_wrap",
+      "label": "t:settings.flex_wrap_desktop",
+      "options": [
+        {
+          "value": "nowrap",
+          "label": "t:options.nowrap"
+        },
+        {
+          "value": "wrap",
+          "label": "t:options.wrap"
+        }
+      ],
+      "default": "nowrap"
+    },
+    {
+      "type": "header",
+      "content": "t:content.mobile_layout"
+    },
+    {
+      "type": "select",
+      "id": "content_direction_mobile",
+      "label": "t:settings.direction",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "t:options.same_as_existing_behavior"
+        },
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_mobile",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "t:options.same_as_desktop"
+        },
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment_mobile",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "t:options.same_as_desktop"
+        },
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "flex_wrap_mobile",
+      "label": "t:settings.flex_wrap_mobile",
+      "options": [
+        {
+          "value": "auto",
+          "label": "t:options.automatic"
+        },
+        {
+          "value": "nowrap",
+          "label": "t:options.nowrap"
+        },
+        {
+          "value": "wrap",
+          "label": "t:options.wrap"
+        }
+      ],
+      "default": "auto"
+    },
+    {
       "type": "header",
       "content": "t:content.size"
     },

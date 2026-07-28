@@ -66,7 +66,7 @@
         "section_height": "small",
         "section_height_custom": 50,
         "background_color": "",
-        "toggle_overlay": true,
+        "toggle_overlay": false,
         "overlay_color": "#00000026",
         "overlay_style": "gradient",
         "gradient_direction": "to top",
@@ -84,6 +84,7 @@
         "heading": {
           "type": "text",
           "name": "t:names.title",
+          "disabled": true,
           "settings": {
             "text": "<h1>{{ closest.page.title }}</h1>",
             "width": "100%",
@@ -124,8 +125,8 @@
         "content_direction": "column",
         "gap": 32,
         "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 40,
-        "padding-block-end": 80,
+        "padding-block-start": 64,
+        "padding-block-end": 64,
         "margin-block-start": 0,
         "margin-block-end": 0
       }

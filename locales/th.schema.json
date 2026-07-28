@@ -171,6 +171,12 @@
     "disclosures": "การเปิดเผยข้อมูล"
   },
   "settings": {
+    "flex_wrap_desktop": "การตัดบรรทัด Flex บนเดสก์ท็อป",
+    "flex_wrap_mobile": "การตัดบรรทัด Flex บนมือถือ",
+    "custom_css_class": "คลาส CSS ที่กำหนดเอง",
+    "custom_css_class_info": "เพิ่มคลาส CSS ที่กำหนดเองอย่างน้อยหนึ่งคลาส โดยคั่นด้วยเว้นวรรค",
+    "custom_id": "ID ที่กำหนดเอง",
+    "custom_id_info": "เพิ่ม HTML ID ที่ไม่ซ้ำกันโดยไม่ต้องใส่สัญลักษณ์ #",
     "alignment": "การจัดตำแหน่ง",
     "autoplay": "เล่นอัตโนมัติ",
     "background": "พื้นหลัง",
@@ -586,6 +592,9 @@
     "title_preset": "พรีเซ็ตชื่อ"
   },
   "options": {
+    "same_as_existing_behavior": "เหมือนลักษณะการทำงานเดิม",
+    "same_as_desktop": "เหมือนเดสก์ท็อป",
+    "automatic": "อัตโนมัติ",
     "apple": "Apple",
     "arrow": "ลูกศร",
     "auto": "อัตโนมัติ",

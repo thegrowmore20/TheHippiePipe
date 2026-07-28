@@ -236,78 +236,49 @@
     /* Typography presets */
     {% liquid
       assign font_sizes = "paragraph, h1, h2, h3, h4, h5, h6" | split: ", "
-      assign fluid_size_cutoff = 48
       assign absolute_font_size_min = 10
 
-      comment
-        Build an array of font sizes and sort it
-      endcomment
-      assign font_size_values = ''
-      for font_size in font_sizes
-        assign size_setting = 'type_size_[font_size]' | replace: '[font_size]', font_size
-        assign size_setting_value = settings[size_setting] | times: 1
-
-        comment
-          If the font size is less than 100, pad it with a 0
-          This is because we end up with an array of strings, which | sort filter can't order "correctly")
-        endcomment
-        if size_setting_value < 100
-          assign size_setting_value = '0[size_setting_value]' | replace: '[size_setting_value]', size_setting_value
-        endif
-
-        assign font_size_values = font_size_values | append: '[size_setting_value],' | replace: '[size_setting_value]', size_setting_value
-      endfor
-
-      assign font_size_values = font_size_values | split: ',' | uniq | sort_natural
-
-      comment
-        For each font size S, find the next smaller size S-1, and determine the minimum for S
-        The calculation depends on the size of S-1 (over or under the cutoff)
-      endcomment
       for font_size in font_sizes
         assign size_setting = 'type_size_[font_size]' | replace: '[font_size]', font_size
         assign font_size_value = settings[size_setting] | times: 1
-        assign font_size_string = '[font_size_value]' | replace: '[font_size_value]', font_size_value
-        assign index = font_size_values | find_index: font_size_string
 
-        if font_size_value >= fluid_size_cutoff
-
-          comment
-            Calculate the minimum size for each font size
-          endcomment
-          assign fluid_font_size_min = font_size_value
-
-          if index == 0
+        comment
+          Body copy keeps 87.5% of its selected desktop size on mobile
+          (16px becomes 14px). Headings use 80% so large display sizes scale
+          more meaningfully. Values interpolate from 375px to 1200px, and the
+          selected global setting always remains the desktop maximum.
+        endcomment
+        if font_size == 'paragraph'
+          assign mobile_scale = 0.875
+          assign fluid_font_size_min = font_size_value | times: mobile_scale
+          if fluid_font_size_min < absolute_font_size_min
             assign fluid_font_size_min = absolute_font_size_min
-          else
-            assign next_font_size_index = index | minus: 1
-            assign next_font_size_value = font_size_values[next_font_size_index]
-            assign next_font_size_value_number = next_font_size_value | times: 1
-
-            comment
-              If the next bigger font size under the fluid cutoff, we use keep a 4px buffer
-            endcomment
-            if next_font_size_value_number < fluid_size_cutoff
-              assign fluid_font_size_min = next_font_size_value_number | plus: 4
-              if font_size_value < fluid_font_size_min
-                assign fluid_font_size_min = font_size_value
-              endif
-            else
-              assign fluid_font_size_min = next_font_size_value | times: 1
-            endif
           endif
-
-          comment
-            Calculate the fluid and maximum size for each font size
-          endcomment
-          assign fluid_size_min_rem = fluid_font_size_min | divided_by: 16.0
-          assign fluid_size = font_size_value | times: 0.1
-          assign fluid_size_max_rem = font_size_value | divided_by: 16.0
-
-          echo '--font-size--[font_size]: clamp([fluid_size_min_rem]rem, [fluid_size]vw, [fluid_size_max_rem]rem);' | replace: '[font_size]', font_size | replace: '[fluid_size_min_rem]', fluid_size_min_rem | replace: '[fluid_size]', fluid_size | replace: '[fluid_size_max_rem]', fluid_size_max_rem
         else
+          assign mobile_scale = 0.8
+          assign fluid_font_size_min = font_size_value | times: mobile_scale
+          if fluid_font_size_min < 14
+            assign fluid_font_size_min = 14
+          endif
+        endif
+
+        if fluid_font_size_min > font_size_value
+          assign fluid_font_size_min = font_size_value
+        endif
+
+        if fluid_font_size_min == font_size_value
           assign fluid_size_rem = font_size_value | divided_by: 16.0
           echo '--font-size--[font_size]: [fluid_size_rem]rem;' | replace: '[font_size]', font_size | replace: '[fluid_size_rem]', fluid_size_rem
+        else
+          assign fluid_size_delta = font_size_value | minus: fluid_font_size_min
+          assign fluid_size_slope = fluid_size_delta | divided_by: 825.0 | times: 100
+          assign fluid_size_intercept = fluid_size_slope | times: 3.75
+          assign fluid_size_intercept = fluid_font_size_min | minus: fluid_size_intercept
+          assign fluid_size_min_rem = fluid_font_size_min | divided_by: 16.0
+          assign fluid_size_intercept_rem = fluid_size_intercept | divided_by: 16.0
+          assign fluid_size_max_rem = font_size_value | divided_by: 16.0
+
+          echo '--font-size--[font_size]: clamp([fluid_size_min_rem]rem, calc([fluid_size_intercept_rem]rem + [fluid_size_slope]vw), [fluid_size_max_rem]rem);' | replace: '[font_size]', font_size | replace: '[fluid_size_min_rem]', fluid_size_min_rem | replace: '[fluid_size_intercept_rem]', fluid_size_intercept_rem | replace: '[fluid_size_slope]', fluid_size_slope | replace: '[fluid_size_max_rem]', fluid_size_max_rem
         endif
       endfor
 
@@ -535,13 +506,13 @@
     /* Badges */
     --badge-blob-padding-block: 1px;
     --badge-blob-padding-inline: 12px 8px;
-    --badge-rectangle-padding-block: 1px;
+    --badge-rectangle-padding-block: 4px;
     --badge-rectangle-padding-inline: 6px;
     @media screen and (min-width: 750px) {
       --badge-blob-padding-block: 4px;
       --badge-blob-padding-inline: 16px 12px;
-      --badge-rectangle-padding-block: 4px;
-      --badge-rectangle-padding-inline: 10px;
+      --badge-rectangle-padding-block: 6px;
+      --badge-rectangle-padding-inline: 8px;
     }
 
     /* Icons */
@@ -584,7 +555,7 @@
     --button-size-sm: 30px;
     --button-size-md: 36px;
     --button-size: var(--minimum-touch-target);
-    --button-padding-inline: 12px;
+    --button-padding-inline: 24px;
     --button-padding-block: 7px;
 
     @media screen and (min-width: 750px) {

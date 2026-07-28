@@ -1487,12 +1487,19 @@ product-price.text-block:is(.h1, .h2, .h3, .h4, .h5, .h6) .volume-pricing-note {
 
 @media screen and (max-width: 749px) {
   .mobile-column {
-    flex-flow: column nowrap;
+    flex-flow: column var(--flex-wrap-mobile, nowrap);
     align-items: var(--horizontal-alignment);
     justify-content: var(--vertical-alignment-mobile);
   }
 
-  .layout-panel-flex--row:not(.mobile-column) {
+  .mobile-layout-override {
+    flex-flow: var(--flex-direction-mobile) var(--flex-wrap-mobile);
+    align-items: var(--mobile-align-items);
+    justify-content: var(--mobile-justify-content);
+    height: auto;
+  }
+
+  :is(.layout-panel-flex--row:not(.mobile-column, .mobile-layout-column), .mobile-layout-row) {
     flex-wrap: var(--flex-wrap-mobile);
     height: auto;
 
@@ -2100,6 +2107,12 @@ label:has(input[type='checkbox']:disabled) {
 
 .layout-panel-flex--row > .group-block--width-custom {
   flex-basis: var(--size-style-width);
+}
+
+@media screen and (max-width: 749px) {
+  .layout-panel-flex > .group-block--width-custom {
+    flex-basis: var(--size-style-width-mobile, var(--size-style-width));
+  }
 }
 
 /* Dimension utilities - Height */

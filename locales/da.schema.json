@@ -171,6 +171,12 @@
     "disclosures": "Oplysninger"
   },
   "settings": {
+    "flex_wrap_desktop": "Ombrydning på computer",
+    "flex_wrap_mobile": "Ombrydning på mobil",
+    "custom_css_class": "Tilpasset CSS-klasse",
+    "custom_css_class_info": "Tilføj en eller flere tilpassede CSS-klasser adskilt af mellemrum.",
+    "custom_id": "Tilpasset ID",
+    "custom_id_info": "Tilføj et unikt HTML-ID uden #-symbolet.",
     "alignment": "Justering",
     "autoplay": "Automatisk afspilning",
     "background": "Baggrund",
@@ -586,6 +592,9 @@
     "title_preset": "Forudindstilling for titel"
   },
   "options": {
+    "same_as_existing_behavior": "Samme som eksisterende adfærd",
+    "same_as_desktop": "Samme som på computer",
+    "automatic": "Automatisk",
     "apple": "Apple",
     "arrow": "Pil",
     "auto": "Auto",

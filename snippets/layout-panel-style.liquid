@@ -23,11 +23,51 @@
   if settings.vertical_on_mobile and vertical_alignment == 'last baseline'
     assign vertical_alignment_mobile = 'flex-end'
   endif
+
+  assign flex_direction_mobile = settings.content_direction
+  if settings.vertical_on_mobile
+    assign flex_direction_mobile = 'column'
+  endif
+  if settings.content_direction_mobile != blank and settings.content_direction_mobile != 'inherit'
+    assign flex_direction_mobile = settings.content_direction_mobile
+  endif
+
+  assign horizontal_alignment_mobile = horizontal_alignment
+  if settings.horizontal_alignment_mobile != blank and settings.horizontal_alignment_mobile != 'inherit'
+    assign horizontal_alignment_mobile = settings.horizontal_alignment_mobile
+  endif
+
+  if settings.vertical_alignment_mobile != blank and settings.vertical_alignment_mobile != 'inherit'
+    assign vertical_alignment_mobile = settings.vertical_alignment_mobile
+  endif
+
+  assign flex_wrap = settings.flex_wrap | default: 'nowrap'
+  assign flex_wrap_mobile = settings.flex_wrap_mobile
+  if flex_wrap_mobile == blank or flex_wrap_mobile == 'auto'
+    if flex_direction_mobile == 'row'
+      assign flex_wrap_mobile = 'wrap'
+    else
+      assign flex_wrap_mobile = 'nowrap'
+    endif
+  endif
+
+  if flex_direction_mobile == 'row'
+    assign mobile_justify_content = horizontal_alignment_mobile
+    assign mobile_align_items = vertical_alignment_mobile
+  else
+    assign mobile_justify_content = vertical_alignment_mobile
+    assign mobile_align_items = horizontal_alignment_mobile
+  endif
 -%}
 
---flex-direction: {{ settings.content_direction | default: 'column' }}; --flex-wrap: nowrap; --flex-wrap-mobile: wrap;
+--flex-direction: {{ settings.content_direction | default: 'column' }};
+--flex-direction-mobile: {{ flex_direction_mobile }};
+--flex-wrap: {{ flex_wrap }};
+--flex-wrap-mobile: {{ flex_wrap_mobile }};
 
 {% render 'gap-style', value: settings.gap %}
 
 --horizontal-alignment: {{ horizontal_alignment }}; --vertical-alignment: {{ vertical_alignment }};
 --vertical-alignment-mobile: {{ vertical_alignment_mobile }};
+--mobile-justify-content: {{ mobile_justify_content }};
+--mobile-align-items: {{ mobile_align_items }};

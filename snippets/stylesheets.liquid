@@ -22,3 +22,14 @@
     <link href="{{ 'product-page.css' | asset_url }}" rel="stylesheet" type="text/css" media="all" />
 </noscript> 
 {% endif %}
+
+{% if request.page_type == "page" and template.suffix == 'affiliate' %}
+<link href="{{ 'affiliate-page.css' | asset_url }}" as="style" rel="preload">
+<link rel="stylesheet"
+    href="{{ 'affiliate-page.css' | asset_url }}"
+    media="print"
+    onload="this.media='all'">
+<noscript>
+    <link href="{{ 'affiliate-page.css' | asset_url }}" rel="stylesheet" type="text/css" media="all" />
+</noscript> 
+{% endif %}

@@ -171,6 +171,12 @@
     "disclosures": "Toelichtingen"
   },
   "settings": {
+    "flex_wrap_desktop": "Flexterugloop op desktop",
+    "flex_wrap_mobile": "Flexterugloop op mobiel",
+    "custom_css_class": "Aangepaste CSS-klasse",
+    "custom_css_class_info": "Voeg een of meer aangepaste CSS-klassen toe, gescheiden door spaties.",
+    "custom_id": "Aangepaste ID",
+    "custom_id_info": "Voeg een unieke HTML-ID toe zonder het #-symbool.",
     "autoplay": "Automatisch afspelen",
     "background": "Achtergrond",
     "border_radius": "Hoekradius",
@@ -586,6 +592,9 @@
     "title_preset": "Titelvoorinstelling"
   },
   "options": {
+    "same_as_existing_behavior": "Hetzelfde als bestaand gedrag",
+    "same_as_desktop": "Hetzelfde als desktop",
+    "automatic": "Automatisch",
     "apple": "Apple",
     "arrow": "Pijl",
     "banana": "Banaan",

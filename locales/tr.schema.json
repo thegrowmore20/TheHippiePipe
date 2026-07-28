@@ -171,6 +171,12 @@
     "disclosures": "Bildirimler"
   },
   "settings": {
+    "flex_wrap_desktop": "Masaüstü flex kaydırma",
+    "flex_wrap_mobile": "Mobil flex kaydırma",
+    "custom_css_class": "Özel CSS sınıfı",
+    "custom_css_class_info": "Boşluklarla ayırarak bir veya daha fazla özel CSS sınıfı ekleyin.",
+    "custom_id": "Özel kimlik",
+    "custom_id_info": "# simgesi olmadan benzersiz bir HTML kimliği ekleyin.",
     "autoplay": "Otomatik oynatma",
     "background": "Arka plan",
     "border_radius": "Köşe yarıçapı",
@@ -586,6 +592,9 @@
     "title_preset": "Başlık ön ayarı"
   },
   "options": {
+    "same_as_existing_behavior": "Mevcut davranışla aynı",
+    "same_as_desktop": "Masaüstüyle aynı",
+    "automatic": "Otomatik",
     "apple": "Apple",
     "arrow": "Ok",
     "banana": "Muz",
