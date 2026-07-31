@@ -12,27 +12,25 @@
   inset-inline-end: var(--wishlist-button-offset, 1rem);
   z-index: var(--layer-raised, 2);
 
-  animation: wishlist-button-reveal var(--wishlist-button-fade, 0.3s) ease
-    var(--wishlist-button-delay, 1s) both;
+  /* Hidden until wishlist-reveal.js confirms the app has resolved which heart to
+     show. The button renders BOTH the outline (add) and solid (remove) hearts and
+     relies on the wishlist app's JS to hide one; before that runs, both are visible,
+     which is the "distorted two hearts" flash on reload. We keep the button hidden
+     until exactly one heart is hidden (app resolved), or a safety-net timeout fires. */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--wishlist-button-fade, 0.3s) ease,
+    visibility var(--wishlist-button-fade, 0.3s) ease;
 }
 
-@keyframes wishlist-button-reveal {
-  from {
-    opacity: 0;
-    visibility: hidden;
-  }
-
-  to {
-    opacity: 1;
-    visibility: visible;
-  }
+.custom-wishlist-button.is-wishlist-ready {
+  opacity: 1;
+  visibility: visible;
 }
 
-/* Still delayed for reduced-motion users — the point is hiding the flicker, not
-   decoration — but it appears rather than fades. */
 @media (prefers-reduced-motion: reduce) {
   .custom-wishlist-button {
-    animation-duration: 1ms;
+    transition-duration: 1ms;
   }
 }
 

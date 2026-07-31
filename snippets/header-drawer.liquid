@@ -132,10 +132,16 @@
                         id="HeaderDrawer-{{ link.handle }}"
                         class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset"
                       >
-                        <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
-                        <span class="svg-wrapper icon-plus">
-                          {{- 'icon-plus.svg' | inline_asset_content -}}
-                        </span>
+                        <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}{% render 'menu-drawer-link-count', link: link %}</span>
+                        {% if block_settings.drawer_accordion_icon == 'caret' %}
+                          <span class="svg-wrapper icon-caret menu-drawer__accordion-caret" aria-hidden="true">
+                            {{- 'icon-caret.svg' | inline_asset_content -}}
+                          </span>
+                        {% else %}
+                          <span class="svg-wrapper icon-plus">
+                            {{- 'icon-plus.svg' | inline_asset_content -}}
+                          </span>
+                        {% endif %}
                       </summary>
                       {% liquid
                         assign render_link_image = false
@@ -172,8 +178,10 @@
                                   class: 'menu-drawer__link-image',
                                   sizes: 'auto, 400px'
                                 %}
+                              {% else %}
+                                {% render 'menu-drawer-link-image', link: childlink %}
                               {% endif %}
-                              <span class="menu-drawer__menu-item-text wrap-text">{{ childlink.title | escape }}</span>
+                              <span class="menu-drawer__menu-item-text wrap-text">{{ childlink.title | escape }}{% render 'menu-drawer-link-count', link: childlink %}</span>
                             </a>
                           </li>
                         {%- endfor -%}
@@ -196,7 +204,7 @@
                       aria-current="page"
                     {% endif %}
                   >
-                    <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                    <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}{% render 'menu-drawer-link-count', link: link %}</span>
                   </a>
                   {% liquid
                     assign render_link_image = false
@@ -232,8 +240,10 @@
                               class: 'menu-drawer__link-image',
                               sizes: 'auto, 400px'
                             %}
+                          {% else %}
+                            {% render 'menu-drawer-link-image', link: childlink %}
                           {% endif %}
-                          <span class="menu-drawer__menu-item-text wrap-text">{{ childlink.title | escape }}</span>
+                          <span class="menu-drawer__menu-item-text wrap-text">{{ childlink.title | escape }}{% render 'menu-drawer-link-count', link: childlink %}</span>
                         </a>
                       </li>
                     {%- endfor -%}
@@ -250,7 +260,8 @@
                       aria-current="page"
                     {% endif %}
                   >
-                    <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                    {% render 'menu-drawer-link-image', link: link %}
+                    <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}{% render 'menu-drawer-link-count', link: link %}</span>
                   </a>
                 {% endif %}
               </li>
@@ -387,9 +398,15 @@
                                         <span class="menu-drawer__menu-item-text wrap-text">
                                           {{- childlink.title | escape -}}
                                         </span>
-                                        <span class="svg-wrapper icon-plus">
-                                          {{- 'icon-plus.svg' | inline_asset_content -}}
-                                        </span>
+                                        {% if block_settings.drawer_accordion_icon == 'caret' %}
+                                          <span class="svg-wrapper icon-caret menu-drawer__accordion-caret" aria-hidden="true">
+                                            {{- 'icon-caret.svg' | inline_asset_content -}}
+                                          </span>
+                                        {% else %}
+                                          <span class="svg-wrapper icon-plus">
+                                            {{- 'icon-plus.svg' | inline_asset_content -}}
+                                          </span>
+                                        {% endif %}
                                       </summary>
                                       {% liquid
                                         assign render_link_image = false
@@ -870,7 +887,7 @@
     flex-direction: column;
 
     @media screen and (min-width: 750px) {
-      width: 25rem;
+      width: 23.75rem;
     }
   }
 
@@ -885,7 +902,8 @@
     left: 0;
     width: 100vw;
     height: 100dvh;
-    backdrop-filter: brightness(0.75);
+    /* Dark overlay over the page body while the drawer is open. */
+    background: rgba(0, 0, 0, 0.5);
     z-index: var(--layer-overlay);
     opacity: 0;
     transition: opacity var(--drawer-animation-speed) ease;
@@ -1170,6 +1188,30 @@
     padding: var(--padding-xs);
   }
 
+  /* Top-level close button styled to match the cart (theme) drawer's floating close button */
+  .menu-drawer > .menu-drawer__close-button {
+    align-self: flex-end;
+    /* Never let the flex column compress the button when the menu content
+       (now taller with link thumbnails) overflows — keeps it a perfect circle. */
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    margin: var(--padding-md) var(--padding-md) 0 0;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--color-foreground);
+    background-color: var(--color-background);
+    border: 1px solid rgb(0 0 0 / 0.06);
+    box-shadow: 0 2px 6px 0 rgb(0 0 0 / 0.06);
+  }
+
+  .menu-drawer > .menu-drawer__close-button:hover {
+    background-color: color-mix(in srgb, var(--color-foreground) 6%, var(--color-background));
+  }
+
   .menu-drawer__back-button {
     display: flex;
     width: 100%;
@@ -1222,6 +1264,62 @@
   .menu-drawer svg {
     width: var(--icon-size-xs);
     height: var(--icon-size-xs);
+  }
+
+  /* Accordion arrow icon (alternative to the plus/minus toggle). Points down when
+     collapsed, flips up when the group is open. The flip is applied to the svg itself
+     (not the wrapper): `transform-box: fill-box` pivots around the caret's own geometric
+     centre, so it mirrors in place — crisp, and no shift/distortion regardless of the
+     wrapper's (row-height) box. */
+  .menu-drawer__accordion-caret {
+    flex-shrink: 0;
+  }
+
+  .menu-drawer__accordion-caret svg {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform var(--animation-speed-medium, 0.2s) var(--animation-easing, ease);
+  }
+
+  details[open] > summary > .menu-drawer__accordion-caret svg {
+    transform: scaleY(-1);
+  }
+
+  /* Small inline thumbnail (product/collection featured image) before a menu link's text. */
+  .menu-drawer__item-thumb {
+    flex: 0 0 auto;
+    display: block;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--style-border-radius-xs, 6px);
+    overflow: hidden;
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-5, 0.05));
+    padding: 2px;
+  }
+
+  .menu-drawer__item-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* When a thumbnail is present, group thumb + text at the start and push any
+     trailing caret/plus to the end. */
+  .menu-drawer__menu-item:has(.menu-drawer__item-thumb) {
+    justify-content: flex-start;
+    gap: var(--gap-sm);
+  }
+
+  .menu-drawer__menu-item:has(.menu-drawer__item-thumb) .menu-drawer__menu-item-text {
+    margin-inline-end: auto;
+  }
+
+  /* Product count shown after a collection name in the drawer, e.g. "Devices (8)". */
+  .menu-drawer__item-count {
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-50, 0.5));
+    font-size: var(--font-size--xs);
+    font-weight: var(--font-paragraph--weight);
   }
 
   .menu-drawer__submenu {

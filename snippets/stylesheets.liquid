@@ -12,6 +12,7 @@
     <link href="{{ 'homepage.css' | asset_url }}" rel="stylesheet" type="text/css" media="all" />
 </noscript> 
 {% endif %}
+
 {% if request.page_type == "product" %}
 <link href="{{ 'product-page.css' | asset_url }}" as="style" rel="preload">
 <link rel="stylesheet"
@@ -23,7 +24,18 @@
 </noscript> 
 {% endif %}
 
-{% if request.page_type == "page" and template.suffix == 'affiliate' %}
+{% if request.page_type == "page" and template.suffix == 'about-us' %}
+<link href="{{ 'about-us-page.css' | asset_url }}" as="style" rel="preload">
+<link rel="stylesheet"
+    href="{{ 'about-us-page.css' | asset_url }}"
+    media="print"
+    onload="this.media='all'">
+<noscript>
+    <link href="{{ 'about-us-page.css' | asset_url }}" rel="stylesheet" type="text/css" media="all" />
+</noscript> 
+{% endif %}
+
+{% if request.page_type == "page" and template.suffix == 'affiliate' or template.suffix contains 'vaporizer-guide' %}
 <link href="{{ 'affiliate-page.css' | asset_url }}" as="style" rel="preload">
 <link rel="stylesheet"
     href="{{ 'affiliate-page.css' | asset_url }}"

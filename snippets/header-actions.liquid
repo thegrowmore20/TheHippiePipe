@@ -166,6 +166,14 @@
     background: transparent;
   }
 
+  /* On mobile the account entry point lives in the mobile footer bottom-nav instead of
+     the header (the wishlist takes its place up here). Match the mobile-footer breakpoint. */
+  @media screen and (max-width: 48rem) {
+    .account-button {
+      display: none;
+    }
+  }
+
   .account-button__icon,
   .account-button__text {
     color: var(--color-account-icon);
@@ -262,6 +270,12 @@
     --cart-bubble-right: 3px;
 
     position: relative;
+    /* cart-icon is stretched to the button height (44px), so vertically centre the
+       glyph — otherwise the svg-wrapper hugs the top and the cart sits ~3px higher
+       than the wishlist/search/account icons. */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* .xb-wishlist-header-auto__svg + span {
@@ -303,10 +317,24 @@
     width: 2.75rem;
   }
 
+  /* Match the wishlist's gap-to-search to the tight spacing of the account/cart group
+     (header-actions is pulled left by --gap-md). Desktop only — on mobile the header
+     icons are already adjacent. */
+  @media screen and (min-width: 750px) {
+    .wishtlist-wrapper-header {
+      margin-inline-end: calc(var(--gap-md) * -0.5);
+    }
+  }
+
   .xb-product-quantity--default {
     bottom: unset !important;
     right: -6px !important;
     top: -.25rem;
+
+    @media screen and (max-width: 600px) {
+      right: -8px !important;
+      top: -.05rem;
+    }
   }
 
   .header .xb-wishlist-header__icon svg{

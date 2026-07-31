@@ -18,6 +18,10 @@
 -%}
 
 {%- if wishlist_product != blank -%}
+  <script
+    src="{{ 'wishlist-reveal.js' | asset_url }}"
+    defer
+  ></script>
   <div class="custom-wishlist-button">
     <div class="xb-wishlist__btn-custom">
       <div

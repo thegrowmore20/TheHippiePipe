@@ -1,0 +1,16 @@
+.warranty-banner {
+    background: linear-gradient(120deg, #1c3f32, #285A46);    
+    position: relative;
+    overflow: hidden;
+}
+
+.warranty-banner::before {
+    content: '';
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    background: rgba(246, 213, 121, .08);
+}

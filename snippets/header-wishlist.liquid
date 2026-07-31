@@ -1,14 +1,13 @@
 {%- doc -%}
   Renders the header wishlist button as its own header item so it can be ordered
-  independently (e.g. before the search icon). The .wishtlist-wrapper markup is kept
-  intact because the mobile-footer section's script relocates it into the bottom nav
-  on small screens. Hidden on mobile here; the script removes hidden--mobile when moving it.
+  independently (e.g. before the search icon). Shown in the header on all
+  breakpoints, including mobile.
 
   @example
   {% render 'header-wishlist' %}
 {%- enddoc -%}
-<div class="wishtlist-wrapper-header hidden--mobile">
-  <div class="wishtlist-wrapper header-actions__action action__cart hover-icon-scale hidden--mobile">
+<div class="wishtlist-wrapper-header">
+  <div class="wishtlist-wrapper header-actions__action action__cart hover-icon-scale">
     <xb-wishlist-header class='header-icon-btn xb-wishlist_header'>
       <span class='xb-product-quantity xb-product-quantity--top-right'></span>
     </xb-wishlist-header>

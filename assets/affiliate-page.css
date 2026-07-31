@@ -1,5 +1,27 @@
+/* affiliate & vape guide page css */
+
+
+/* affiliate start */
 @media (max-width: 989px) {
     .affiliate-how-it-works-steps > .layout-panel-flex {
         flex-direction: column
+    }
+}
+/* affiliate end */
+
+
+
+/* vape guide start */
+@media (max-width: 989px) {
+    .img-text-large-content > .custom-section-content > .layout-panel-flex.mobile-column {
+        flex-direction: column
+    }
+    .img-text-large-content-reverse > .custom-section-content > .layout-panel-flex.mobile-column {
+        flex-direction: column-reverse
+    }
+}
+@media (max-width: 749px) {
+    .img-text-reverse-mobile > .custom-section-content > .layout-panel-flex.mobile-column {
+        flex-direction: column-reverse
     }
 }

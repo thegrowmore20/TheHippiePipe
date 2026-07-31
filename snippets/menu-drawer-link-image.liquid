@@ -1,0 +1,43 @@
+{%- doc -%}
+  Renders a small (32px) thumbnail for a menu drawer link, shown before the link text.
+
+  Image priority:
+    - collection link: custom.megamenu_image metafield → collection image → first product image
+    - product link:    product featured image
+
+  Renders nothing when the link isn't a product/collection or no image is available.
+
+  @param {object} link - The menu link to render a thumbnail for.
+
+  @example
+  {% render 'menu-drawer-link-image', link: childlink %}
+{%- enddoc -%}
+
+{%- liquid
+  assign thumb = blank
+
+  if link.type == 'collection_link' and link.object != blank
+    assign col = link.object
+    assign megamenu_image = col.metafields.custom.megamenu_image.value
+    if megamenu_image != blank
+      assign thumb = megamenu_image
+    elsif col.image != blank
+      assign thumb = col.image
+    else
+      assign first_product = col.products | where: 'featured_image' | first
+      assign thumb = first_product.featured_image
+    endif
+  elsif link.type == 'product_link' and link.object != blank
+    assign thumb = link.object.featured_image
+  endif
+-%}
+
+{%- if thumb != blank -%}
+  <span class="menu-drawer__item-thumb" aria-hidden="true">
+    {{
+      thumb
+      | image_url: width: 96
+      | image_tag: loading: 'lazy', widths: '32, 64, 96', sizes: '32px', class: 'menu-drawer__item-thumb-img', alt: ''
+    }}
+  </span>
+{%- endif -%}

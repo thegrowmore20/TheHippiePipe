@@ -3,6 +3,7 @@
 
   @param {string} [accelerated_checkout_buttons_layout] - { 'vertical' } Forced layout of the additional checkout buttons, instead of relying on platform's layout.
   @param {string} [section_id] - The section ID for cart discount component.
+  @param {boolean} [is_drawer] - When true (cart drawer only), renders the delivery-date estimate above the checkout button and a trust message below it.
 {%- enddoc -%}
 
 {% render 'text-component-shimmer-styles' %}
@@ -61,8 +62,9 @@
                   {{ 'content.seller_note' | t }}
                 </span>
 
-                <span class="cart-totals__icon">
-                  {{- 'icon-plus.svg' | inline_asset_content -}}
+                <span class="cart-totals__icon cart-totals__icon--toggle">
+                  <span class="cart-totals__icon-plus">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
+                  <span class="cart-totals__icon-minus">{{- 'icon-minus.svg' | inline_asset_content -}}</span>
                 </span>
               </summary>
 
@@ -123,10 +125,16 @@
             {% endif %}
           >
             <summary class="cart-discount__summary">
-              <span class="cart-discount__label cart-primary-typography">{{ 'content.discount' | t }}</span>
+              <span class="cart-discount__label cart-primary-typography">
+                <span class="svg-wrapper cart-discount__label-icon">
+                  {{- 'icon-discount.svg' | inline_asset_content -}}
+                </span>
+                {{ 'content.discount' | t }}
+              </span>
 
-              <span class="cart-totals__icon">
-                {{- 'icon-plus.svg' | inline_asset_content -}}
+              <span class="cart-totals__icon cart-totals__icon--toggle">
+                <span class="cart-totals__icon-plus">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
+                <span class="cart-totals__icon-minus">{{- 'icon-minus.svg' | inline_asset_content -}}</span>
               </span>
             </summary>
 
@@ -219,6 +227,78 @@
     </div>
   {% endif %}
 
+  {%- comment -%}
+    Total savings breakdown ("Total Price" + highlighted "Discount" % / amount), shown above
+    the estimated total. Toggle via Settings → Cart → "Show total savings in cart".
+    compare_at_total    = sum of each line's compare-at price (falls back to the selling price)
+    total_saved_amount  = compare-at savings + cart discounts + subscription savings
+    grand_saving        = total_saved_amount as a % of what the customer actually pays
+  {%- endcomment -%}
+  {%- if settings.show_cart_savings -%}
+    {%- liquid
+      assign compare_at_total = 0
+      assign regular_price_total = 0
+      assign total_subscription_savings_amount = 0
+
+      for item in cart.items
+        assign quantity = item.quantity
+        assign regular_price = item.variant.price
+        assign compare_price = item.variant.compare_at_price
+
+        assign item_regular_total = regular_price | times: quantity
+        assign regular_price_total = regular_price_total | plus: item_regular_total
+
+        if compare_price and compare_price > regular_price
+          assign item_compare_total = compare_price | times: quantity
+        else
+          assign item_compare_total = regular_price | times: quantity
+        endif
+        assign compare_at_total = compare_at_total | plus: item_compare_total
+
+        if item.selling_plan_allocation != nil
+          assign plan_price_per_unit = item.selling_plan_allocation.per_delivery_price
+          if plan_price_per_unit < regular_price
+            assign subscription_saving_per_unit = regular_price | minus: plan_price_per_unit
+            assign item_subscription_saving = subscription_saving_per_unit | times: quantity
+            assign total_subscription_savings_amount = total_subscription_savings_amount | plus: item_subscription_saving
+          endif
+        endif
+      endfor
+
+      assign total_line_price = compare_at_total | minus: regular_price_total
+      assign total_saved_amount = total_line_price | plus: cart.total_discount | plus: total_subscription_savings_amount
+
+      if cart.total_price > 0 and total_saved_amount > 0
+        assign grand_saving = total_saved_amount | times: 100.0 | divided_by: cart.total_price | round
+      else
+        assign grand_saving = 0
+      endif
+    -%}
+    {%- if total_saved_amount > 0 -%}
+      <div
+        class="cart-totals__container cart-savings cart-primary-typography"
+        style="--cart-savings-color: {{ settings.cart_savings_color }};"
+      >
+        <div class="cart-totals__item cart-savings__row">
+          <span class="cart-savings__label">{{ 'content.cart_total_price' | t }}</span>
+          <span class="cart-savings__value">{{ compare_at_total | money }}</span>
+        </div>
+        <div class="cart-totals__item cart-savings__row cart-savings__row--discount">
+          <span class="cart-savings__label">
+            {{ 'content.discount' | t }}
+            <span class="cart-savings__badge">
+              <span class="svg-wrapper cart-savings__badge-icon">
+                {{- 'icon-discount.svg' | inline_asset_content -}}
+              </span>
+              {{ grand_saving }}%
+            </span>
+          </span>
+          <span class="cart-savings__value">-{{ total_saved_amount | money }}</span>
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+
   {%- liquid
     if settings.currency_code_enabled_cart_total
       assign total_price = cart.total_price | money_with_currency
@@ -257,6 +337,10 @@
   </div>
 </div>
 
+{%- if is_drawer -%}
+  {% render 'cart-delivery-date' %}
+{%- endif -%}
+
 <div class="cart__ctas">
   <button
     type="submit"
@@ -283,6 +367,9 @@
       {{ content_for_additional_checkout_buttons }}
     </div>
   {% endif %}
+  {%- if is_drawer -%}
+  <p class="cart-trust-message">{{ 'content.cart_trust_message' | t }}</p>
+{%- endif -%}
 </div>
 
 {% stylesheet %}
@@ -363,7 +450,7 @@
     row-gap: var(--gap-2xs);
 
     &.cart-totals__container--has-installments {
-      row-gap: var(--gap-xs);
+      row-gap: var(--gap-2xs);
     }
   }
 
@@ -374,7 +461,7 @@
   .cart-totals {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-xl);
+    gap: var(--gap-sm);
     width: 100%;
     border-block-start: none;
 
@@ -467,6 +554,55 @@
     height: var(--icon-size-xs);
     width: var(--icon-size-xs);
     margin: 0;
+  }
+
+  /* "Shop with confidence" trust line below the cart drawer checkout button. */
+  .cart-trust-message {
+    margin: 0;
+    text-align: center;
+    font-size: var(--font-size--xs);
+    color: #285a46;
+  }
+
+  /* Plus/minus toggle: show plus when the accordion is closed, minus when open. */
+  .cart-totals__icon--toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cart-totals__icon-plus,
+  .cart-totals__icon-minus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  details[open] > summary .cart-totals__icon-plus {
+    display: none;
+  }
+
+  details:not([open]) > summary .cart-totals__icon-minus {
+    display: none;
+  }
+
+  /* Tag icon before the "Discount" label. */
+  .cart-discount__summary .cart-discount__label {
+    align-items: center;
+  }
+
+  .cart-discount__label-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+  }
+
+  .cart-discount__label-icon svg {
+    width: 100%;
+    height: 100%;
   }
 
   .cart__ctas {
@@ -608,6 +744,48 @@
     gap: var(--gap-2xs);
     font-size: var(--font-size--2xs);
     font-weight: 500;
+  }
+
+  /* Total savings breakdown (Settings → Cart → "Show total savings in cart"). */
+  .cart-savings {
+    row-gap: var(--gap-3xs, 4px);
+    font-size: var(--cart-font-size--sm);
+  }
+
+  .cart-savings__label {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-2xs);
+  }
+
+  .cart-savings__row--discount,
+  .cart-savings__row--discount .cart-savings__value {
+    color: var(--cart-savings-color, #34a853);
+    font-weight: 500;
+  }
+
+  .cart-savings__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-3xs, 4px);
+    font-size: var(--font-size--2xs, 12px);
+    line-height: 1;
+    color: var(--cart-savings-color, #34a853);
+    border: 1px solid var(--cart-savings-color, #34a853);
+    border-radius: var(--style-border-radius-buttons-secondary, 4px);
+    padding: 3px 5px;
+  }
+
+  .cart-savings__badge-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+  }
+
+  .cart-savings__badge-icon svg {
+    width: 100%;
+    height: 100%;
   }
 
   @media screen and (min-width: 750px) {

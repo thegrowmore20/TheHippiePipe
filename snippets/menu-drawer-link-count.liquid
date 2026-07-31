@@ -1,0 +1,12 @@
+{%- doc -%}
+  Renders a " (N)" product-count suffix for a collection menu link in the drawer.
+  Renders nothing for non-collection links or empty collections.
+
+  @param {object} link - The menu link.
+
+  @example
+  {% render 'menu-drawer-link-count', link: link %}
+{%- enddoc -%}
+{%- if link.type == 'collection_link' and link.object.all_products_count > 0 -%}
+  <span class="menu-drawer__item-count">&nbsp;({{ link.object.all_products_count }})</span>
+{%- endif -%}

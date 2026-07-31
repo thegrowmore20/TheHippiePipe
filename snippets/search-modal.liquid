@@ -516,4 +516,10 @@
     --button-color: var(--color-foreground);
     --button-background-color: transparent;
   }
+
+  /* Hide the app-injected "Join Waitlist" (rez preorder) button inside the search popup only. */
+  .search-modal .rez-out-of-stock-collection-btn {
+    /* stylelint-disable-next-line declaration-no-important */
+    display: none !important;
+  }
 {% endstylesheet %}

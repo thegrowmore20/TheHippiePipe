@@ -1,0 +1,144 @@
+{%- doc -%}
+  Renders a free-shipping progress bar for the cart drawer.
+
+  Driven by theme settings (Settings → Cart → "Free shipping bar"):
+    - free_shipping_bar_enabled  (checkbox)
+    - free_shipping_threshold    (number, in the store's currency major units, e.g. 100 = $100)
+    - free_shipping_bar_color    (color, the filled portion)
+    - free_shipping_bar_track_color (color, the empty track)
+
+  Text is translatable via locales:
+    - content.free_shipping_progress  (uses {{ amount }} — the amount still needed)
+    - content.free_shipping_unlocked
+
+  @example
+  {% render 'cart-free-shipping' %}
+{%- enddoc -%}
+
+{%- if settings.free_shipping_bar_enabled and settings.free_shipping_threshold > 0 and cart.item_count > 0 -%}
+  {%- liquid
+    # Threshold is entered in major units (dollars); cart.total_price is in cents.
+    assign threshold_cents = settings.free_shipping_threshold | times: 100
+    assign current = cart.total_price
+    assign remaining = threshold_cents | minus: current
+
+    assign progress = current | times: 100.0 | divided_by: threshold_cents
+    if progress > 100
+      assign progress = 100
+    endif
+    if progress < 0
+      assign progress = 0
+    endif
+  -%}
+  <div
+    class="cart-free-shipping{% if remaining <= 0 %} cart-free-shipping--unlocked{% endif %}"
+    style="
+      --fs-progress: {{ progress }}%;
+      --fs-bar-color: {{ settings.free_shipping_bar_color }};
+      --fs-track-color: {{ settings.free_shipping_bar_track_color }};
+    "
+  >
+    <p class="cart-free-shipping__text">
+      {%- if remaining > 0 -%}
+        {%- liquid
+          # Bold the amount by injecting <strong> AFTER translation — Shopify escapes
+          # HTML placed directly inside translation strings, so we use a token + replace.
+          assign remaining_money = remaining | money
+          assign amount_html = '<strong class="cart-free-shipping__amount">' | append: remaining_money | append: '</strong>'
+          assign message = 'content.free_shipping_progress' | t: amount: '%%AMOUNT%%'
+          assign message = message | replace: '%%AMOUNT%%', amount_html
+        -%}
+        {{ message }}
+      {%- else -%}
+        <span class="svg-wrapper cart-free-shipping__unlocked-icon" aria-hidden="true">
+          {{- 'free-shipping-threshold.svg' | inline_asset_content -}}
+        </span>
+        {{ 'content.free_shipping_unlocked' | t }}
+      {%- endif -%}
+    </p>
+    <div
+      class="cart-free-shipping__bar"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="{{ progress | round }}"
+    >
+      <span class="cart-free-shipping__fill"></span>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .cart-free-shipping {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs, 8px);
+    padding: var(--padding-xs, 12px) var(--cart-drawer-padding, 20px) var(--padding-sm, 16px);
+    margin-bottom: var(--margin-md, 12px);
+  }
+
+  /* Divider drawn only across the content area (inset by the drawer padding) so it
+     lines up with the cart line-item dividers rather than spanning edge-to-edge. */
+  .cart-free-shipping::after {
+    content: "";
+    position: absolute;
+    inset-inline: var(--cart-drawer-padding, 20px);
+    inset-block-end: 0;
+    height: var(--style-border-width, 1px);
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10-25, 0.12));
+  }
+
+  .cart-free-shipping__text {
+    margin: 0;
+    font-size: var(--font-size--sm);
+    line-height: 1.3;
+    color: var(--color-foreground);
+  }
+
+  /* When unlocked, lay the icon + message out as a centred flex row so any icon size
+     stays vertically aligned with the text. Scoped to the unlocked state only, so the
+     progress message (with its inline bold amount) keeps normal text flow. */
+  .cart-free-shipping--unlocked .cart-free-shipping__text {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-2xs, 4px);
+  }
+
+  /* Inline unlocked icon — replaces the 🎉 emoji. */
+  .cart-free-shipping__unlocked-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+  }
+
+  .cart-free-shipping__unlocked-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .cart-free-shipping__text strong {
+    font-weight: var(--font-weight-bold, 700);
+  }
+
+  .cart-free-shipping__bar {
+    position: relative;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background-color: var(--fs-track-color, #e6e6e6);
+    overflow: hidden;
+  }
+
+  .cart-free-shipping__fill {
+    display: block;
+    height: 100%;
+    width: var(--fs-progress, 0%);
+    min-width: 0;
+    border-radius: inherit;
+    background-color: var(--fs-bar-color, var(--color-foreground));
+    transition: width var(--animation-speed, 0.25s) var(--animation-easing, ease);
+  }
+{% endstylesheet %}

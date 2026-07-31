@@ -49,7 +49,11 @@
     assign image_resource = image_source
   elsif content_type == 'collections'
     assign collection = closest.collection
-    assign image_resource = collection.image
+    if collection.metafields.custom.mobile_image != blank
+      assign image_resource = collection.metafields.custom.mobile_image
+    else
+      assign image_resource = collection.image
+    endif
     if image_resource == blank
       assign image_resource = collection.products.first.featured_image
     endif

@@ -209,7 +209,10 @@
   }
 
   .quick-add--inline .quick-add__button {
-    position: static;
+    /* relative (not static) so the absolutely-positioned "added" checkmark centres
+       inside the button. With static, the check escapes to a higher ancestor and
+       renders far above the button. relative with no offsets keeps the same flow layout. */
+    position: relative;
     inset: auto;
     width: 100%;
     max-inline-size: 100%;
@@ -244,8 +247,21 @@
     height: var(--icon-size-sm, 1.25rem);
   }
 
-  /* Keep the inline button full-width through the "added" animation. */
+  /* Keep the inline button full-width through the "added" animation, and hide the
+     "Add to cart" label so only the checkmark shows. The base inline rule paints the
+     button text with --button-color, which otherwise out-specifies the shared
+     [data-added] { color: transparent } and leaves the label sitting on top of the
+     check — this rule (2 classes + attr) restores the intended hidden-label state. */
   .quick-add--inline .quick-add__button[data-added='true'] {
     width: 100%;
+    color: transparent;
+  }
+
+  /* The inline button is painted with the primary button colors (see above), so its
+     "added" checkmark must use the button foreground — not the overlay pill's
+     --quick-add-foreground, which is tuned for the translucent pill and lands a dark
+     check on the dark button, making it near-invisible. Matches the PDP behaviour. */
+  .quick-add--inline .quick-add__button[data-added='true'] .add-to-cart__added {
+    color: var(--button-color);
   }
 {% endstylesheet %}

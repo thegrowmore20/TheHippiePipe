@@ -22,34 +22,34 @@
     position: fixed;
     inset: unset;
     top: 0;
-    right: calc(-1 * var(--theme-drawer-width, var(--sidebar-width)));
+    left: 0;
     flex-direction: column;
     width: var(--theme-drawer-width, var(--sidebar-width));
-    max-width: 100%;
+    max-width: 90vw;
     max-height: none;
     height: 100dvh;
     padding: 0;
     border: none;
-    border-left: var(--style-border-drawer);
+    border-right: var(--style-border-drawer);
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
 
   .theme-drawer__dialog[open] {
     display: flex;
-    right: 0;
   }
 
+  /* Slide in from the inline-start edge using transform, matching the menu drawer's animation. */
   .theme-drawer__dialog--opening {
-    animation: drawer-slide-in var(--animation-speed) var(--animation-timing-fade-in);
+    animation: drawer-slide-in var(--drawer-animation-speed) ease;
   }
 
   .theme-drawer__dialog--opening-inline-start {
-    animation: drawer-slide-in-inline-start var(--animation-speed) var(--animation-timing-fade-in);
+    animation: drawer-slide-in-inline-start var(--drawer-animation-speed) ease;
   }
 
   .theme-drawer__dialog--closing {
-    animation: drawer-slide-out var(--animation-speed) var(--animation-timing-fade-out) forwards;
+    animation: drawer-slide-out var(--drawer-animation-speed) ease forwards;
   }
 
   .theme-drawer__dialog-instant {
@@ -58,24 +58,85 @@
 
   @keyframes drawer-slide-in {
     from {
-      right: calc(-1 * var(--theme-drawer-width, var(--sidebar-width)));
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(0);
     }
   }
 
   @keyframes drawer-slide-in-inline-start {
     from {
-      right: calc(var(--theme-drawer-width, var(--sidebar-width)) / 2);
+      transform: translateX(-50%);
+    }
+
+    to {
+      transform: translateX(0);
     }
   }
 
   @keyframes drawer-slide-out {
+    from {
+      transform: translateX(0);
+    }
+
     to {
-      right: calc(-1 * var(--theme-drawer-width, var(--sidebar-width)));
+      transform: translateX(-100%);
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Cart drawer only: open from the RIGHT on DESKTOP (>= 990px).
+     On mobile (< 990px) it falls back to the default left-anchored
+     behaviour. Scoped to #cart-drawer so the filter/chat drawers are
+     never affected. 990px matches the squeeze breakpoint in base.css.
+     To REVERT: delete this block (and the matching #cart-drawer
+     squeeze overrides in base.css). Default is left-anchored:
+       .theme-drawer__dialog { left: 0; border-right: ...; }
+       keyframes drawer-slide-in/out use translateX(-100%).
+     ───────────────────────────────────────────────────────────── */
+  @media screen and (min-width: 990px) {
+    #cart-drawer .theme-drawer__dialog {
+      left: unset;
+      right: 0;
+      border-right: none;
+      border-left: var(--style-border-drawer);
+    }
+
+    #cart-drawer .theme-drawer__dialog--opening {
+      animation-name: cart-drawer-slide-in-right;
+    }
+
+    #cart-drawer .theme-drawer__dialog--closing {
+      animation-name: cart-drawer-slide-out-right;
+    }
+  }
+
+  @keyframes cart-drawer-slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes cart-drawer-slide-out-right {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(100%);
     }
   }
 
   .theme-drawer__dialog::backdrop {
-    background: rgb(var(--backdrop-color-rgb) / var(--backdrop-opacity));
+    /* --backdrop-color-rgb resolves empty in this theme, which makes the rgb() invalid
+       and leaves the backdrop transparent. Use a solid dark overlay to match the menu drawer. */
+    background: rgba(0, 0, 0, 0.5);
   }
 
   /* Exclude open drawers from the page navigation cross-fade so they
@@ -93,7 +154,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--theme-drawer-padding);
+    padding: var(--theme-drawer-padding) var(--theme-drawer-padding) var(--padding-xs);
     flex-shrink: 0;
     color: var(--color-foreground);
   }

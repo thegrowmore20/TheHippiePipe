@@ -147,7 +147,7 @@
                 <div class="usage-choice__row" {{ block.shopify_attributes }}>
                   <div class="usage-choice__want">{{ block.settings.want | escape }}</div>
 
-                  <div class="usage-choice__arrow" aria-hidden="true">
+                  <div class="usage-choice__arrow" onclick="window.location.href='{{ block.settings.link }}'" aria-hidden="true">
                     <svg
                       viewBox="0 0 24 24"
                       fill="none"
@@ -291,7 +291,7 @@
   .usage-choice__list-head span {
     font-family: var(--font-h6--family, inherit);
     font-weight: 600;
-    font-size: 0.78rem;
+    font-size: 16px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--uc-accent, var(--color-foreground, #1a1a1a));
@@ -339,6 +339,7 @@
     border-radius: 50%;
     background: var(--uc-accent, #22402f);
     color: var(--uc-accent-contrast, #d9b36c);
+    cursor: pointer;
   }
 
   .usage-choice__arrow svg {
@@ -379,8 +380,7 @@
   .usage-choice__pill {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.85rem;
+    font-size: 16px;
     font-weight: 500;
     padding: 9px 18px;
     border-radius: 999px;

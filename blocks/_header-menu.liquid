@@ -1162,6 +1162,17 @@
       "visible_if": "{{ block.settings.drawer_accordion == true }}"
     },
     {
+      "type": "select",
+      "id": "drawer_accordion_icon",
+      "label": "Accordion icon",
+      "options": [
+        { "value": "plus", "label": "Plus / minus" },
+        { "value": "caret", "label": "Arrow" }
+      ],
+      "default": "plus",
+      "visible_if": "{{ block.settings.drawer_accordion == true }}"
+    },
+    {
       "type": "checkbox",
       "id": "drawer_dividers",
       "label": "t:settings.dividers",

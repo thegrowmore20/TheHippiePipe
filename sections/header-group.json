@@ -88,6 +88,7 @@
             "text_color_navigation_bar": "",
             "drawer_accordion": true,
             "drawer_accordion_expand_first": true,
+            "drawer_accordion_icon": "caret",
             "drawer_dividers": false
           },
           "blocks": {}

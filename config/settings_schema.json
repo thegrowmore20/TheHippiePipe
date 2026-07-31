@@ -1642,6 +1642,57 @@
       },
       {
         "type": "header",
+        "content": "Free shipping bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "free_shipping_bar_enabled",
+        "label": "Show free shipping progress bar",
+        "info": "Displays a progress bar in the cart drawer toward a free shipping threshold.",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "info": "Order amount needed to unlock free shipping, in your store currency (e.g. 100 = $100).",
+        "default": 100,
+        "visible_if": "{{ settings.free_shipping_bar_enabled == true }}"
+      },
+      {
+        "type": "color",
+        "id": "free_shipping_bar_color",
+        "label": "Progress bar color",
+        "default": "#285a46",
+        "visible_if": "{{ settings.free_shipping_bar_enabled == true }}"
+      },
+      {
+        "type": "color",
+        "id": "free_shipping_bar_track_color",
+        "label": "Progress bar track color",
+        "default": "#e6e6e6",
+        "visible_if": "{{ settings.free_shipping_bar_enabled == true }}"
+      },
+      {
+        "type": "header",
+        "content": "Cart savings"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cart_savings",
+        "label": "Show total savings in cart",
+        "info": "Displays a \"Total Price\" line and a highlighted discount amount and percentage above the estimated total. Only shows when the cart has savings.",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "cart_savings_color",
+        "label": "Savings highlight color",
+        "default": "#34a853",
+        "visible_if": "{{ settings.show_cart_savings == true }}"
+      },
+      {
+        "type": "header",
         "content": "t:content.product_media"
       },
       {

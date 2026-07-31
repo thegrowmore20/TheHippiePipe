@@ -466,6 +466,13 @@
           <scroll-hint
             class="facets-drawer__filters"
           >
+            {% render 'collection-nav',
+              menu: block_settings.collection_nav,
+              filter_style: 'vertical',
+              sectionId: section.id,
+              in_drawer: true
+            %}
+
             {% if block_settings.enable_filtering %}
               {% render 'filter-remove-buttons',
                 filters: filters,
@@ -675,7 +682,7 @@
     --facets-input-label-color: rgb(var(--color-input-text-rgb) / var(--opacity-60));
     --facets-clear-all-min-width: 120px;
     --facets-see-results-min-width: 55%;
-    --facets-mobile-gap: 22px;
+    --facets-mobile-gap: 12px;
     --facets-low-opacity: 10%;
     --facets-hover-opacity: 75%;
 
@@ -1282,7 +1289,7 @@
   .facets__see-results {
     min-width: var(--facets-see-results-min-width);
     flex-grow: 1;
-    padding-block: var(--padding-lg);
+    padding-block: var(--padding-sm);
 
     @media screen and (min-width: 990px) {
       display: none;

@@ -219,7 +219,7 @@
                           "type": "text",
                           "name": "t:names.text",
                           "settings": {
-                            "text": "<p><em>Where fire meets craft</em></p>",
+                            "text": "<p><em>We make gear, not gimmicks.</em></p>",
                             "width": "fit-content",
                             "max_width": "normal",
                             "max_width_custom": 600,
@@ -246,7 +246,7 @@
                           "type": "text",
                           "name": "t:names.text",
                           "settings": {
-                            "text": "<p>The Hippie Pipe builds bold, compact analog vape pipes and 510 accessories for adults who keep it simple and keep it moving. Real rosewood, carbon fiber, and stainless steel, backed by a lifetime warranty.</p>",
+                            "text": "<p>Compact, analog, built from rosewood, carbon fiber, and stainless steel With Limited lifetime warranty.</p>",
                             "width": "fit-content",
                             "max_width": "normal",
                             "max_width_custom": 600,

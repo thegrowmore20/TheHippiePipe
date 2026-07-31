@@ -284,11 +284,16 @@
 
                       {%- if item.line_level_discount_allocations.size > 0 -%}
                         <ul
-                          class="list-unstyled"
+                          class="list-unstyled cart-items__discounts"
                           role="list"
                         >
                           {%- for discount in item.line_level_discount_allocations -%}
-                            <li>{{ discount.discount_application.title | escape }}</li>
+                            <li class="cart-items__discount">
+                              <span class="svg-wrapper cart-items__discount-icon">
+                                {{- 'icon-discount.svg' | inline_asset_content -}}
+                              </span>
+                              {{ discount.discount_application.title | escape }}
+                            </li>
                           {%- endfor -%}
                         </ul>
                       {%- endif -%}
@@ -729,8 +734,8 @@
   .cart-items__empty-button {
     margin-top: var(--margin-md);
     margin-inline: auto;
-    padding-inline: var(--padding-4xl);
-    padding-block: var(--padding-lg);
+    padding-inline: var(--padding-2xl);
+    padding-block: var(--padding-md);
   }
 
   /* Error message */
@@ -1000,5 +1005,25 @@
       filter: none;
       opacity: 1;
     }
+  }
+
+  /* Line-item discount: a small tag icon before the discount name. The icon
+     inherits the discount text colour via currentColor and scales with it. */
+  .cart-items__discount {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-2xs, 4px);
+  }
+
+  .cart-items__discount-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
+  }
+
+  .cart-items__discount-icon svg {
+    width: 100%;
+    height: 100%;
   }
 {% endstylesheet %}

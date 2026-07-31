@@ -6,7 +6,7 @@ import { isClickedOutside, lockScroll, onAnimationEnd, unlockScroll } from '@the
 const MODAL_BREAKPOINT = 990;
 
 /**
- * A drawer that opens from the right side.
+ * A drawer that opens from the left side.
  *
  * On wide viewports (≥ 990px) the drawer squeezes page content alongside it.
  * The panel is a non-modal dialog (`show()`); we install a focus trap via

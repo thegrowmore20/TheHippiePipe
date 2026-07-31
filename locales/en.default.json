@@ -165,6 +165,9 @@
   "content": {
     "cancel": "Cancel",
     "discount": "Discount",
+    "free_shipping_progress": "You're {{ amount }} away from free shipping!",
+    "free_shipping_unlocked": "You've unlocked free shipping!",
+    "cart_trust_message": "Shop with confidence - 30 days easy return",
     "account_title": "Account",
     "terms_and_policies": "Terms and Policies",
     "account_title_personalized": "Hi {{ first_name }}",
@@ -175,6 +178,7 @@
     "cart_title": "Cart",
     "cart_subtotal": "Subtotal",
     "cart_total": "Cart total",
+    "cart_total_price": "Total Price",
     "checkout": "Check out",
     "collection_placeholder": "Collection title",
     "discount_code": "Discount code",

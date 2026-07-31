@@ -132,6 +132,17 @@
     border-radius: var(--border-radius);
   }
 
+  /* Clamp the article title to two lines (keeps cards aligned). Targets the innermost
+     heading whether the title renders as rich text (rte-formatter > heading) or a plain heading. */
+  .featured-blog-posts-card__content > h4 > rte-formatter > *,
+  .featured-blog-posts-card__content > h4 > :is(h1, h2, h3, h4, h5, h6, p) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
   .resource-list--grid .resource-list__item {
     min-width: 0;
   }
