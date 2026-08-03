@@ -12,6 +12,9 @@
   assign product = closest.product
   assign block_settings = block.settings
   assign image_sizes = '(min-width: 750px) 50vw, 100vw'
+  # Product cards use the global theme setting. Featured-product galleries can
+  # still override this below when "Limit media to screen height" is enabled.
+  assign media_fit = settings.product_card_media_fit | default: 'cover'
 
   # Check if product has badges and determine position
   assign has_badges = false

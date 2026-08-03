@@ -1642,6 +1642,24 @@
       },
       {
         "type": "header",
+        "content": "Cart savings"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cart_savings",
+        "label": "Show Total Price and Discount",
+        "info": "Displays a \"Total Price\" line and a highlighted discount amount and percentage above the estimated total. Only shows when the cart has savings.",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "cart_savings_color",
+        "label": "Savings highlight color",
+        "default": "#34a853",
+        "visible_if": "{{ settings.show_cart_savings == true }}"
+      },
+      {
+        "type": "header",
         "content": "Free shipping bar"
       },
       {
@@ -1654,9 +1672,23 @@
       {
         "type": "number",
         "id": "free_shipping_threshold",
-        "label": "Free shipping threshold",
-        "info": "Order amount needed to unlock free shipping, in your store currency (e.g. 100 = $100).",
+        "label": "Free shipping threshold (default)",
+        "info": "Default order amount needed to unlock free shipping, in your store's base currency (e.g. 100 = $100). Used for any currency not listed below.",
         "default": 100,
+        "visible_if": "{{ settings.free_shipping_bar_enabled == true }}"
+      },
+      {
+        "type": "textarea",
+        "id": "free_shipping_threshold_per_currency",
+        "label": "Threshold per currency",
+        "info": "Optional. Set a different threshold for specific currencies — one per line as CURRENCY:amount, e.g. USD:100 / EUR:90 / CAD:80. When the cart's currency matches a line, that amount is used; otherwise the default above applies.",
+        "visible_if": "{{ settings.free_shipping_bar_enabled == true }}"
+      },
+      {
+        "type": "textarea",
+        "id": "free_shipping_countries",
+        "label": "Display in countries",
+        "info": "Optional. Show the free shipping bar only to these countries — one per line, using the ISO country code (e.g. US, CA, GB) or the country name. Leave empty to show it in every country.",
         "visible_if": "{{ settings.free_shipping_bar_enabled == true }}"
       },
       {
@@ -1672,24 +1704,6 @@
         "label": "Progress bar track color",
         "default": "#e6e6e6",
         "visible_if": "{{ settings.free_shipping_bar_enabled == true }}"
-      },
-      {
-        "type": "header",
-        "content": "Cart savings"
-      },
-      {
-        "type": "checkbox",
-        "id": "show_cart_savings",
-        "label": "Show total savings in cart",
-        "info": "Displays a \"Total Price\" line and a highlighted discount amount and percentage above the estimated total. Only shows when the cart has savings.",
-        "default": true
-      },
-      {
-        "type": "color",
-        "id": "cart_savings_color",
-        "label": "Savings highlight color",
-        "default": "#34a853",
-        "visible_if": "{{ settings.show_cart_savings == true }}"
       },
       {
         "type": "header",

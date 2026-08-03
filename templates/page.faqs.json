@@ -87,7 +87,7 @@
           "settings": {
             "text": "<h1>{{ closest.page.title }}</h1>",
             "width": "100%",
-            "max_width": "normal",
+            "max_width": "none",
             "max_width_custom": 600,
             "alignment": "left",
             "type_preset": "h2",
@@ -143,7 +143,7 @@
             "max_width": "narrow",
             "max_width_custom": 600,
             "alignment": "left",
-            "type_preset": "h2",
+            "type_preset": "rte",
             "font": "var(--font-body--family)",
             "font_size": "",
             "line_height": "normal",
@@ -238,7 +238,7 @@
                   "settings": {
                     "text": "<p>Yes. All products are strictly for adult use (21+). Age verification is required at checkout, and ID may be checked at delivery depending on your state/carrier.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -279,7 +279,7 @@
                   "settings": {
                     "text": "<p>Our devices are sold as tobacco/dry-herb accessories for legal adult use. Availability can vary by state or country due to local vape-accessory regulations, so check your local laws before ordering.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -320,7 +320,7 @@
                   "settings": {
                     "text": "<p>Want zero electronics and manual torch heating? Go with The Hippie Pipe, Pipe X, or OM Chrome. Prefer a rechargeable 510-thread battery setup? Check out OM Gunmetal or OM Rose Gold.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -361,7 +361,7 @@
                   "settings": {
                     "text": "<p>Email support@thehippiepipe.com or reach out through our Help page, we typically respond within 24 hours on business days.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -502,7 +502,7 @@
                   "settings": {
                     "text": "<p>All three share the same core analog, telescopic mechanism. Pipe X adds a darker, blacked-out finish, OM Chrome steps up with a ~30% bigger chamber and a rapid-convection airpath for a smoother draw.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -543,7 +543,7 @@
                   "settings": {
                     "text": "<p>The Hippie Pipe, Pipe X, and OM Chrome are 100% analog, no battery, no charging, torch-powered. OM Gunmetal and OM Rose Gold are rechargeable 510-thread batteries built for compatible atomizers.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -584,7 +584,7 @@
                   "settings": {
                     "text": "<p>Both are rechargeable 510-thread batteries on the same platform. OM Gunmetal has a mirror finish, OM Rose Gold adds a rose gold finish and a longer protective cap over the threading.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -625,7 +625,7 @@
                   "settings": {
                     "text": "<p>510 is the industry-standard threading that connects a battery to compatible atomizers. Charge OM Gunmetal or OM Rose Gold with the included cable before first use, an LED indicator signals when charging is complete.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -666,7 +666,7 @@
                   "settings": {
                     "text": "<p>Let it cool, then wipe the chamber with a cotton swab or pipe cleaner and swap the screen when airflow feels restricted. For battery devices, wipe the exterior with a dry or slightly damp cloth, never submerge components in water.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -807,7 +807,7 @@
                   "settings": {
                     "text": "<p>The Pipe X device, a Double Jet Flame Torch Lighter, a grinder, and a matching Pipe Holder, a complete kit at a discount versus buying each item separately.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -848,7 +848,7 @@
                   "settings": {
                     "text": "<p>It's a refillable butane torch with an adjustable dual-jet flame, built to pair with all our analog devices. Refill through the base valve, and keep the flame pointed away from your face and any flammable materials when lighting.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -889,7 +889,7 @@
                   "settings": {
                     "text": "<p>Both feature durable metal construction with precision-cut teeth. The Sprocket is our standard-size grinder, The Rocket Plus is a smaller keychain-attachable version for ultra-portable, on-the-go grinding.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -930,7 +930,7 @@
                   "settings": {
                     "text": "<p>It attaches to your Hippie Pipe or Pipe X via the silicone adapter, routing your draw through water for a smoother, cooler pull. The glass is fragile, so handle and store it carefully when traveling.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -971,7 +971,7 @@
                   "settings": {
                     "text": "<p>There's no fixed schedule, swap in a fresh mouthpiece or screen whenever you see visible wear or airflow feels restricted. Both are quick, tool-free installs, and each comes in a multi-pack so you always have a backup on hand.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -1112,7 +1112,7 @@
                   "settings": {
                     "text": "<p>We currently ship to selective countries, check availability at checkout by entering your address. If your country isn't listed, it's not currently supported.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -1153,7 +1153,7 @@
                   "settings": {
                     "text": "<p>Every order is backed by a Lifetime Warranty on manufacturing defects and a 30-day money-back guarantee. Contact support before returning anything so we can get you sorted quickly.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -1194,7 +1194,7 @@
                   "settings": {
                     "text": "<p>Orders typically ship within 1–3 business days, with delivery in 3–7 business days depending on location. You'll get tracking info by email as soon as your order ships.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -1235,7 +1235,7 @@
                   "settings": {
                     "text": "<p>We accept all major credit/debit cards plus Apple Pay, Shop Pay, and other secure checkout options shown at checkout.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -1276,7 +1276,7 @@
                   "settings": {
                     "text": "<p>Yes, smoke shops, retailers, and bulk buyers can apply through our wholesale program. Email support@thehippiepipe.com with your business details to get started.</p>",
                     "width": "100%",
-                    "max_width": "normal",
+                    "max_width": "none",
                     "max_width_custom": 600,
                     "alignment": "left",
                     "type_preset": "rte",
@@ -1360,7 +1360,7 @@
           "settings": {
             "text": "<h2>Couldn’t Find Your Answer?</h2>",
             "width": "fit-content",
-            "max_width": "normal",
+            "max_width": "none",
             "max_width_custom": 600,
             "alignment": "left",
             "type_preset": "rte",

@@ -12,6 +12,7 @@
 <div class="cart-totals">
   {% # We need to keep this node in place to allow morphing to work properly # %}
   <div class="cart-totals__original-container cart-primary-typography">
+
     {%- if cart.cart_level_discount_applications.size > 0 -%}
       <span class="cart-totals__item cart-totals__original">
         <span class="cart-totals__original-label">{{ 'content.cart_subtotal' | t }}</span>
@@ -227,78 +228,6 @@
     </div>
   {% endif %}
 
-  {%- comment -%}
-    Total savings breakdown ("Total Price" + highlighted "Discount" % / amount), shown above
-    the estimated total. Toggle via Settings → Cart → "Show total savings in cart".
-    compare_at_total    = sum of each line's compare-at price (falls back to the selling price)
-    total_saved_amount  = compare-at savings + cart discounts + subscription savings
-    grand_saving        = total_saved_amount as a % of what the customer actually pays
-  {%- endcomment -%}
-  {%- if settings.show_cart_savings -%}
-    {%- liquid
-      assign compare_at_total = 0
-      assign regular_price_total = 0
-      assign total_subscription_savings_amount = 0
-
-      for item in cart.items
-        assign quantity = item.quantity
-        assign regular_price = item.variant.price
-        assign compare_price = item.variant.compare_at_price
-
-        assign item_regular_total = regular_price | times: quantity
-        assign regular_price_total = regular_price_total | plus: item_regular_total
-
-        if compare_price and compare_price > regular_price
-          assign item_compare_total = compare_price | times: quantity
-        else
-          assign item_compare_total = regular_price | times: quantity
-        endif
-        assign compare_at_total = compare_at_total | plus: item_compare_total
-
-        if item.selling_plan_allocation != nil
-          assign plan_price_per_unit = item.selling_plan_allocation.per_delivery_price
-          if plan_price_per_unit < regular_price
-            assign subscription_saving_per_unit = regular_price | minus: plan_price_per_unit
-            assign item_subscription_saving = subscription_saving_per_unit | times: quantity
-            assign total_subscription_savings_amount = total_subscription_savings_amount | plus: item_subscription_saving
-          endif
-        endif
-      endfor
-
-      assign total_line_price = compare_at_total | minus: regular_price_total
-      assign total_saved_amount = total_line_price | plus: cart.total_discount | plus: total_subscription_savings_amount
-
-      if cart.total_price > 0 and total_saved_amount > 0
-        assign grand_saving = total_saved_amount | times: 100.0 | divided_by: cart.total_price | round
-      else
-        assign grand_saving = 0
-      endif
-    -%}
-    {%- if total_saved_amount > 0 -%}
-      <div
-        class="cart-totals__container cart-savings cart-primary-typography"
-        style="--cart-savings-color: {{ settings.cart_savings_color }};"
-      >
-        <div class="cart-totals__item cart-savings__row">
-          <span class="cart-savings__label">{{ 'content.cart_total_price' | t }}</span>
-          <span class="cart-savings__value">{{ compare_at_total | money }}</span>
-        </div>
-        <div class="cart-totals__item cart-savings__row cart-savings__row--discount">
-          <span class="cart-savings__label">
-            {{ 'content.discount' | t }}
-            <span class="cart-savings__badge">
-              <span class="svg-wrapper cart-savings__badge-icon">
-                {{- 'icon-discount.svg' | inline_asset_content -}}
-              </span>
-              {{ grand_saving }}%
-            </span>
-          </span>
-          <span class="cart-savings__value">-{{ total_saved_amount | money }}</span>
-        </div>
-      </div>
-    {%- endif -%}
-  {%- endif -%}
-
   {%- liquid
     if settings.currency_code_enabled_cart_total
       assign total_price = cart.total_price | money_with_currency
@@ -307,7 +236,106 @@
     endif
   -%}
 
-  <div class="cart-totals__container{% if settings.show_installments %} cart-totals__container--has-installments{% endif %}">
+  {% liquid
+
+        assign compare_at_total = 0
+        assign total_compare_at_savings = 0
+        assign c_savings_percent = 0
+        assign regular_price_total = 0
+        assign discount_total = cart.total_discount
+        assign total_subscription_savings_amount = 0
+        assign total_subscription_discount_percentage = 0
+        assign item_level_discount_percentage = 0
+
+        for item in cart.items
+          assign item_total_compare_price = 0
+          assign quantity = item.quantity
+          assign regular_price = item.variant.price
+          assign compare_price = item.variant.compare_at_price
+          assign item_total_regular_price = regular_price | times: quantity
+
+          if compare_price and compare_price > regular_price
+            assign item_total_compare_price = compare_price | times: quantity
+          else
+            assign item_total_compare_price = regular_price | times: quantity
+          endif
+
+          assign compare_at_total = compare_at_total | plus: item_total_compare_price
+          assign regular_price_total = regular_price_total | plus: item_total_regular_price
+
+          if compare_price and compare_price > regular_price
+            assign single_item_save = compare_price | minus: regular_price
+            assign line_item_save = single_item_save | times: quantity
+            assign total_compare_at_savings = total_compare_at_savings | plus: line_item_save
+          endif
+
+          if item.line_level_discount_allocations.size > 0
+            for discount in item.line_level_discount_allocations
+              assign item_level_discount_percentage = item_level_discount_percentage | plus: discount.discount_application.value
+            endfor
+          endif
+
+          if item.selling_plan_allocation != nil
+            assign plan_price_per_unit = item.selling_plan_allocation.per_delivery_price
+
+            if plan_price_per_unit < regular_price
+              assign subscription_saving_per_unit = regular_price | minus: plan_price_per_unit
+              assign subscription_line_saving = subscription_saving_per_unit | times: quantity
+              assign total_subscription_savings_amount = total_subscription_savings_amount | plus: subscription_line_saving
+
+              assign item_sub_discount_percent = subscription_saving_per_unit | times: 100.0 | divided_by: regular_price
+              assign total_subscription_discount_percentage = total_subscription_discount_percentage | plus: item_sub_discount_percent
+            endif
+          endif
+
+        endfor
+
+        if compare_at_total > 0 and total_compare_at_savings > 0
+          assign c_savings_percent = total_compare_at_savings | times: 100.0 | divided_by: compare_at_total
+        endif
+
+        assign cart_level_discount_percentage = 0
+        for discount in cart.cart_level_discount_applications
+          assign cart_level_discount_percentage = cart_level_discount_percentage | plus: discount.value
+        endfor
+
+        assign total_line_price = compare_at_total | minus: regular_price_total
+        assign total_saved_amount = total_line_price | plus: discount_total | plus: total_subscription_savings_amount
+
+        # Percentage saved off the ORIGINAL price (compare_at_total, i.e. the "Total Price"
+        # shown), not off the amount paid. Dividing by cart.total_price (the discounted total)
+        # overstates it — e.g. $11.99 off $79.99 is 15%, but 11.99 / 68.00 rounds to 18%.
+        if compare_at_total > 0 and total_saved_amount > 0
+          assign grand_saving = total_saved_amount | times: 100.0 | divided_by: compare_at_total | round
+        else
+          assign grand_saving = 0
+        endif
+
+      %}
+
+     {%- if settings.show_cart_savings and total_saved_amount > 0 -%}
+     <div id="cart-total-savings" class="cart-savings">
+     <div class="cart-totals__item cart__summary-item cart__total summary-total-price-wrapper">
+          <span class="cart__original-total-label">
+            Total Price
+          </span>
+          <span class="summary-total-price" id="summary-total-price"> 
+              {{ compare_at_total | money }}
+          </span>
+      </div>  
+            <div class="cart-totals__item cart__summary-item cart__total summary-total-compare-wrapper" style="--cart-savings-color: {{ settings.cart_savings_color }};">
+          <span class="cart__original-total-label dis-flex align-center gap-2xs">
+            Discount <span id="grand-saving" class="grand-saving dis-flex align-center gap-2xs"> {{ 'icon-discount.svg' | inline_asset_content }} {{ grand_saving | append: '%' }}  </span>
+          </span>
+          <span class="summary-total-compare-price" id="summary-total-compare-price"> 
+              -{{ total_saved_amount | money }}
+          </span>
+      </div>
+
+     </div>
+  {%- endif -%}
+
+  <div id="cart-estimated-total" class="cart-totals__container{% if settings.show_installments %} cart-totals__container--has-installments{% endif %}">
     <span
       class="cart-totals__item cart-totals__total"
       role="status"
@@ -461,7 +489,7 @@
   .cart-totals {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-sm);
+    gap: var(--gap-xs);
     width: 100%;
     border-block-start: none;
 
@@ -746,29 +774,39 @@
     font-weight: 500;
   }
 
-  /* Total savings breakdown (Settings → Cart → "Show total savings in cart"). */
+  /* Total Price / Discount savings rows (Settings → Cart → "Show Total Price and Discount").
+     Styled to match the highlighted inline design: a green "Discount" row with a bordered
+     tag + percentage badge. Uses scoped rules rather than the theme's non-existent
+     dis-flex/align-center utility classes the markup references. */
+
+  /* Keyed wrapper (stable id) so the cart re-render/morph can cleanly add or remove the whole
+     block without cross-matching the estimated-total container. display:contents keeps the two
+     rows laid out exactly as direct children of .cart-totals. */
   .cart-savings {
-    row-gap: var(--gap-3xs, 4px);
+    display: contents;
+  }
+
+  .summary-total-price-wrapper,
+  .summary-total-compare-wrapper {
     font-size: var(--cart-font-size--sm);
   }
 
-  .cart-savings__label {
+  .summary-total-compare-wrapper {
+    color: var(--cart-savings-color, #34a853);
+    font-weight: 500;
+  }
+
+  .summary-total-compare-wrapper .cart__original-total-label {
     display: flex;
     align-items: center;
     gap: var(--gap-2xs);
   }
 
-  .cart-savings__row--discount,
-  .cart-savings__row--discount .cart-savings__value {
-    color: var(--cart-savings-color, #34a853);
-    font-weight: 500;
-  }
-
-  .cart-savings__badge {
+  #grand-saving {
     display: inline-flex;
     align-items: center;
     gap: var(--gap-3xs, 4px);
-    font-size: var(--font-size--2xs, 12px);
+    font-size: var(--font-size--2xs);
     line-height: 1;
     color: var(--cart-savings-color, #34a853);
     border: 1px solid var(--cart-savings-color, #34a853);
@@ -776,16 +814,9 @@
     padding: 3px 5px;
   }
 
-  .cart-savings__badge-icon {
-    display: inline-flex;
-    flex-shrink: 0;
+  #grand-saving svg {
     width: 12px;
     height: 12px;
-  }
-
-  .cart-savings__badge-icon svg {
-    width: 100%;
-    height: 100%;
   }
 
   @media screen and (min-width: 750px) {

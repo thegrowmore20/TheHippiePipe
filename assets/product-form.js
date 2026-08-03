@@ -200,6 +200,12 @@ if (!customElements.get('add-to-cart-component')) {
  * @property {string} step
  * @property {string | null} cartQuantity
  *
+ * @typedef {object} BatchAddToCartItem
+ * @property {string} variantId - The variant to add.
+ * @property {number} quantity - The quantity to add.
+ * @property {number} [sellingPlan] - Selling plan id, when the form has one (main product only).
+ * @property {Record<string, string>} [properties] - Line item properties (main product only).
+ *
  * @extends Component<ProductFormRefs>
  */
 class ProductFormComponent extends Component {
@@ -211,6 +217,9 @@ class ProductFormComponent extends Component {
 
   /** @type {boolean} */
   #variantChangeInProgress = false;
+
+  /** @type {boolean} */
+  #buyNowWithAddonsInProgress = false;
 
   /** @type {number} */
   #variantChangeGeneration = 0;
@@ -238,6 +247,10 @@ class ProductFormComponent extends Component {
 
     // Listen for cart updates to sync data-cart-quantity
     document.addEventListener(StandardEvents.cartLinesUpdate, this.#onCartUpdate, { signal });
+
+    // Capture-phase so we can take over accelerated checkout (Buy it now) before Shopify's
+    // own handler runs when add-ons are selected — the native flow would drop the add-ons.
+    this.addEventListener('click', this.#onAcceleratedCheckoutClick, { signal, capture: true });
   }
 
   disconnectedCallback() {
@@ -426,6 +439,14 @@ class ProductFormComponent extends Component {
       formData.set('quantity', overrideQuantity.toString());
     }
 
+    // When add-ons are selected, send the main product and the add-ons as a single batch
+    // request so they land in the cart together, then clear the selection on success.
+    const addonItems = this.#getSelectedAddonItems();
+    if (!overrideVariantId && addonItems.length > 0) {
+      this.#processBatchAddToCart([this.#mainItemFromFormData(formData), ...addonItems], () => this.#resetAddons());
+      return;
+    }
+
     const cartItemsComponents = document.querySelectorAll('cart-items-component');
     let cartItemComponentsSectionIds = [];
     cartItemsComponents.forEach((item) => {
@@ -583,8 +604,11 @@ class ProductFormComponent extends Component {
       });
   }
 
-  /** @param {Array<{variantId: string, quantity: number}>} items */
-  #processBatchAddToCart(items) {
+  /**
+   * @param {Array<BatchAddToCartItem>} items
+   * @param {() => void} [onSuccess] - Called after the items are successfully added.
+   */
+  #processBatchAddToCart(items, onSuccess) {
     if (items.length === 0) return;
 
     const { addToCartTextError } = this.refs;
@@ -615,10 +639,7 @@ class ProductFormComponent extends Component {
     );
 
     const payload = {
-      items: items.map((item) => ({
-        id: Number(item.variantId),
-        quantity: item.quantity,
-      })),
+      items: items.map((item) => this.#toCartLine(item)),
       sections: cartItemComponentsSectionIds.join(','),
     };
 
@@ -682,6 +703,8 @@ class ProductFormComponent extends Component {
           addToCartTextError.classList.add('hidden');
           addToCartTextError.removeAttribute('aria-live');
         }
+
+        onSuccess?.();
 
         const allAddToCartContainers = /** @type {NodeListOf<AddToCartComponent>} */ (
           this.querySelectorAll('add-to-cart-component')
@@ -957,7 +980,12 @@ class ProductFormComponent extends Component {
       }
     }
 
-    this.#processBatchAddToCart(resolvedItems);
+    // Adds queued during a variant change still carry the currently selected add-ons.
+    const addonItems = resolvedItems.length > 0 ? this.#getSelectedAddonItems() : [];
+    this.#processBatchAddToCart(
+      [...resolvedItems, ...addonItems],
+      addonItems.length > 0 ? () => this.#resetAddons() : undefined
+    );
   }
 
   /**
@@ -1115,6 +1143,149 @@ class ProductFormComponent extends Component {
     const containers = /** @type {NodeListOf<AddToCartComponent>} */ (this.querySelectorAll('add-to-cart-component'));
     return Array.from(containers).some((container) => container.refs.addToCartButton?.disabled);
   }
+
+  /**
+   * The add-ons component (blocks/product-addons.liquid) rendered for this product in the same
+   * section, if any. Quick-add modals and product cards resolve their own container, so a PDP's
+   * add-on selection never leaks into other forms for the same product.
+   * @returns {(HTMLElement & {getSelectedItems?: () => BatchAddToCartItem[], reset?: () => void}) | null}
+   */
+  #getAddonsComponent() {
+    const container = this.closest('.shopify-section, dialog, product-card');
+    return container?.querySelector(`product-addons[data-product-id="${this.dataset.productId}"]`) ?? null;
+  }
+
+  /**
+   * The currently selected add-ons as batch items.
+   * @returns {BatchAddToCartItem[]}
+   */
+  #getSelectedAddonItems() {
+    return this.#getAddonsComponent()?.getSelectedItems?.() ?? [];
+  }
+
+  /** Clears the add-on selection. Called after the add-ons land in the cart. */
+  #resetAddons() {
+    this.#getAddonsComponent()?.reset?.();
+  }
+
+  /**
+   * The main product line from the form data, preserving selling plan and line item properties
+   * so the batch path adds exactly what a normal form submit would.
+   * @param {FormData} formData
+   * @returns {BatchAddToCartItem}
+   */
+  #mainItemFromFormData(formData) {
+    /** @type {BatchAddToCartItem} */
+    const item = {
+      variantId: String(formData.get('id')),
+      quantity: Number(formData.get('quantity')) || Number(this.dataset.quantityDefault) || 1,
+    };
+
+    const sellingPlan = formData.get('selling_plan');
+    if (sellingPlan) item.sellingPlan = Number(sellingPlan);
+
+    /** @type {Record<string, string>} */
+    const properties = {};
+    for (const [key, value] of formData.entries()) {
+      const match = key.match(/^properties\[(.+)\]$/);
+      if (match?.[1] && typeof value === 'string') properties[match[1]] = value;
+    }
+    if (Object.keys(properties).length > 0) item.properties = properties;
+
+    return item;
+  }
+
+  /**
+   * Shapes a batch item into a cart Ajax API line.
+   * @param {BatchAddToCartItem} item
+   * @returns {{id: number, quantity: number, selling_plan?: number, properties?: Record<string, string>}}
+   */
+  #toCartLine(item) {
+    /** @type {{id: number, quantity: number, selling_plan?: number, properties?: Record<string, string>}} */
+    const line = { id: Number(item.variantId), quantity: item.quantity };
+    if (item.sellingPlan) line.selling_plan = item.sellingPlan;
+    if (item.properties) line.properties = item.properties;
+    return line;
+  }
+
+  /**
+   * Shows a message in the add-to-cart error area and announces it to screen readers.
+   * @param {string} message
+   */
+  #displayError(message) {
+    const { addToCartTextError } = this.refs;
+    if (!addToCartTextError) return;
+
+    addToCartTextError.classList.remove('hidden');
+    const textNode = addToCartTextError.childNodes[2];
+    if (textNode) {
+      textNode.textContent = message;
+    } else {
+      addToCartTextError.appendChild(document.createTextNode(message));
+    }
+    this.#setLiveRegionText(message);
+
+    if (this.#timeout) clearTimeout(this.#timeout);
+    this.#timeout = setTimeout(() => {
+      addToCartTextError.classList.add('hidden');
+      this.#clearLiveRegionText();
+    }, ERROR_MESSAGE_DISPLAY_DURATION);
+  }
+
+  /**
+   * Takes over accelerated checkout (Buy it now) when add-ons are selected. The native
+   * dynamic-checkout flow checks out only the form's variant and would silently drop the
+   * add-ons, so instead everything is added to the cart in one request and the customer is
+   * sent to checkout. Registered in the capture phase so it runs before Shopify's handler.
+   * @param {Event} event
+   */
+  #onAcceleratedCheckoutClick = (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target?.closest('[ref="acceleratedCheckoutButtonContainer"]')) return;
+
+    const addonItems = this.#getSelectedAddonItems();
+    if (addonItems.length === 0) return;
+
+    // Stop the native buy-now flow before it reaches Shopify's button handler.
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if (this.#buyNowWithAddonsInProgress) return;
+
+    const form = this.querySelector('form');
+    if (!form || !form.reportValidity()) return;
+
+    this.#buyNowWithAddonsInProgress = true;
+
+    const items = [this.#mainItemFromFormData(new FormData(form)), ...addonItems].map((item) =>
+      this.#toCartLine(item)
+    );
+
+    fetch(Theme.routes.cart_add_url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ items }),
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        if (response.status) throw new Error(response.message || 'Add to cart failed');
+        // Uncheck before navigating so a back/bfcache restore doesn't show a stale selection.
+        this.#resetAddons();
+        window.location.href = '/checkout';
+      })
+      .catch((error) => {
+        console.error(error);
+        this.#buyNowWithAddonsInProgress = false;
+
+        this.dispatchEvent(
+          new CartErrorEvent({
+            error: error?.message || 'Network error during add to cart',
+            code: 'SERVICE_UNAVAILABLE',
+          })
+        );
+        this.#displayError(error?.message || 'Network error during add to cart');
+      });
+  };
 }
 
 if (!customElements.get('product-form-component')) {

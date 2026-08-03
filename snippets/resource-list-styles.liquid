@@ -77,6 +77,12 @@
         --resource-list-columns-per-row: 6;
       }
     }
+
+    /* Keep iPad/tablet columns explicit, even when the theme editor narrows the
+       section's container to make room for its settings sidebar. */
+    @media screen and (min-width: 750px) and (max-width: 989px) {
+      grid-template-columns: var(--resource-list-columns-tablet, var(--resource-list-columns));
+    }
   }
 
   .resource-list__item {

@@ -26,6 +26,7 @@
   Expected `settings` object properties:
   - layout_type: 'grid' | 'bento' | 'carousel' | 'editorial'
   - columns: Number of columns for grid/carousel
+  - tablet_columns: Number of columns on tablet/iPad
   - mobile_columns: Number of columns on mobile
   - columns_gap: Gap between columns in pixels
   - rows_gap: Gap between rows in pixels (grid only)
@@ -50,6 +51,7 @@
 
   assign layout_type = settings.layout_type | default: 'grid'
   assign columns = settings.columns | default: 3
+  assign tablet_columns = settings.tablet_columns | default: columns
   assign mobile_columns = settings.mobile_columns | default: 2
   assign columns_gap = settings.columns_gap | default: 16
   assign rows_gap = settings.rows_gap | default: 16
@@ -64,6 +66,7 @@
         echo '--resource-list-column-gap-desktop: ' | append: columns_gap | append: 'px;'
         echo '--resource-list-row-gap-desktop: ' | append: rows_gap | append: 'px;'
         echo '--resource-list-columns: repeat(' | append: columns | append: ', 1fr);'
+        echo '--resource-list-columns-tablet: repeat(' | append: tablet_columns | append: ', 1fr);'
         echo '--resource-list-columns-mobile: repeat(' | append: mobile_columns | append: ', 1fr);'
         echo '--column-count-mobile: ' | append: mobile_columns | append: ';'
       endcapture

@@ -206,7 +206,7 @@
     flex-direction: column;
     align-items: center;
     gap: var(--gap-2xs);
-    padding: var(--cart-drawer-summary-padding);
+    padding: var(--cart-drawer-summary-padding) var(--cart-drawer-summary-padding) var(--padding-2xs);
     margin-top: auto;
     background-color: var(--color-background);
     /* stylelint-disable-next-line color-named */
@@ -259,6 +259,7 @@
     text-align: center;
     align-items: center;
     justify-content: center;
+    gap: var(--gap-md);
   }
 
   cart-drawer-component:not(:has(.cart-form)) .cart-drawer__items {

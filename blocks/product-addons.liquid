@@ -1,8 +1,10 @@
 {%- doc -%}
   Renders the product's add-on products as a checkbox list with a running total.
 
-  Reads product.metafields.custom.addons — a list of product references. Selections are
-  published to `window.addonSelectedVariants[productId]` for the cart integration to read.
+  Reads product.metafields.custom.addons — a list of product references. The product form
+  (assets/product-form.js) reads the selection via `getSelectedItems()` and includes it in
+  both Add to cart and Buy it now, then calls `reset()` after a successful add. Selections
+  are also mirrored to `window.addonSelectedVariants[productId]` for any other consumer.
 
   On mobile the list becomes a scroll-snap carousel using native touch scrolling, so no
   slider script is needed.
@@ -104,6 +106,24 @@
             if (window.addonSelectedVariants) delete window.addonSelectedVariants[this.productId];
           }
 
+          /**
+           * The checked add-ons as cart-ready lines. Read by product-form.js when
+           * adding to cart or buying now.
+           * @returns {Array<{variantId: string, quantity: number}>}
+           */
+          getSelectedItems() {
+            const checked = this.querySelectorAll('input[name="addon_variant"]:checked');
+            return Array.from(checked).map((input) => ({ variantId: input.value, quantity: 1 }));
+          }
+
+          /** Unchecks every add-on. Called by product-form.js after a successful add. */
+          reset() {
+            const checked = this.querySelectorAll('input[name="addon_variant"]:checked');
+            if (checked.length === 0) return;
+            checked.forEach((input) => (input.checked = false));
+            this.updateSummary();
+          }
+
           updateSummary() {
             const checked = this.querySelectorAll('input[name="addon_variant"]:checked');
             let total = 0;
@@ -115,7 +135,7 @@
               variants.push({ variantId: input.value, title: input.dataset.title, price });
             });
 
-            // Published for the cart integration; nothing in the theme reads this yet.
+            // Mirrored for consumers outside the product form (the form itself uses getSelectedItems()).
             window.addonSelectedVariants = window.addonSelectedVariants || {};
             window.addonSelectedVariants[this.productId] = variants;
 

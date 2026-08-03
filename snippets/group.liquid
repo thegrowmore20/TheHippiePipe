@@ -18,6 +18,29 @@
   if settings.background_media != blank and settings.background_media != 'none'
     assign skip_contrast = true
   endif
+
+  comment 
+  assign tablet_direction = settings.content_direction | default: 'column'
+  assign has_tablet_layout = false
+  if settings.content_direction_tablet != blank or settings.horizontal_alignment_tablet != blank or settings.vertical_alignment_tablet != blank or settings.flex_wrap_tablet != blank
+    assign has_tablet_layout = true
+  endif
+  if settings.content_direction_tablet != blank and settings.content_direction_tablet != 'inherit'
+    assign tablet_direction = settings.content_direction_tablet
+  endif
+  endcomment
+
+  assign mobile_direction = settings.content_direction | default: 'column'
+  assign has_mobile_layout = false
+  if settings.content_direction_mobile != blank or settings.horizontal_alignment_mobile != blank or settings.vertical_alignment_mobile != blank or settings.flex_wrap_mobile != blank
+    assign has_mobile_layout = true
+  endif
+  if settings.vertical_on_mobile
+    assign mobile_direction = 'column'
+  endif
+  if settings.content_direction_mobile != blank and settings.content_direction_mobile != 'inherit'
+    assign mobile_direction = settings.content_direction_mobile
+  endif
 %}
 {% render 'contrast-override', background_color: background_color, section_id: block_id, skip_contrast: skip_contrast %}
 
@@ -72,11 +95,8 @@
       {% if request.design_mode %}group-block-content--design-mode{% endif %}
       layout-panel-flex
       layout-panel-flex--{{ settings.content_direction | default: 'column' }}
-      {% if settings.vertical_on_mobile %} mobile-column{% endif %}
-      {% if settings.content_direction_mobile != blank and settings.content_direction_mobile != 'inherit' %}
-        mobile-layout-override
-        mobile-layout-{{ settings.content_direction_mobile }}
-      {% endif %}
+      {% comment %} {% if has_tablet_layout %}tablet-layout-{{ tablet_direction }}{% endif %} {% endcomment %}
+      {% if has_mobile_layout %}mobile-layout-override mobile-layout-{{ mobile_direction }}{% endif %}
     "
     style="{% render 'layout-panel-style', settings: settings %}"
   >

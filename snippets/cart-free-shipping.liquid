@@ -3,9 +3,19 @@
 
   Driven by theme settings (Settings → Cart → "Free shipping bar"):
     - free_shipping_bar_enabled  (checkbox)
-    - free_shipping_threshold    (number, in the store's currency major units, e.g. 100 = $100)
+    - free_shipping_threshold    (number, default threshold in major units, e.g. 100 = $100)
+    - free_shipping_threshold_per_currency (textarea, per-currency overrides "USD:100" one per line)
+    - free_shipping_countries    (textarea, one country per line; empty = show worldwide)
     - free_shipping_bar_color    (color, the filled portion)
     - free_shipping_bar_track_color (color, the empty track)
+
+  The threshold is resolved per cart currency: if the cart's currency (cart.currency.iso_code)
+  matches a line in free_shipping_threshold_per_currency, that amount is used; otherwise the
+  default free_shipping_threshold applies.
+
+  Country visibility: if free_shipping_countries is empty the bar shows in every country;
+  otherwise it only shows when the customer's country (localization.country) matches a listed
+  entry (ISO code like US/CA/GB, or the country name — case-insensitive, USA/UK aliased).
 
   Text is translatable via locales:
     - content.free_shipping_progress  (uses {{ amount }} — the amount still needed)
@@ -15,10 +25,51 @@
   {% render 'cart-free-shipping' %}
 {%- enddoc -%}
 
-{%- if settings.free_shipping_bar_enabled and settings.free_shipping_threshold > 0 and cart.item_count > 0 -%}
+{%- liquid
+  # Resolve the threshold for the cart's active currency. Start from the default, then let a
+  # matching "CODE:amount" line in the per-currency textarea override it.
+  assign fs_threshold = settings.free_shipping_threshold
+  assign fs_currency = cart.currency.iso_code
+
+  assign fs_overrides = settings.free_shipping_threshold_per_currency | newline_to_br | split: '<br />'
+  for fs_line in fs_overrides
+    assign fs_parts = fs_line | strip | split: ':'
+    if fs_parts.size >= 2
+      assign fs_code = fs_parts[0] | strip | upcase
+      if fs_code == fs_currency
+        assign fs_threshold = fs_parts[1] | strip | times: 1.0
+      endif
+    endif
+  endfor
+
+  # Country visibility. Empty list => show everywhere. Otherwise show only when the customer's
+  # country matches a listed entry, comparing against both the ISO code (US) and name
+  # (United States), case-insensitively, with USA/UK aliased to their ISO codes.
+  assign fs_country_ok = true
+  assign fs_countries = settings.free_shipping_countries | strip
+  if fs_countries != blank
+    assign fs_country_ok = false
+    assign cust_iso = localization.country.iso_code | upcase
+    assign cust_name = localization.country.name | upcase
+    assign fs_country_lines = fs_countries | newline_to_br | split: '<br />'
+    for fs_line_country in fs_country_lines
+      assign fs_norm = fs_line_country | strip | upcase
+      if fs_norm == 'USA'
+        assign fs_norm = 'US'
+      elsif fs_norm == 'UK'
+        assign fs_norm = 'GB'
+      endif
+      if fs_norm == cust_iso or fs_norm == cust_name
+        assign fs_country_ok = true
+        break
+      endif
+    endfor
+  endif
+-%}
+{%- if settings.free_shipping_bar_enabled and fs_country_ok and fs_threshold > 0 and cart.item_count > 0 -%}
   {%- liquid
     # Threshold is entered in major units (dollars); cart.total_price is in cents.
-    assign threshold_cents = settings.free_shipping_threshold | times: 100
+    assign threshold_cents = fs_threshold | times: 100
     assign current = cart.total_price
     assign remaining = threshold_cents | minus: current
 

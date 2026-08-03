@@ -4,6 +4,10 @@
     padding-bottom: 64px;
 }
 
+strong{
+  font-weight: 500;
+}
+
 .gap-2xs {
   gap: var(--gap-2xs);
 }

@@ -37,6 +37,7 @@
     style="
       --category-grid-columns: {{ section.settings.columns }};
       --category-grid-columns-mobile: {{ section.settings.mobile_columns }};
+      --category-grid-columns-tablet: {{ section.settings.tablet_columns }};
       --category-grid-column-gap: {{ section.settings.columns_gap }}px;
       --category-grid-row-gap: {{ section.settings.rows_gap }}px;
       {%- unless ratio == 'adapt' %} --category-grid-card-ratio: {{ ratio }};{% endunless -%}
@@ -60,6 +61,13 @@
       grid-template-columns: repeat(var(--category-grid-columns, 3), minmax(0, 1fr));
     }
   }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .category-grid {
+      grid-template-columns: repeat(var(--category-grid-columns-tablet, 2), minmax(0, 1fr));
+    }
+  }
+  
 
   /* Grid items default to min-width: auto, which lets a long title widen its whole column. */
   .category-grid > * {
@@ -123,6 +131,22 @@
         {
           "value": "2",
           "label": "t:options.two_number"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "tablet_columns",
+      "label": "Tablet Columns",
+      "options": [
+        {
+          "value": "2",
+          "label": "t:options.two_number"
+        },
+        {
+          "value": "3",
+          "label": "3"
         }
       ],
       "default": "2"

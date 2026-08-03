@@ -6,16 +6,17 @@
       settings: {block.settings || section.settings}
   endcomment
 
-  assign horizontal_alignment = settings.horizontal_alignment
+  assign content_direction = settings.content_direction | default: 'column'
+  assign horizontal_alignment = settings.horizontal_alignment | default: settings.horizontal_alignment_flex_direction_column | default: 'flex-start'
 
-  assign vertical_alignment = settings.vertical_alignment
+  assign vertical_alignment = settings.vertical_alignment | default: settings.vertical_alignment_flex_direction_column | default: 'flex-start'
   if settings.align_baseline and vertical_alignment == 'flex-end'
     assign vertical_alignment = 'last baseline'
   endif
 
-  unless settings.content_direction == 'row'
-    assign horizontal_alignment = settings.horizontal_alignment_flex_direction_column
-    assign vertical_alignment = settings.vertical_alignment_flex_direction_column
+  unless content_direction == 'row'
+    assign horizontal_alignment = settings.horizontal_alignment_flex_direction_column | default: horizontal_alignment
+    assign vertical_alignment = settings.vertical_alignment_flex_direction_column | default: vertical_alignment
   endunless
 
   assign vertical_alignment_mobile = vertical_alignment
@@ -24,7 +25,7 @@
     assign vertical_alignment_mobile = 'flex-end'
   endif
 
-  assign flex_direction_mobile = settings.content_direction
+  assign flex_direction_mobile = content_direction
   if settings.vertical_on_mobile
     assign flex_direction_mobile = 'column'
   endif
@@ -42,6 +43,35 @@
   endif
 
   assign flex_wrap = settings.flex_wrap | default: 'nowrap'
+
+  assign flex_direction_tablet = content_direction
+  if settings.content_direction_tablet != blank and settings.content_direction_tablet != 'inherit'
+    assign flex_direction_tablet = settings.content_direction_tablet
+  endif
+
+  assign horizontal_alignment_tablet = horizontal_alignment
+  if settings.horizontal_alignment_tablet != blank and settings.horizontal_alignment_tablet != 'inherit'
+    assign horizontal_alignment_tablet = settings.horizontal_alignment_tablet
+  endif
+
+  assign vertical_alignment_tablet = vertical_alignment
+  if settings.vertical_alignment_tablet != blank and settings.vertical_alignment_tablet != 'inherit'
+    assign vertical_alignment_tablet = settings.vertical_alignment_tablet
+  endif
+
+  assign flex_wrap_tablet = settings.flex_wrap_tablet
+  if flex_wrap_tablet == blank or flex_wrap_tablet == 'inherit'
+    assign flex_wrap_tablet = flex_wrap
+  endif
+
+  if flex_direction_tablet == 'row'
+    assign tablet_justify_content = horizontal_alignment_tablet
+    assign tablet_align_items = vertical_alignment_tablet
+  else
+    assign tablet_justify_content = vertical_alignment_tablet
+    assign tablet_align_items = horizontal_alignment_tablet
+  endif
+
   assign flex_wrap_mobile = settings.flex_wrap_mobile
   if flex_wrap_mobile == blank or flex_wrap_mobile == 'auto'
     if flex_direction_mobile == 'row'
@@ -60,9 +90,13 @@
   endif
 -%}
 
---flex-direction: {{ settings.content_direction | default: 'column' }};
+--flex-direction: {{ content_direction }};
 --flex-direction-mobile: {{ flex_direction_mobile }};
 --flex-wrap: {{ flex_wrap }};
+--flex-direction-tablet: {{ flex_direction_tablet }};
+--flex-wrap-tablet: {{ flex_wrap_tablet }};
+--tablet-justify-content: {{ tablet_justify_content }};
+--tablet-align-items: {{ tablet_align_items }};
 --flex-wrap-mobile: {{ flex_wrap_mobile }};
 
 {% render 'gap-style', value: settings.gap %}

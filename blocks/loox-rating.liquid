@@ -6,7 +6,7 @@
 {%- enddoc -%}
 
 {% liquid
-  assign product = closest.product
+  assign product = block.settings.product | default: closest.product
   assign rating = product.metafields.loox.avg_rating
   assign review_count = product.metafields.loox.num_reviews
 %}
@@ -47,6 +47,11 @@
   "name": "Loox rating",
   "tag": null,
   "settings": [
+    {
+      "type" : "product",
+      "id" : "product",
+      "label" : "t:settings.product"
+    },
     {
       "type": "select",
       "id": "alignment",
