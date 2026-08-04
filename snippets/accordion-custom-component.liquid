@@ -62,16 +62,21 @@
 {% stylesheet %}
   accordion-custom {
     details {
+      /* Defined once so consumers can re-enable the open/close animation (e.g.
+         exclusive accordions closing a non-focused row) without repeating it. */
+      --accordion-content-transition:
+        content-visibility var(--animation-speed-slow) allow-discrete,
+        padding-block var(--animation-speed-slow) var(--animation-easing),
+        opacity var(--animation-speed-slow) var(--animation-easing),
+        block-size var(--animation-speed-slow) var(--animation-easing);
+
       &::details-content,
       .details-content {
         block-size: 0;
         overflow-y: clip;
         opacity: 0;
         interpolate-size: allow-keywords;
-        transition: content-visibility var(--animation-speed-slow) allow-discrete,
-          padding-block var(--animation-speed-slow) var(--animation-easing),
-          opacity var(--animation-speed-slow) var(--animation-easing),
-          block-size var(--animation-speed-slow) var(--animation-easing);
+        transition: var(--accordion-content-transition);
       }
 
       /* Disable transitions when the content toggle is not caused by the direct user interaction, e.g. opening the filters on mobile. */

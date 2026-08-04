@@ -28,7 +28,7 @@
     <div class="product-faqs__list">
       {%- for faq in faqs -%}
         {%- capture faq_row -%}
-          <details class="product-faqs__row">
+          <details class="product-faqs__row" name="product-faqs-{{ block.id }}">
             <summary class="product-faqs__question">
               {{ faq.question.value }}
               <span class="svg-wrapper icon-caret icon-animated">
@@ -91,20 +91,9 @@
     padding-block: var(--padding-sm);
   }
 
-  /*
-   * The caret is a plain inline icon here rather than the theme's circular
-   * details marker, so size it against the question's own font size.
-   */
-  .product-faqs__question .icon-caret {
-    flex-shrink: 0;
-    width: 1em;
-    height: 1em;
-  }
-
-  .product-faqs__question .icon-caret svg {
-    width: 100%;
-    height: 100%;
-    display: block;
+  .product-faqs accordion-custom details:not(:focus-within)::details-content,
+  .product-faqs accordion-custom details:not(:focus-within) .details-content {
+    transition: var(--accordion-content-transition);
   }
 {% endstylesheet %}
 

@@ -122,4 +122,20 @@
   .group-block__link ~ .group-block-content--design-mode {
     pointer-events: auto;
   }
+
+  /* The home-page feature tiles are composed as two rows of two cards. On
+     narrow screens the copy wraps to different lengths, so stretch each row's
+     pair of cards to the taller of the two instead of letting each size to its
+     own content. Flex `stretch` equalises heights without needing a definite
+     parent height (percentage-height chains break here because the outer card
+     is height:fit). */
+  @media screen and (max-width: 749px) {
+    .group-block.feature-tiles-equal-height .layout-panel-flex--row {
+      align-items: stretch;
+    }
+
+    .group-block.feature-tiles-equal-height .layout-panel-flex--row > .group-block {
+      height: auto;
+    }
+  }
 {% endstylesheet %}

@@ -126,6 +126,11 @@
 {%- if has_slides -%}
 
   {% style %}
+    #shopify-section-{{ section.id }} {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 720px;
+    }
+
     {% if has_heading %}
       /* -------------------------------------------------------------- heading */
       .ai-slider-heading-{{ uid }} {
@@ -745,7 +750,7 @@
     background_color: section.settings.background_color
   %}
 
-  <script>
+  <script type="module">
     (function() {
       class ImageSlider{{ uid }} extends HTMLElement {
         constructor() {
@@ -808,7 +813,31 @@
 
           if (!this.track || this.slides.length === 0) return;
 
-          this.init();
+          this._initialized = false;
+          this.initWhenNearViewport();
+        }
+
+        initWhenNearViewport() {
+          const initialize = () => {
+            if (this._initialized || !this.isConnected) return;
+            this._initialized = true;
+            this._initIO?.disconnect();
+            this.init();
+          };
+
+          if (typeof IntersectionObserver === 'undefined') {
+            if ('requestIdleCallback' in window) {
+              requestIdleCallback(initialize, { timeout: 1200 });
+            } else {
+              setTimeout(initialize, 0);
+            }
+            return;
+          }
+
+          this._initIO = new IntersectionObserver((entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) initialize();
+          }, { rootMargin: '300px 0px' });
+          this._initIO.observe(this);
         }
 
         init() {
@@ -1357,6 +1386,7 @@
           }
 
           this._io?.disconnect();
+          this._initIO?.disconnect();
         }
       }
 

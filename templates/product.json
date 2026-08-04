@@ -45,7 +45,7 @@
             "thumbnail_position": "left",
             "thumbnail_width": 72,
             "thumbnail_radius": 0,
-            "aspect_ratio": "adapt",
+            "aspect_ratio": "1",
             "constrain_to_viewport": true,
             "media_fit": "contain",
             "media_radius": 0,
@@ -2293,7 +2293,7 @@
           "name": "Product Faqs",
           "settings": {
             "max_width": 800,
-            "divider_color": "",
+            "divider_color": "{{ settings.color_palette.color2 }}",
             "padding-block-start": 32,
             "padding-block-end": 32,
             "padding-inline-start": 0,

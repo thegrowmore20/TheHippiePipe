@@ -100,10 +100,11 @@
       {% liquid
         assign featured_media = product.featured_media
 
+        # Product-card media should not compete with the page's true LCP media.
+        # Native lazy loading still begins immediately for cards in/near the viewport.
         assign featured_media_loading = 'lazy'
         assign featured_media_sizes = 'auto, ' | append: image_sizes
-        if section.index == null or section.index < 5
-          assign featured_media_loading = 'eager'
+        if section.index == null
           assign featured_media_sizes = image_sizes
         endif
 

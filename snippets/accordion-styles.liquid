@@ -58,4 +58,14 @@
     height: auto;
     margin-inline-end: var(--margin-xs);
   }
+
+  /* Exclusive accordion: opening one row auto-closes any other open row in the
+     same group (shared `name` on the <details>). The theme disables transitions
+     on rows that aren't focus-within, which would snap the indirectly-closed row
+     shut — so re-enable the accordion's own open/close transition here, reusing
+     the same speed/easing utilities, to keep that close smooth. */
+  .accordion accordion-custom details:not(:focus-within)::details-content,
+  .accordion accordion-custom details:not(:focus-within) .details-content {
+    transition: var(--accordion-content-transition);
+  }
 {% endstylesheet %}

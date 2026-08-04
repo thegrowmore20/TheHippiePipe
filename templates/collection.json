@@ -40,9 +40,8 @@
         },
         "text_K7HUrm": {
           "type": "text",
-          "disabled": true,
           "settings": {
-            "text": "<p>Made with care and unconditionally loved by our customers.</p>",
+            "text": "<p>{{ closest.collection.metafields.custom.hookline.value }}</p>",
             "width": "fit-content",
             "max_width": "narrow",
             "max_width_custom": 600,
@@ -54,12 +53,12 @@
             "letter_spacing": "normal",
             "case": "none",
             "wrap": "pretty",
-            "text_color": "",
+            "text_color": "{{ settings.color_palette.background }}",
             "background": false,
             "background_color": "#00000026",
             "corner_radius": 0,
             "padding-block-start": 0,
-            "padding-block-end": 32,
+            "padding-block-end": 0,
             "padding-inline-start": 0,
             "padding-inline-end": 0
           },
@@ -307,6 +306,7 @@
             "loox_rating_510": {
               "type": "loox-rating",
               "settings": {
+                "product": "",
                 "alignment": "flex-start",
                 "padding-block-start": 4,
                 "padding-block-end": 8,

@@ -140,11 +140,6 @@
           "selector_collection": ""
         }
       },
-      "7800736727063894098": {
-        "type": "shopify://apps/rez-preorder-notify-me/blocks/rez/0da60196-81b6-4270-afac-c9294e1641ba",
-        "disabled": false,
-        "settings": {}
-      },
       "4651250007506174373": {
         "type": "shopify://apps/mp-instagram-feed/blocks/app_embed/2e85b90f-5da9-4654-967e-051f1942340c",
         "disabled": false,
@@ -153,6 +148,11 @@
       "13305437469741356523": {
         "type": "shopify://apps/gsc-instagram-feed/blocks/embed/96970b1b-b770-454f-b16b-51f47e1aa4ed",
         "disabled": true,
+        "settings": {}
+      },
+      "7800736727063894098": {
+        "type": "shopify://apps/rez-preorder-notify-me/blocks/rez/0da60196-81b6-4270-afac-c9294e1641ba",
+        "disabled": false,
         "settings": {}
       }
     },

@@ -71,5 +71,19 @@
 
 
 .shopify-section.section-wrapper:has(comparison-table.hidden) {
-  display: none 
+  display: none;
+}
+
+
+.product-details accordion-custom .details-content * {
+  text-align: left !important
+}
+
+.product-details accordion-custom .details-content iframe,
+.product-details accordion-custom .details-content video {
+  width: 100%;
+}
+
+.shopify-block:has(product-addons) {
+  width: 100%;
 }

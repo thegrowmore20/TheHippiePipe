@@ -81,6 +81,34 @@
       {%- endfor -%}
     </ul>
 
+    {%- if addons.size > 1 -%}
+      <div class="addons__navigation" aria-label="Add-on slider controls">
+        <button class="addons__arrow" type="button" ref="previousButton" aria-label="Previous add-on">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M12.5 4.5 7 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+
+        <div class="addons__dots" role="group" aria-label="Choose add-on slide">
+          {%- for item in addons -%}
+            <button
+              class="addons__dot{% if forloop.first %} is-active{% endif %}"
+              type="button"
+              data-slide-index="{{ forloop.index0 }}"
+              aria-label="Show add-on {{ forloop.index }}"
+              aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+            ></button>
+          {%- endfor -%}
+        </div>
+
+        <button class="addons__arrow" type="button" ref="nextButton" aria-label="Next add-on">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="m7.5 4.5 5.5 5.5-5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+    {%- endif -%}
+
     <p class="addons__summary">
       <span ref="summaryText">{{ 'content.addons_none_selected' | t }}</span>
       <span class="addons__summary-total" ref="summaryTotal"></span>
@@ -96,13 +124,26 @@
             this.productId = this.dataset.productId;
             this.textEl = this.querySelector('[ref="summaryText"]');
             this.totalEl = this.querySelector('[ref="summaryTotal"]');
+            this.listEl = this.querySelector('.addons__list');
+            this.dots = Array.from(this.querySelectorAll('.addons__dot'));
+            this.previousButton = this.querySelector('[ref="previousButton"]');
+            this.nextButton = this.querySelector('[ref="nextButton"]');
             this.addEventListener('change', (event) => {
               if (event.target.name === 'addon_variant') this.updateSummary();
             });
+            this.previousButton?.addEventListener('click', () => this.showSlide(this.activeSlide - 1));
+            this.nextButton?.addEventListener('click', () => this.showSlide(this.activeSlide + 1));
+            this.dots.forEach((dot) => {
+              dot.addEventListener('click', () => this.showSlide(Number(dot.dataset.slideIndex)));
+            });
+            this.listEl?.addEventListener('scroll', () => this.queueNavigationUpdate(), { passive: true });
+            this.activeSlide = 0;
+            this.updateNavigation();
             this.updateSummary();
           }
 
           disconnectedCallback() {
+            if (this.navigationFrame) cancelAnimationFrame(this.navigationFrame);
             if (window.addonSelectedVariants) delete window.addonSelectedVariants[this.productId];
           }
 
@@ -158,6 +199,37 @@
               return Shopify.formatMoney(cents, {{ shop.money_format | json }});
             }
             return (cents / 100).toFixed(2);
+          }
+
+          showSlide(index) {
+            if (!this.listEl || this.dots.length === 0) return;
+            const targetIndex = Math.max(0, Math.min(index, this.dots.length - 1));
+            this.listEl.scrollTo({ left: targetIndex * this.listEl.clientWidth, behavior: 'smooth' });
+          }
+
+          queueNavigationUpdate() {
+            if (this.navigationFrame) return;
+            this.navigationFrame = requestAnimationFrame(() => {
+              this.navigationFrame = null;
+              this.updateNavigation();
+            });
+          }
+
+          updateNavigation() {
+            if (!this.listEl || this.dots.length === 0) return;
+            const slideWidth = this.listEl.clientWidth || 1;
+            this.activeSlide = Math.max(
+              0,
+              Math.min(Math.round(this.listEl.scrollLeft / slideWidth), this.dots.length - 1)
+            );
+
+            this.dots.forEach((dot, index) => {
+              const active = index === this.activeSlide;
+              dot.classList.toggle('is-active', active);
+              dot.setAttribute('aria-current', active ? 'true' : 'false');
+            });
+            if (this.previousButton) this.previousButton.disabled = this.activeSlide === 0;
+            if (this.nextButton) this.nextButton.disabled = this.activeSlide === this.dots.length - 1;
           }
         }
       );
@@ -243,9 +315,10 @@
     background: var(--addons-accent-background);
     border: 2px solid var(--addons-accent-background);
     color: var(--addons-accent-text);
-    font-weight: 700;
+    font-weight: 500;
     transition: background-color var(--animation-speed, 0.2s) var(--animation-easing, ease),
       color var(--animation-speed, 0.2s) var(--animation-easing, ease);
+    line-height: 1;
   }
 
   /* Both states share the same grid cell so the pill never changes size when toggled. */
@@ -301,6 +374,10 @@
     font-weight: 700;
   }
 
+  .addons__navigation {
+    display: none;
+  }
+
   /*
    * Mobile: one add-on per view, swiped natively with scroll snapping.
    * No slider script — the browser handles momentum, snapping and accessibility.
@@ -323,6 +400,68 @@
       flex: 0 0 100%;
       scroll-snap-align: start;
       padding-block: var(--padding-2xs, 0.375rem);
+    }
+
+    .addons__navigation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--gap-sm, 0.75rem);
+      margin-block-start: var(--margin-xs, 0.5rem);
+    }
+
+    .addons__arrow,
+    .addons__dot {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .addons__arrow {
+      display: grid;
+      place-items: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      padding: 0.375rem;
+      border-radius: 50%;
+      background: var(--addons-accent-background);
+      color: var(--addons-accent-text);
+    }
+
+    .addons__arrow svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .addons__arrow:disabled {
+      cursor: default;
+      opacity: 0.35;
+    }
+
+    .addons__arrow:focus-visible,
+    .addons__dot:focus-visible {
+      outline: var(--focus-outline-width, 2px) solid var(--addons-accent-background);
+      outline-offset: 3px;
+    }
+
+    .addons__dots {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .addons__dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      padding: 0;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--addons-accent-background) 30%, transparent);
+      transition: transform var(--animation-speed, 0.2s) ease,
+        background-color var(--animation-speed, 0.2s) ease;
+    }
+
+    .addons__dot.is-active {
+      background: var(--addons-accent-background);      
     }
   }
 {% endstylesheet %}

@@ -385,7 +385,14 @@
     background_color: s.background_color
   %}
 
-  <script>
+  {% style %}
+    #shopify-section-{{ section.id }} {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 640px;
+    }
+  {% endstyle %}
+
+  <script type="module">
     if (!customElements.get('comparison-table')) {
       customElements.define(
         'comparison-table',

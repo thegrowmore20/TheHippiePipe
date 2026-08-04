@@ -37,10 +37,37 @@
             "padding-inline-end": 0
           },
           "blocks": {}
+        },
+        "text_zQ3YhH": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Master every session with tips, tutorials, and everything you need to know.</p>",
+            "width": "fit-content",
+            "max_width": "narrow",
+            "max_width_custom": 600,
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "{{ settings.color_palette.background }}",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
         }
       },
       "block_order": [
-        "text_ihKwxR"
+        "text_ihKwxR",
+        "text_zQ3YhH"
       ],
       "name": "t:names.hero",
       "settings": {

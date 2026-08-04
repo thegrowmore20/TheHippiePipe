@@ -152,7 +152,7 @@
     assign product_media_container_class = product_media_container_class | append: ' constrain-height'
   endif
   if block_settings.aspect_ratio != 'adapt'
-    assign product_media_container_class = product_media_container_class | append: ' media-fit-cover'
+    assign product_media_container_class = product_media_container_class | append: ' media-fit-' | append: block_settings.media_fit
   elsif block_settings.constrain_to_viewport
     assign product_media_container_class = product_media_container_class | append: ' media-fit-' | append: block_settings.media_fit
   else
@@ -243,45 +243,26 @@
     }
   {% endunless %}
 
-  {% if block_settings.aspect_ratio == 'adapt' and block_settings.constrain_to_viewport %}
-    .media-fit-{{ block_settings.media_fit }} {
-      --product-media-fit: {{ block_settings.media_fit }};
-    }
+  .media-fit-cover {
+    --product-media-fit: cover;
+  }
 
-    /* Media fit for all media elements */
-    .media-fit-{{ block_settings.media_fit }} :is(img, video, iframe, .deferred-media__poster-image) {
-      object-fit: {{ block_settings.media_fit }};
-      width: 100%;
-      height: 100%;
-    }
+  .media-fit-contain {
+    --product-media-fit: contain;
+  }
 
-    /* 3D Models (no object-fit support, just sizing) */
-    .media-fit-{{ block_settings.media_fit }} model-viewer {
-      width: 100%;
-      height: 100%;
-    }
-  {% endif %}
+  :is(.media-fit-cover, .media-fit-contain) :is(img, video, iframe, .deferred-media__poster-image) {
+    object-fit: var(--product-media-fit);
+    width: 100%;
+    height: 100%;
+  }
 
-  {% unless block_settings.aspect_ratio == 'adapt' and block_settings.constrain_to_viewport %}
-    .media-fit-cover {
-      --product-media-fit: cover;
-    }
+  /* 3D Models (no object-fit support, just sizing) */
+  :is(.media-fit-cover, .media-fit-contain) model-viewer {
+    width: 100%;
+    height: 100%;
+  }
 
-    /* Media fit for all media elements - default to cover */
-    .media-fit-cover :is(img, video, iframe, .deferred-media__poster-image) {
-      object-fit: cover;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* 3D Models (no object-fit support, just sizing) */
-    .media-fit-cover model-viewer {
-      width: 100%;
-      height: 100%;
-    }
-  {% endunless %}
-
-  /* Add background color so carousel arrows' mix-blend-mode works correctly even on transparent areas. */
   {% if block_settings.media_fit == 'contain' %}
     .media-fit-contain :is(img, .deferred-media__poster-image) {
       background-color: var(--color-background);
@@ -311,9 +292,7 @@
       object-position: var(--gallery-media-focal-point, center);
     }
   {% endcapture %}
-  {% if block_settings.aspect_ratio == 'adapt' and block_settings.constrain_to_viewport == false %}
-    {{ view_transition_styles_contain }}
-  {% elsif block_settings.aspect_ratio == 'adapt' and block_settings.constrain_to_viewport == true and block_settings.media_fit == 'contain' %}
+  {% if block_settings.media_fit == 'contain' or block_settings.aspect_ratio == 'adapt' and block_settings.constrain_to_viewport == false %}
     {{ view_transition_styles_contain }}
   {% else %}
     {{ view_transition_styles_cover }}

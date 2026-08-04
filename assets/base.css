@@ -1232,7 +1232,7 @@ summary {
   align-items: center;
   cursor: pointer;
   list-style: none;
-  padding-block: var(--padding-lg);
+  padding-block: var(--padding-md);
 }
 
 summary:hover {

@@ -16,7 +16,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<h2>Premium Vaporizer Guide</h2>",
+            "text": "<h1>{{ closest.page.title }}</h1>",
             "width": "fit-content",
             "max_width": "normal",
             "max_width_custom": 600,
@@ -2309,7 +2309,7 @@
                 "text_Ux387e": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>This is the biggest fork in the road. The Hippie Pipe, Pipe X, and OM Chrome are 100% analog, torch-powered, zero electronics, nothing to charge or that can die on you mid-session. OM Gunmetal trades that for rechargeable, battery-powered convenience, no torch needed, just charge and go.</p><p>Neither is \"better\", it's about what fits your ritual. Want full manual control and nothing to plug in? Go analog. Want fast, low-effort hits without carrying a torch? Go battery.</p>",
+                    "text": "<p>This is the biggest fork in the road. The Hippie Pipe, and Pipe X are 100% analog, torch-powered, zero electronics, nothing to charge or that can die on you mid-session. OM Gunmetal trades that for rechargeable, battery-powered convenience, no torch needed, just charge and go.</p><p>Neither is \"better\", it's about what fits your ritual. Want full manual control and nothing to plug in? Go analog. Want fast, low-effort hits without carrying a torch? Go battery.</p>",
                     "width": "100%",
                     "max_width": "none",
                     "max_width_custom": 600,
@@ -2389,7 +2389,7 @@
                 "text_B6hbdR": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Every Hippie Pipe device is built from durable metal designed for daily pocket and bag use. The finish is where you make it yours, chrome for a classic look, blacked-out for a darker edge, or mirror gunmetal if you're carrying a battery device. Beyond looks, the finish also affects how visible fingerprints, scratches, and wear will be over time, matte/dark finishes hide daily wear better than polished chrome.</p>",
+                    "text": "<p>Every Hippie Pipe device is crafted from durable metal for reliable everyday use, whether it's in your pocket or your bag.<br/><br/>The difference comes down to the finish. Choose <strong>The Hippie Pipe</strong> in polished chrome for a timeless look, <strong>Pipe X</strong> in black for a more understated style, <strong>OM Chrome</strong> for a sleek mirror-like finish, or O<strong>M Gunmetal</strong> for a darker, modern aesthetic. Beyond appearance, darker finishes like black and gunmetal are better at hiding fingerprints and everyday wear, while polished chrome offers a bright, classic look that develops character over time.</p>",
                     "width": "100%",
                     "max_width": "none",
                     "max_width_custom": 600,
@@ -2429,7 +2429,7 @@
                 "text_cNeDtj": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>All of our devices are built for pocket or bag carry, but there's a range. The analog line (Original, Pipe X, OM Chrome) sits in the same compact footprint. The battery line (OM Gunmetal) goes even smaller, small enough to clip to your keys.</p><p>If ultra-minimal size is your top priority, the battery line wins. If you want the full analog ritual in a compact form, the pipe line is built for that.</p>",
+                    "text": "<p>All of our devices are built for pocket or bag carry, but there's a range. The analog line (<strong>Original</strong>, <strong>Pipe X</strong>) sits in the same compact footprint. The battery line (<strong>OM Chrome</strong>, <strong>OM Gunmetal</strong>) goes even smaller, small enough to clip to your keys.</p><p>If ultra-minimal size is your top priority, the battery line wins. If you want the full analog ritual in a compact form, the pipe line is built for that.</p>",
                     "width": "100%",
                     "max_width": "none",
                     "max_width_custom": 600,
