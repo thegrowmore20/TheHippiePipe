@@ -78,6 +78,13 @@
       padding-block-end: var(--zoom-out-padding-block-end, 0);
     }
   }
+  @media screen and (min-width: 750px) and (max-width: 853px) {
+    {% if section.settings.layout_type == 'grid' and section.settings.product_card_size == 'medium' %}
+        .product-grid--{{ section.id }}:is(.product-grid--grid) {
+          --product-grid-columns-desktop: repeat(auto-fill, minmax(215px, 2fr));
+        }
+    {% endif %}
+  }
 {% endstyle %}
 <div
   id="ResultsList"

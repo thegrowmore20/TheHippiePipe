@@ -112,7 +112,7 @@
         "image_3ddVL9": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/Affiliate_Banner_Mobile.webp",
+            "image": "shopify://shop_images/The_Hippie_Pipe_Guide_to_Premium_Vaporizers_optimized.webp",
             "link": "",
             "image_ratio": "adapt",
             "width": "fill",
@@ -2303,7 +2303,8 @@
                 "heading": "Manual vs. Rechargeable",
                 "open_by_default": false,
                 "icon": "arrow",
-                "width": 20
+                "image_upload": "shopify://shop_images/Veprizor_Guide_Manual_vs._Rechargeable_Black.svg",
+                "width": 34
               },
               "blocks": {
                 "text_Ux387e": {
@@ -2343,13 +2344,14 @@
                 "heading": "Chamber Size & Session Length",
                 "open_by_default": false,
                 "icon": "arrow",
-                "width": 20
+                "image_upload": "shopify://shop_images/Veprizor_Guide_Chamber_Size_Session_Length.svg",
+                "width": 24
               },
               "blocks": {
                 "text_Eqc97y": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Chamber size determines how much you load before a reload. OM Chrome's ~30% bigger chamber means fewer reloads per session, built for people who session longer or share. The Original and Pipe X keep a standard chamber size for a more compact, everyday carry.<br/><br/></p>",
+                    "text": "<p>Chamber size determines how much you load before a reload. OM Chrome's ~30% bigger chamber means fewer reloads per session, built for people who session longer or share. The Hippie Pipe and Pipe X keep a standard chamber size for a more compact, everyday carry.<br/><br/></p>",
                     "width": "100%",
                     "max_width": "none",
                     "max_width_custom": 600,
@@ -2383,7 +2385,8 @@
                 "heading": "Build & Finish",
                 "open_by_default": false,
                 "icon": "arrow",
-                "width": 20
+                "image_upload": "shopify://shop_images/Veprizor_Guide_Build_Finish.svg",
+                "width": 24
               },
               "blocks": {
                 "text_B6hbdR": {
@@ -2423,13 +2426,14 @@
                 "heading": "Portability & Carry",
                 "open_by_default": false,
                 "icon": "arrow",
-                "width": 20
+                "image_upload": "shopify://shop_images/Veprizor_Guide_Portability_Carry.svg",
+                "width": 24
               },
               "blocks": {
                 "text_cNeDtj": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>All of our devices are built for pocket or bag carry, but there's a range. The analog line (<strong>Original</strong>, <strong>Pipe X</strong>) sits in the same compact footprint. The battery line (<strong>OM Chrome</strong>, <strong>OM Gunmetal</strong>) goes even smaller, small enough to clip to your keys.</p><p>If ultra-minimal size is your top priority, the battery line wins. If you want the full analog ritual in a compact form, the pipe line is built for that.</p>",
+                    "text": "<p>All of our devices are built for pocket or bag carry, but there's a range. The analog line (<strong>The Hippie Pipe</strong>, <strong>Pipe X</strong>) sits in the same compact footprint. The battery line (<strong>OM Chrome</strong>, <strong>OM Gunmetal</strong>) goes even smaller, small enough to clip to your keys.</p><p>If ultra-minimal size is your top priority, the battery line wins. If you want the full analog ritual in a compact form, the pipe line is built for that.</p>",
                     "width": "100%",
                     "max_width": "none",
                     "max_width_custom": 600,
@@ -2463,7 +2467,8 @@
                 "heading": "Cleaning & Maintenance",
                 "open_by_default": false,
                 "icon": "arrow",
-                "width": 20
+                "image_upload": "shopify://shop_images/Veprizor_Guide_Cleaning_Maintenance.svg",
+                "width": 24
               },
               "blocks": {
                 "text_qqi67m": {
@@ -2835,11 +2840,12 @@
                           "type": "icon",
                           "settings": {
                             "icon": "fire",
+                            "image_upload": "shopify://shop_images/Veprizor_Guide_Analog_Heating.svg",
                             "number_text": "",
                             "number_font_size": 24,
                             "number_color": "",
                             "number_background_color": "",
-                            "width": 20,
+                            "width": 34,
                             "link": "",
                             "open_in_new_tab": false,
                             "icon_color": "{{ settings.color_palette.color3 }}"
@@ -3126,11 +3132,12 @@
                           "type": "icon",
                           "settings": {
                             "icon": "fire",
+                            "image_upload": "shopify://shop_images/Veprizor_Guide_Telescopic_Chamber.svg",
                             "number_text": "",
                             "number_font_size": 24,
                             "number_color": "",
                             "number_background_color": "",
-                            "width": 20,
+                            "width": 34,
                             "link": "",
                             "open_in_new_tab": false,
                             "icon_color": "{{ settings.color_palette.color3 }}"
@@ -3473,11 +3480,12 @@
                           "type": "icon",
                           "settings": {
                             "icon": "fire",
+                            "image_upload": "shopify://shop_images/Veprizor_Guide_Chrome_Heat_Indicator.svg",
                             "number_text": "",
                             "number_font_size": 24,
                             "number_color": "",
                             "number_background_color": "",
-                            "width": 20,
+                            "width": 34,
                             "link": "",
                             "open_in_new_tab": false,
                             "icon_color": "{{ settings.color_palette.color3 }}"
@@ -3764,11 +3772,12 @@
                           "type": "icon",
                           "settings": {
                             "icon": "fire",
+                            "image_upload": "shopify://shop_images/Veprizor_Guide_Rapid_Convection-04.svg",
                             "number_text": "",
                             "number_font_size": 24,
                             "number_color": "",
                             "number_background_color": "",
-                            "width": 20,
+                            "width": 34,
                             "link": "",
                             "open_in_new_tab": false,
                             "icon_color": "{{ settings.color_palette.color3 }}"
@@ -4111,11 +4120,12 @@
                           "type": "icon",
                           "settings": {
                             "icon": "fire",
+                            "image_upload": "shopify://shop_images/Veprizor_Guide_510_THreads.svg",
                             "number_text": "",
                             "number_font_size": 24,
                             "number_color": "",
                             "number_background_color": "",
-                            "width": 20,
+                            "width": 34,
                             "link": "",
                             "open_in_new_tab": false,
                             "icon_color": "{{ settings.color_palette.color3 }}"
@@ -4402,11 +4412,12 @@
                           "type": "icon",
                           "settings": {
                             "icon": "fire",
+                            "image_upload": "shopify://shop_images/Veprizor_Guide_Ceramic_Automizer.svg",
                             "number_text": "",
                             "number_font_size": 24,
                             "number_color": "",
                             "number_background_color": "",
-                            "width": 20,
+                            "width": 34,
                             "link": "",
                             "open_in_new_tab": false,
                             "icon_color": "{{ settings.color_palette.color3 }}"
@@ -4749,11 +4760,12 @@
                           "type": "icon",
                           "settings": {
                             "icon": "fire",
+                            "image_upload": "shopify://shop_images/Veprizor_Guide_Stealth_Mode.svg",
                             "number_text": "",
                             "number_font_size": 24,
                             "number_color": "",
                             "number_background_color": "",
-                            "width": 20,
+                            "width": 34,
                             "link": "",
                             "open_in_new_tab": false,
                             "icon_color": "{{ settings.color_palette.color3 }}"
@@ -5040,11 +5052,12 @@
                           "type": "icon",
                           "settings": {
                             "icon": "fire",
+                            "image_upload": "shopify://shop_images/Veprizor_Guide_Rapid_Convection-08.svg",
                             "number_text": "",
                             "number_font_size": 24,
                             "number_color": "",
                             "number_background_color": "",
-                            "width": 20,
+                            "width": 34,
                             "link": "",
                             "open_in_new_tab": false,
                             "icon_color": "{{ settings.color_palette.color3 }}"
@@ -5232,7 +5245,7 @@
         "image_wANUL3": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/Affiliate_Banner_Mobile.webp",
+            "image": "shopify://shop_images/Why_OM_Chrome_Was_Built_This_Way_optimized.webp",
             "link": "",
             "image_ratio": "adapt",
             "width": "fill",
@@ -5638,7 +5651,7 @@
         "image_gTBT9b": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/Screenshot2023-07-19at2.44.03PM.png",
+            "image": "shopify://shop_images/Same_Bold_Attitude_Rechargeable_Power_optimized.webp",
             "link": "",
             "image_ratio": "adapt",
             "width": "fill",
@@ -5756,7 +5769,7 @@
         "pill_label": "Shop",
         "accent_color": "{{ settings.color_palette.color3 }}",
         "accent_contrast": "{{ settings.color_palette.color4 }}",
-        "pill_background": "{{ settings.color_palette.color10 }}",
+        "pill_background": "{{ settings.color_palette.color4 }}",
         "pill_text": "#000000",
         "note": "",
         "button_label": "",

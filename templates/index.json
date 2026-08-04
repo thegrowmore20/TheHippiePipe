@@ -3644,19 +3644,19 @@
         "text_iDiiXf": {
           "type": "text",
           "settings": {
-            "text": "<h2>New arrivals</h2>",
+            "text": "<h2>Analog By Design</h2>",
             "width": "fit-content",
             "max_width": "narrow",
             "max_width_custom": 600,
             "alignment": "left",
-            "type_preset": "h1",
+            "type_preset": "rte",
             "font": "var(--font-body--family)",
             "font_size": "1rem",
             "line_height": "normal",
             "letter_spacing": "normal",
             "case": "none",
             "wrap": "pretty",
-            "text_color": "",
+            "text_color": "{{ settings.color_palette.background }}",
             "background": false,
             "background_color": "#00000026",
             "corner_radius": 0,
@@ -3670,7 +3670,7 @@
         "text_h9eCHw": {
           "type": "text",
           "settings": {
-            "text": "<p>Made with care and unconditionally loved by our customers.</p>",
+            "text": "<p>No batteries. No charging. Just pure, portable flavor in every session.</p>",
             "width": "fit-content",
             "max_width": "narrow",
             "max_width_custom": 600,
@@ -3682,12 +3682,12 @@
             "letter_spacing": "normal",
             "case": "none",
             "wrap": "pretty",
-            "text_color": "",
+            "text_color": "{{ settings.color_palette.background }}",
             "background": false,
             "background_color": "#00000026",
             "corner_radius": 0,
             "padding-block-start": 0,
-            "padding-block-end": 32,
+            "padding-block-end": 0,
             "padding-inline-start": 0,
             "padding-inline-end": 0
           },
@@ -3697,8 +3697,8 @@
           "type": "button",
           "name": "t:names.button",
           "settings": {
-            "label": "Shop now",
-            "link": "shopify://collections/all",
+            "label": "Shop Pipe X",
+            "link": "shopify://products/pipe-x",
             "open_in_new_tab": false,
             "style_class": "button",
             "custom_button_background": "{{ settings.color_palette.foreground }}",
@@ -3724,6 +3724,7 @@
       "name": "t:names.hero",
       "settings": {
         "media_type_1": "image",
+        "image_1": "shopify://shop_images/Home-11.webp",
         "media_type_2": "image",
         "stack_media_on_mobile": false,
         "custom_mobile_media": false,
@@ -3767,8 +3768,8 @@
             "vertical_alignment": "center",
             "align_baseline": false,
             "horizontal_alignment_flex_direction_column": "center",
-            "vertical_alignment_flex_direction_column": "space-between",
-            "gap": 32,
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 16,
             "flex_wrap": "nowrap",
             "content_direction_tablet": "inherit",
             "horizontal_alignment_tablet": "inherit",
@@ -3787,8 +3788,9 @@
             "background_media": "image",
             "background_color": "",
             "video_position": "cover",
+            "background_image": "shopify://shop_images/Home-2.webp",
             "background_image_position": "cover",
-            "toggle_overlay": false,
+            "toggle_overlay": true,
             "overlay_color": "#00000026",
             "overlay_style": "solid",
             "gradient_direction": "to top",
@@ -3807,35 +3809,22 @@
             "custom_class": ""
           },
           "blocks": {
-            "spacer_CtX98b": {
-              "type": "spacer",
-              "settings": {
-                "size": "pixel",
-                "percent_size": 100,
-                "pixel_size": 16,
-                "custom_mobile_size": false,
-                "size_mobile": "percent",
-                "percent_size_mobile": 100,
-                "pixel_size_mobile": 120
-              },
-              "blocks": {}
-            },
-            "text_KWyaaq": {
+            "text_Mr6X8x": {
               "type": "text",
               "settings": {
-                "text": "<h3>New arrivals</h3>",
+                "text": "<h2>Dark. Discreet. Sleek.</h2>",
                 "width": "fit-content",
                 "max_width": "normal",
                 "max_width_custom": 600,
                 "alignment": "center",
-                "type_preset": "h3",
+                "type_preset": "rte",
                 "font": "var(--font-body--family)",
                 "font_size": "1rem",
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
-                "text_color": "",
+                "text_color": "{{ settings.color_palette.background }}",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -3846,13 +3835,40 @@
               },
               "blocks": {}
             },
-            "button_DjGV3W": {
-              "type": "button",
+            "text_yGPnfV": {
+              "type": "text",
               "settings": {
-                "label": "Shop now",
-                "link": "shopify://collections/all",
+                "text": "<p>Three voltage settings, stainless steel finish, built to disappear in your pocket.</p>",
+                "width": "fit-content",
+                "max_width": "narrow",
+                "max_width_custom": 600,
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "{{ settings.color_palette.background }}",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "button_Tjncrb": {
+              "type": "button",
+              "name": "t:names.button",
+              "settings": {
+                "label": "Shop OM Gunmetal",
+                "link": "shopify://products/om-gunmetal-510-thread-battery-full-ceramic-atomizer-cap",
                 "open_in_new_tab": false,
-                "style_class": "button-unstyled",
+                "style_class": "button",
                 "custom_button_background": "{{ settings.color_palette.foreground }}",
                 "custom_button_text": "{{ settings.color_palette.background }}",
                 "custom_button_border": "{{ settings.color_palette.background }}",
@@ -3869,9 +3885,9 @@
             }
           },
           "block_order": [
-            "spacer_CtX98b",
-            "text_KWyaaq",
-            "button_DjGV3W"
+            "text_Mr6X8x",
+            "text_yGPnfV",
+            "button_Tjncrb"
           ]
         },
         "group_MVVWtH": {
@@ -3883,8 +3899,8 @@
             "vertical_alignment": "center",
             "align_baseline": false,
             "horizontal_alignment_flex_direction_column": "center",
-            "vertical_alignment_flex_direction_column": "space-between",
-            "gap": 32,
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 16,
             "flex_wrap": "nowrap",
             "content_direction_tablet": "inherit",
             "horizontal_alignment_tablet": "inherit",
@@ -3903,8 +3919,9 @@
             "background_media": "image",
             "background_color": "",
             "video_position": "cover",
+            "background_image": "shopify://shop_images/Home-3.webp",
             "background_image_position": "cover",
-            "toggle_overlay": false,
+            "toggle_overlay": true,
             "overlay_color": "#00000026",
             "overlay_style": "solid",
             "gradient_direction": "to top",
@@ -3923,35 +3940,22 @@
             "custom_class": ""
           },
           "blocks": {
-            "spacer_t7XUj4": {
-              "type": "spacer",
-              "settings": {
-                "size": "pixel",
-                "percent_size": 100,
-                "pixel_size": 16,
-                "custom_mobile_size": false,
-                "size_mobile": "percent",
-                "percent_size_mobile": 100,
-                "pixel_size_mobile": 120
-              },
-              "blocks": {}
-            },
-            "text_rkbjpm": {
+            "text_XDkwii": {
               "type": "text",
               "settings": {
-                "text": "<h3>Bestsellers</h3>",
+                "text": "<h2>Compact. Slim. Shiny.</h2>",
                 "width": "fit-content",
-                "max_width": "normal",
+                "max_width": "narrow",
                 "max_width_custom": 600,
-                "alignment": "center",
-                "type_preset": "h3",
+                "alignment": "left",
+                "type_preset": "rte",
                 "font": "var(--font-body--family)",
                 "font_size": "1rem",
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
-                "text_color": "",
+                "text_color": "{{ settings.color_palette.background }}",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -3962,13 +3966,40 @@
               },
               "blocks": {}
             },
-            "button_ExxBBh": {
-              "type": "button",
+            "text_P7izFP": {
+              "type": "text",
               "settings": {
-                "label": "Shop now",
-                "link": "shopify://collections/all",
+                "text": "<p>Three voltage settings, stainless steel finish, built to disappear in your pocket.</p>",
+                "width": "fit-content",
+                "max_width": "narrow",
+                "max_width_custom": 600,
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "{{ settings.color_palette.background }}",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "button_AhMfCV": {
+              "type": "button",
+              "name": "t:names.button",
+              "settings": {
+                "label": "Shop OM Chrome",
+                "link": "shopify://products/om-basik-long-cap",
                 "open_in_new_tab": false,
-                "style_class": "button-unstyled",
+                "style_class": "button",
                 "custom_button_background": "{{ settings.color_palette.foreground }}",
                 "custom_button_text": "{{ settings.color_palette.background }}",
                 "custom_button_border": "{{ settings.color_palette.background }}",
@@ -3985,9 +4016,9 @@
             }
           },
           "block_order": [
-            "spacer_t7XUj4",
-            "text_rkbjpm",
-            "button_ExxBBh"
+            "text_XDkwii",
+            "text_P7izFP",
+            "button_AhMfCV"
           ]
         }
       },
@@ -4030,25 +4061,25 @@
         "custom_id": ""
       }
     },
-    "hero_LEyfnT": {
+    "hero_iR4QxV": {
       "type": "hero",
       "blocks": {
-        "text_PpzJyg": {
+        "text_TTabht": {
           "type": "text",
           "settings": {
-            "text": "<h2>New arrivals</h2>",
+            "text": "<h2>Carry With Confidence</h2>",
             "width": "fit-content",
-            "max_width": "narrow",
+            "max_width": "normal",
             "max_width_custom": 600,
-            "alignment": "left",
-            "type_preset": "h1",
+            "alignment": "center",
+            "type_preset": "rte",
             "font": "var(--font-body--family)",
             "font_size": "1rem",
             "line_height": "normal",
             "letter_spacing": "normal",
             "case": "none",
             "wrap": "pretty",
-            "text_color": "",
+            "text_color": "{{ settings.color_palette.background }}",
             "background": false,
             "background_color": "#00000026",
             "corner_radius": 0,
@@ -4059,14 +4090,14 @@
           },
           "blocks": {}
         },
-        "text_tA87y9": {
+        "text_64y6Rk": {
           "type": "text",
           "settings": {
-            "text": "<p>Made with care and unconditionally loved by our customers.</p>",
+            "text": "<p>Keep your pipe, holder, and essentials together in one travel-ready bundle.</p>",
             "width": "fit-content",
-            "max_width": "narrow",
+            "max_width": "normal",
             "max_width_custom": 600,
-            "alignment": "left",
+            "alignment": "center",
             "type_preset": "rte",
             "font": "var(--font-body--family)",
             "font_size": "1rem",
@@ -4074,23 +4105,23 @@
             "letter_spacing": "normal",
             "case": "none",
             "wrap": "pretty",
-            "text_color": "",
+            "text_color": "{{ settings.color_palette.background }}",
             "background": false,
             "background_color": "#00000026",
             "corner_radius": 0,
             "padding-block-start": 0,
-            "padding-block-end": 32,
+            "padding-block-end": 0,
             "padding-inline-start": 0,
             "padding-inline-end": 0
           },
           "blocks": {}
         },
-        "button_efgXGr": {
+        "button_UzY3dA": {
           "type": "button",
           "name": "t:names.button",
           "settings": {
-            "label": "Shop now",
-            "link": "shopify://collections/all",
+            "label": "Shop Bundle",
+            "link": "shopify://products/pipe-holder-bundle-brown-rosewood",
             "open_in_new_tab": false,
             "style_class": "button",
             "custom_button_background": "{{ settings.color_palette.foreground }}",
@@ -4109,9 +4140,9 @@
         }
       },
       "block_order": [
-        "text_PpzJyg",
-        "text_tA87y9",
-        "button_efgXGr"
+        "text_TTabht",
+        "text_64y6Rk",
+        "button_UzY3dA"
       ],
       "name": "t:names.hero",
       "settings": {
@@ -4330,7 +4361,7 @@
     "17846374127c6e736c",
     "hero_JpXMxC",
     "section_GTMPFJ",
-    "hero_LEyfnT",
+    "hero_iR4QxV",
     "featured_blog_posts_VRFK6y"
   ]
 }
