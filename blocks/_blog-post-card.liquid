@@ -78,6 +78,22 @@
     width: 100%;
   }
 
+  @media (max-width: 989px) {
+    .blog-post-item--horizontal .blog-post-card {
+      align-items: center;
+    }
+    .blog-post-item--horizontal:has(.blog-post-card__image-container) .blog-post-card {
+      & > *:first-child {
+        flex-basis: 60%;
+      }
+
+      & > *:last-child {
+        flex-basis: 40%;
+      }
+    }
+  }
+  
+
   /**
    * Horizontal layout (image left, content right)
    * Applied to hero posts based on total article count
@@ -85,9 +101,25 @@
    */
   .blog-post-item--horizontal .blog-post-card {
     flex-direction: row;
+    align-items: center;
 
     @media screen and (max-width: 749px) {
       flex-direction: column;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+  .blog-post-item--horizontal:has(.blog-post-card__image-container) .blog-post-card {
+      & > *:first-child {
+        flex-basis: 100%;
+      }
+
+      & > *:last-child {
+        flex-basis: 100%;
+      }
+    }
+    .blog-post-card .blog-post-card__image {
+      height: auto;
     }
   }
 
@@ -109,6 +141,15 @@
     &:hover {
       color: var(--color-foreground-subdued);
     }
+  }
+  a.blog-post-card__title-link > * {
+    display: -webkit-box;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    padding: 0;
   }
 {% endstylesheet %}
 

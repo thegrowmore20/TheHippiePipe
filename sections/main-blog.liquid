@@ -29,14 +29,26 @@
   >
     {% content_for 'blocks' %}
 
-    <div
-      ref="grid"
-      class="blog-posts-container"
-    >
-      {% liquid
-        assign items_on_page = blog.articles.size
-      %}
-      {% for article in blog.articles %}
+    {% liquid
+      assign posts_per_page = 24
+
+      if section.settings.enable_infinite_scroll == false
+        assign posts_per_page = section.settings.posts_per_page
+      endif
+    %}
+
+    {% paginate blog.articles by posts_per_page %}
+      {% if section.settings.enable_infinite_scroll %}
+        <span ref="viewMorePrevious"></span>
+      {% endif %}
+
+      <div
+        ref="grid"
+        class="blog-posts-container"
+        data-last-page="{{ paginate.pages }}"
+      >
+        {% assign items_on_page = blog.articles.size %}
+        {% for article in blog.articles %}
         {% liquid
           # Defaults for compact layout
           assign col_span = 2
@@ -98,6 +110,16 @@
             --blog-post-card-scale: {{ scale }};
           }
 
+          @media screen and (max-width: 989px) and (min-width: 750px) {
+            [data-blog-index="{{ section.id }}-1"] {
+              --col-span: 6;
+            }
+            [data-blog-index="{{ section.id }}-{{ forloop.index }}"] {
+              --col-span: 3;
+              --blog-post-card-scale: 0.5;
+            }
+          }
+
           @media screen and (max-width: 749px) {
             [data-blog-index="{{ section.id }}-{{ forloop.index }}"] {
               --col-span: 6;
@@ -109,11 +131,20 @@
           class="blog-post-item{% if is_horizontal %} blog-post-item--horizontal{% endif %}"
           data-testid="blog-post-item"
           data-blog-index="{{ section.id }}-{{ forloop.index }}"
+          data-page="{{ paginate.current_page }}"
+          ref="cards[]"
         >
           {% content_for 'block', id: 'static-blog-post-card', type: '_blog-post-card', article: article %}
         </div>
-      {% endfor %}
-    </div>
+        {% endfor %}
+      </div>
+
+      {% if section.settings.enable_infinite_scroll %}
+        <span ref="viewMoreNext"></span>
+      {% else %}
+        {% render 'pagination-controls', paginate: paginate %}
+      {% endif %}
+    {% endpaginate %}
   </div>
 </blog-posts-list>
 
@@ -135,6 +166,11 @@
     width: 100%;
     column-gap: var(--columns-gap);
     row-gap: var(--rows-gap);
+
+    @media only screen and (max-width: 989px) and (min-width: 750px) {
+      column-gap: 20px;
+      row-gap: 20px;
+    }
   }
 
   /**
@@ -205,6 +241,22 @@
       "id": "background_color",
       "label": "t:settings.background_color",
       "placeholder": "t:settings.default"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_infinite_scroll",
+      "label": "Auto load blog posts on scroll",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "label": "Blog posts per page",
+      "min": 3,
+      "max": 24,
+      "step": 3,
+      "default": 9,
+      "visible_if": "{{ section.settings.enable_infinite_scroll == false }}"
     },
     {
       "type": "header",

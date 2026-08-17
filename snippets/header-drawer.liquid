@@ -128,9 +128,13 @@
                     <details
                       id="Details-menu-drawer-{{ link.handle }}"
                     >
+                      {% if link.type == 'collection_link' %}
+                        {% assign link_collection_count =  link.object.products_count %}
+                        {% assign link_collection = link.object.title %}
+                      {% endif %}
                       <summary
                         id="HeaderDrawer-{{ link.handle }}"
-                        class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset"
+                        class="{{link_collection_count}}-- menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset"
                       >
                         <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}{% render 'menu-drawer-link-count', link: link %}</span>
                         {% if block_settings.drawer_accordion_icon == 'caret' %}
@@ -181,11 +185,16 @@
                               {% else %}
                                 {% render 'menu-drawer-link-image', link: childlink %}
                               {% endif %}
-                              <span class="menu-drawer__menu-item-text wrap-text">{{ childlink.title | escape }}{% render 'menu-drawer-link-count', link: childlink %}</span>
+                              <span class="menu-drawer__menu-item-text dddd wrap-text">{{ childlink.title | escape }}{% render 'menu-drawer-link-count', link: childlink %}</span>
                             </a>
                           </li>
                         {%- endfor -%}
                       </ul>
+                      {% if link_collection_count > link.links.size %}
+                        <div class="menudrawer-view-all">
+                          <a href="{{ link.url }}" class="button">View All</a>
+                        </div>
+                      {% endif %}
                     </details>
                   {% endcapture %}
                   {% render 'accordion-custom-component',
@@ -789,6 +798,9 @@
 </header-drawer>
 
 {% stylesheet %}
+  .menudrawer-view-all a.button {
+    height: 36px;
+  }
   .header__icon--menu {
     position: initial;
   }
@@ -1236,6 +1248,9 @@
   .menu-drawer__menu-item-text {
     overflow: hidden;
     text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
   }
 
   /** Styles when the country selector is hidden */
@@ -1264,6 +1279,11 @@
   .menu-drawer svg {
     width: var(--icon-size-xs);
     height: var(--icon-size-xs);
+  }
+
+  .menu-drawer .close-button svg {
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
   }
 
   /* Accordion arrow icon (alternative to the plus/minus toggle). Points down when
@@ -1302,6 +1322,7 @@
     height: 100%;
     object-fit: contain;
     display: block;
+    border-radius: var(--style-border-radius-xs, 6px);
   }
 
   /* When a thumbnail is present, group thumb + text at the start and push any

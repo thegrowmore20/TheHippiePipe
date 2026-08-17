@@ -362,6 +362,7 @@
     {% endif %}
     {% if cart_bubble_color_override %}
       --cart-bubble-background: {{ cart_bubble_background }};
+      --cart-bubble-background-hover: {% if section.settings.icon_hover_color != blank %}{{ section.settings.icon_hover_color }}{% else %}var(--color-white){% endif %};
       --cart-bubble-text: {{ cart_bubble_text }};
     {% endif %}
     {% if section.settings.actions_display_style == 'text' %}
@@ -497,6 +498,7 @@
     display: block;
     contain: layout style;
     background: transparent;
+    background: var(--color-background-top-row); 
 
     a,
     .button,
@@ -673,7 +675,7 @@
   }
 
   .header__underlay-closed {
-    height: var(--closed-underlay-height, 100%);
+    height: var(--closed-underlay-height, calc(100% - 1px));
     z-index: var(--layer-lowest);
     background: linear-gradient(
       var(--color-background-top-row) 0 var(--top-row-height),
@@ -966,7 +968,8 @@
     justify-content: center;
 
     &:hover {
-      --button-color: var(--color-foreground);
+      /* --button-color: var(--color-foreground); */
+      --button-color: var(--color-white);
     }
   }
 

@@ -1,0 +1,168 @@
+ .comparison {
+    display: block;
+    width: 100%;
+    align-self: stretch;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+
+  .comparison-placeholder {
+    padding: 32px;
+    text-align: center;
+    border: 1px dashed currentcolor;
+    border-radius: 8px;
+    opacity: 0.65;
+  }
+
+  .comparison__scroller {
+    overflow-x: auto;
+    border-radius: var(--comparison-radius, 8px);
+    cursor: grab;
+  }
+
+  .comparison__scroller.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  .comparison__table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .comparison__table :is(td, th) {
+    border-block-end: 1px solid var(--comparison-border);
+    border-inline-end: 1px solid var(--comparison-border);
+    padding: var(--padding-xs) var(--padding-sm);
+    background-color: var(--color-background);
+    vertical-align: middle;
+    text-align: center;
+    font-size: var(--font-paragraph--size, 0.875rem);
+  }
+
+
+  /* Sticky first column so attribute names stay readable while the table scrolls.
+     `width` is required here — table-layout: fixed reads only the physical
+     `width` property on first-row cells to size columns; inline-size/min/max-width
+     are ignored by the sizing algorithm (they still clip content, but don't set
+     the column track). */
+  .comparison__table .comparison__attribute {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: var(--layer-raised, 2);
+    width: var(--comparison-column-width);
+    min-width: var(--comparison-column-width);
+    max-width: var(--comparison-column-width);
+    text-align: left;
+    font-weight: 600;
+    background-color: var(--comparison-attribute-background);
+    border-inline-start: 1px solid var(--comparison-border);
+    overflow-wrap: break-word;
+  }
+
+  .comparison__attribute--empty {
+    border: 0;
+    background: transparent;
+  }
+
+  .comparison__column,
+  .comparison__cell {
+    width: auto;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .comparison__table .comparison__cell {
+    font-size: 14px;
+  }
+
+  .comparison__column {
+    border-block-end: 0;
+    vertical-align: bottom;
+  }
+
+  .comparison__column product-component {
+    text-align: left;
+  }
+
+  .comparison__column product-component .resource-card__content {
+    gap: var(--padding-xs);
+  }
+
+  .comparison__column product-component .resource-card__media {
+    padding: 2.5rem;
+  }
+
+  .comparison__column-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+    display: block;
+  }
+
+  .comparison__column-label {
+    display: block;
+    margin-block-start: var(--margin-xs, 0.5rem);
+    font-weight: 600;
+  }
+
+  /* The resource-card is height:100% by default, which would stretch the header row. */
+  .comparison__column .resource-card,
+  .comparison__column .resource-card__wrapper {
+    height: auto;
+  }
+
+  .comparison__table tr:last-child td:last-child {
+    border-bottom-right-radius: var(--comparison-radius, 8px);
+    }
+    .comparison__table tr:last-child th:first-child {
+    border-bottom-left-radius: var(--comparison-radius, 8px);
+    }
+
+    .comparison__table tr:first-child th {
+    border-block-start: 1px solid var(--comparison-border);
+    }
+    .comparison__table tr:first-child th:last-child {
+    border-top-right-radius: var(--comparison-radius, 8px);
+    }
+    .comparison__table tr:first-child th:first-of-type {
+    border-top-left-radius: var(--comparison-radius, 8px);
+    border-inline-start: 1px solid var(--comparison-border);
+    }
+
+    .comparison__table tr:first-child td.comparison__attribute.comparison__attribute--empty {
+      border-inline-end: 0;
+      border-inline-start: 0;
+      background: var(--color-white)
+    }
+
+
+  .comparison__footnote {
+    margin-block-start: var(--margin-sm, 0.75rem);
+    text-align: center;
+    font-weight: 600;
+  }
+
+  @media screen and (max-width: 749px) {
+    .comparison__scroller {
+      cursor: auto;
+    }
+
+    .comparison__table .comparison__attribute {
+      width: 8.5rem;
+      min-width: 8.5rem;
+    }
+
+    .comparison__column,
+    .comparison__cell {
+      width: 12rem;
+      min-width: 12rem;
+      max-width: 12rem;
+    }
+    .comparison__column product-component .resource-card__media {
+      padding: 1rem
+    }
+  }

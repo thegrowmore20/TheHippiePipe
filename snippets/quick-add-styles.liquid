@@ -184,6 +184,12 @@
   .quick-add-block {
     display: block;
     width: 100%;
+    /* margin-top: auto */
+  }
+
+  product-card[class*="card"][data-rez-button-added] .rez-out-of-stock-collection-btn {
+    margin-top: 12px !important;
+    min-height: 40px;
   }
 
   .quick-add.quick-add--inline {
@@ -217,7 +223,7 @@
     width: 100%;
     max-inline-size: 100%;
     min-inline-size: 0;
-    height: var(--button-size-md);
+    height: var(--button-size-lg); 
     justify-content: center;
     gap: var(--gap-2xs);
     opacity: 1;

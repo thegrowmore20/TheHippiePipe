@@ -1,6 +1,10 @@
 {{ 'overflow-list.css' | asset_url | preload_tag: as: 'style' }}
 {{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'base-extended.css' | asset_url | stylesheet_tag: preload: true }}
+{% comment %} {{ 'base-extended.css' | asset_url | stylesheet_tag: preload: true }} {% endcomment %}
+
+<link rel="preload" href="{{ 'base-extended.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript>{{ 'base-extended.css' | asset_url | stylesheet_tag }}</noscript>
+
 
 {% if request.page_type == "index" %}
 <link href="{{ 'homepage.css' | asset_url }}" as="style" rel="preload">

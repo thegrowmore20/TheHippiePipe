@@ -483,6 +483,21 @@ p:empty {
   height: 100%;
 }
 
+/* Mobile section height override. Only sections that emit --section-min-height-mobile
+   (i.e. set a mobile-specific height) are affected; every other section falls back to
+   its desktop --section-min-height, so this is a no-op for them. */
+@media screen and (max-width: 749px) {
+  .section {
+    min-height: var(--section-min-height-mobile, var(--section-min-height, 'auto'));
+  }
+
+  .section-content-wrapper.section-content-wrapper {
+    min-height: calc(
+      var(--section-min-height-mobile, var(--section-min-height, 'auto')) - var(--section-height-offset, 0px)
+    );
+  }
+}
+
 /* Utility */
 
 .hidden {
@@ -887,6 +902,11 @@ a {
 
 :is(h1, h2, h3, h4, h5, h6, p) > a:hover {
   color: rgb(var(--color-rgb, var(--color-foreground-rgb)) / 0.7);
+}
+
+/* Section header links such as "View all" in featured collections and blogs. */
+.section-view-all-link:hover {
+  text-decoration-color: currentcolor;
 }
 
 /* Add underline to text using our paragraph styles only. */

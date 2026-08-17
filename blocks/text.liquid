@@ -1,6 +1,6 @@
 
 
-{% render 'text', block: block %}
+{% render 'text', block: block, class: block.settings.custom_class %}
 
 {% schema %}
 {
@@ -337,6 +337,11 @@
       "max": 50,
       "step": 1,
       "visible_if": "{{ block.settings.background }}"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom class"
     },
     {
       "type": "header",

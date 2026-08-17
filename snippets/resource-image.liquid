@@ -49,7 +49,9 @@
     assign image_resource = image_source
   elsif content_type == 'collections'
     assign collection = closest.collection
-    if collection.metafields.custom.mobile_image != blank
+    if collection.metafields.custom.card_thumbnail != blank
+      assign image_resource = collection.metafields.custom.card_thumbnail
+    elsif collection.metafields.custom.mobile_image != blank
       assign image_resource = collection.metafields.custom.mobile_image
     else
       assign image_resource = collection.image

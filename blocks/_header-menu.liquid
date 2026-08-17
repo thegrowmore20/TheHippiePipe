@@ -93,6 +93,9 @@
 
     {% capture children %}
       {% for link in block_settings.menu.links %}
+        {%- if link.type == 'collection_link' and link.object -%}
+          {%- assign link_count = link.object.all_products_count | default: link.object.products_count -%}
+        {%- endif -%}
         <li
           role="presentation"
           class="menu-list__list-item"
@@ -116,7 +119,7 @@
             ref="menuitem"
           >
             <span class="menu-list__link-title">
-              {{- link.title -}}
+              {{- link.title -}}&nbsp;({{ link_count }})
               {%- if link.links != blank -%}
                 <span class="svg-wrapper menu-list__caret" aria-hidden="true">
                   {{- 'icon-caret.svg' | inline_asset_content -}}
@@ -338,7 +341,8 @@
 
     &:hover,
     &:focus {
-      color: var(--menu-top-level-font-color);
+      color: var(--menu-top-level-font-color-hover);
+      
     }
 
     @media screen and (min-width: 750px) {
@@ -402,9 +406,27 @@
     margin-inline: auto;
   }
 
+  .mega-menu .megamenu-view-all {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    padding-block-start: var(--submenu-padding-block-start)
+  }
+  .mega-menu .megamenu-view-all a.button {
+    margin: 0 auto;
+    height: 36px;
+  }
+
   @media screen and (min-width: 990px) {
     .mega-menu-product-row__grid {
       grid-template-columns: repeat(var(--mmpr-columns, 6), minmax(0, 1fr));
+      margin-inline: 0;
+    }
+    .mega-menu.mega-menu-product-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--gap-md, 1rem);
     }
   }
 
@@ -489,10 +511,10 @@
   }
 
   /* stylelint-disable-next-line selector-max-specificity */
-  .menu-list:not(:has(.menu-list__list-item:hover)) .menu-list__link--active,
+  /* .menu-list:not(:has(.menu-list__list-item:hover)) .menu-list__link--active, */
   .menu-list .menu-list__list-item:where(:hover, :focus-within) .menu-list__link,
   .menu-list .menu-list__list-item:is([slot='more'], [slot='overflow']) .menu-list__link[aria-expanded='true'] {
-    color: var(--menu-top-level-font-color);
+    color: var(--menu-top-level-font-color-hover);
   }
 
   .overflow-menu::part(list) {

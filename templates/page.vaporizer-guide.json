@@ -73,12 +73,12 @@
       "name": "t:names.hero",
       "settings": {
         "media_type_1": "image",
-        "image_1": "shopify://shop_images/Vaporizer_Banner_Desktop.webp",
+        "image_1": "shopify://shop_images/Vaporizer_guides.webp",
         "media_type_2": "image",
         "stack_media_on_mobile": false,
         "custom_mobile_media": true,
         "media_type_1_mobile": "image",
-        "image_1_mobile": "shopify://shop_images/Vaporizer_Banner_Mobile.webp",
+        "image_1_mobile": "shopify://shop_images/Vaporizer_guides-mobile.webp",
         "media_type_2_mobile": "image",
         "link": "",
         "open_in_new_tab": false,
@@ -93,6 +93,8 @@
         "section_width": "page-width",
         "section_height": "small",
         "section_height_custom": 50,
+        "section_height_mobile": "inherit",
+        "section_height_mobile_custom": 50,
         "background_color": "",
         "toggle_overlay": true,
         "overlay_color": "#00000026",
@@ -259,6 +261,8 @@
         "custom_width": 800,
         "section_height": "",
         "section_height_custom": 50,
+        "section_height_mobile": "inherit",
+        "section_height_mobile_custom": 50,
         "background_media": "none",
         "background_color": "",
         "video_position": "cover",
@@ -2142,6 +2146,8 @@
         "custom_width": 800,
         "section_height": "",
         "section_height_custom": 50,
+        "section_height_mobile": "inherit",
+        "section_height_mobile_custom": 50,
         "background_media": "none",
         "background_color": "{{ settings.color_palette.background }}",
         "video_position": "cover",
@@ -2303,7 +2309,7 @@
                 "heading": "Manual vs. Rechargeable",
                 "open_by_default": false,
                 "icon": "arrow",
-                "image_upload": "shopify://shop_images/Veprizor_Guide_Manual_vs._Rechargeable_Black.svg",
+                "image_upload": "shopify://shop_images/Veprizor_Guide_Manual_vs._Rechargeable_4300d531-bbbc-4b97-8a6e-f055b8968f44.svg",
                 "width": 34
               },
               "blocks": {
@@ -2344,8 +2350,8 @@
                 "heading": "Chamber Size & Session Length",
                 "open_by_default": false,
                 "icon": "arrow",
-                "image_upload": "shopify://shop_images/Veprizor_Guide_Chamber_Size_Session_Length.svg",
-                "width": 24
+                "image_upload": "shopify://shop_images/Veprizor_Guide_Chamber_Size_Session_Length_9a742487-a1d9-4ecf-8742-117358b7a420.svg",
+                "width": 34
               },
               "blocks": {
                 "text_Eqc97y": {
@@ -2385,8 +2391,8 @@
                 "heading": "Build & Finish",
                 "open_by_default": false,
                 "icon": "arrow",
-                "image_upload": "shopify://shop_images/Veprizor_Guide_Build_Finish.svg",
-                "width": 24
+                "image_upload": "shopify://shop_images/Veprizor_Guide_Build_Finish_50648eed-1974-448b-b126-79c0a88f0c87.svg",
+                "width": 34
               },
               "blocks": {
                 "text_B6hbdR": {
@@ -2426,8 +2432,8 @@
                 "heading": "Portability & Carry",
                 "open_by_default": false,
                 "icon": "arrow",
-                "image_upload": "shopify://shop_images/Veprizor_Guide_Portability_Carry.svg",
-                "width": 24
+                "image_upload": "shopify://shop_images/Veprizor_Guide_Portability_Carry_6a5ee7e7-0ce6-4a41-b968-c4d5776cbe82.svg",
+                "width": 34
               },
               "blocks": {
                 "text_cNeDtj": {
@@ -2467,8 +2473,8 @@
                 "heading": "Cleaning & Maintenance",
                 "open_by_default": false,
                 "icon": "arrow",
-                "image_upload": "shopify://shop_images/Veprizor_Guide_Cleaning_Maintenance.svg",
-                "width": 24
+                "image_upload": "shopify://shop_images/Veprizor_Guide_Cleaning_Maintenance_5947d6b0-f425-4185-84b9-7b01c38a9b4f.svg",
+                "width": 34
               },
               "blocks": {
                 "text_qqi67m": {
@@ -2530,6 +2536,8 @@
         "custom_width": 1000,
         "section_height": "small",
         "section_height_custom": 50,
+        "section_height_mobile": "inherit",
+        "section_height_mobile_custom": 50,
         "background_media": "none",
         "background_color": "",
         "video_position": "cover",
@@ -2829,10 +2837,10 @@
                         "link": "",
                         "open_in_new_tab": false,
                         "placeholder": "",
-                        "padding-block-start": 12,
-                        "padding-block-end": 12,
-                        "padding-inline-start": 12,
-                        "padding-inline-end": 12,
+                        "padding-block-start": 15,
+                        "padding-block-end": 15,
+                        "padding-inline-start": 15,
+                        "padding-inline-end": 15,
                         "custom_class": ""
                       },
                       "blocks": {
@@ -3121,10 +3129,10 @@
                         "link": "",
                         "open_in_new_tab": false,
                         "placeholder": "",
-                        "padding-block-start": 12,
-                        "padding-block-end": 12,
-                        "padding-inline-start": 12,
-                        "padding-inline-end": 12,
+                        "padding-block-start": 15,
+                        "padding-block-end": 15,
+                        "padding-inline-start": 15,
+                        "padding-inline-end": 15,
                         "custom_class": ""
                       },
                       "blocks": {
@@ -3469,10 +3477,10 @@
                         "link": "",
                         "open_in_new_tab": false,
                         "placeholder": "",
-                        "padding-block-start": 12,
-                        "padding-block-end": 12,
-                        "padding-inline-start": 12,
-                        "padding-inline-end": 12,
+                        "padding-block-start": 15,
+                        "padding-block-end": 15,
+                        "padding-inline-start": 15,
+                        "padding-inline-end": 15,
                         "custom_class": ""
                       },
                       "blocks": {
@@ -3761,10 +3769,10 @@
                         "link": "",
                         "open_in_new_tab": false,
                         "placeholder": "",
-                        "padding-block-start": 12,
-                        "padding-block-end": 12,
-                        "padding-inline-start": 12,
-                        "padding-inline-end": 12,
+                        "padding-block-start": 15,
+                        "padding-block-end": 15,
+                        "padding-inline-start": 15,
+                        "padding-inline-end": 15,
                         "custom_class": ""
                       },
                       "blocks": {
@@ -4109,10 +4117,10 @@
                         "link": "",
                         "open_in_new_tab": false,
                         "placeholder": "",
-                        "padding-block-start": 12,
-                        "padding-block-end": 12,
-                        "padding-inline-start": 12,
-                        "padding-inline-end": 12,
+                        "padding-block-start": 15,
+                        "padding-block-end": 15,
+                        "padding-inline-start": 15,
+                        "padding-inline-end": 15,
                         "custom_class": ""
                       },
                       "blocks": {
@@ -4401,10 +4409,10 @@
                         "link": "",
                         "open_in_new_tab": false,
                         "placeholder": "",
-                        "padding-block-start": 12,
-                        "padding-block-end": 12,
-                        "padding-inline-start": 12,
-                        "padding-inline-end": 12,
+                        "padding-block-start": 15,
+                        "padding-block-end": 15,
+                        "padding-inline-start": 15,
+                        "padding-inline-end": 15,
                         "custom_class": ""
                       },
                       "blocks": {
@@ -4749,10 +4757,10 @@
                         "link": "",
                         "open_in_new_tab": false,
                         "placeholder": "",
-                        "padding-block-start": 12,
-                        "padding-block-end": 12,
-                        "padding-inline-start": 12,
-                        "padding-inline-end": 12,
+                        "padding-block-start": 15,
+                        "padding-block-end": 15,
+                        "padding-inline-start": 15,
+                        "padding-inline-end": 15,
                         "custom_class": ""
                       },
                       "blocks": {
@@ -5041,10 +5049,10 @@
                         "link": "",
                         "open_in_new_tab": false,
                         "placeholder": "",
-                        "padding-block-start": 12,
-                        "padding-block-end": 12,
-                        "padding-inline-start": 12,
-                        "padding-inline-end": 12,
+                        "padding-block-start": 15,
+                        "padding-block-end": 15,
+                        "padding-inline-start": 15,
+                        "padding-inline-end": 15,
                         "custom_class": ""
                       },
                       "blocks": {
@@ -5218,6 +5226,8 @@
         "custom_width": 800,
         "section_height": "",
         "section_height_custom": 50,
+        "section_height_mobile": "inherit",
+        "section_height_mobile_custom": 50,
         "background_media": "none",
         "background_color": "{{ settings.color_palette.color7 }}",
         "video_position": "cover",
@@ -5415,6 +5425,8 @@
         "custom_width": 800,
         "section_height": "",
         "section_height_custom": 50,
+        "section_height_mobile": "inherit",
+        "section_height_mobile_custom": 50,
         "background_media": "none",
         "background_color": "{{ settings.color_palette.background }}",
         "video_position": "cover",
@@ -5690,6 +5702,8 @@
         "custom_width": 800,
         "section_height": "",
         "section_height_custom": 50,
+        "section_height_mobile": "inherit",
+        "section_height_mobile_custom": 50,
         "background_media": "none",
         "background_color": "{{ settings.color_palette.background }}",
         "video_position": "cover",
@@ -5849,7 +5863,7 @@
               "type": "_product-list-text",
               "name": "t:names.collection_title",
               "settings": {
-                "text": "<h2>Our Signature Models</h2>",
+                "text": "<h2>Shop Signature Models</h2>",
                 "width": "fit-content",
                 "max_width": "normal",
                 "alignment": "left",
@@ -5975,7 +5989,7 @@
               "type": "loox-rating",
               "name": "Loox rating",
               "settings": {
-                "product": "",
+                "product": "{{ closest.product }}",
                 "alignment": "flex-start",
                 "padding-block-start": 4,
                 "padding-block-end": 8,
@@ -6000,7 +6014,7 @@
                 "case": "none",
                 "text_color": "",
                 "padding-block-start": 0,
-                "padding-block-end": 0,
+                "padding-block-end": 8,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
               },
@@ -6292,6 +6306,8 @@
         "custom_width": 800,
         "section_height": "small",
         "section_height_custom": 50,
+        "section_height_mobile": "inherit",
+        "section_height_mobile_custom": 50,
         "background_media": "none",
         "background_color": "{{ settings.color_palette.color7 }}",
         "video_position": "cover",

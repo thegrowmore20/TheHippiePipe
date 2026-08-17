@@ -19,10 +19,11 @@
   if link.type == 'collection_link' and link.object != blank
     assign col = link.object
     assign megamenu_image = col.metafields.custom.megamenu_image.value
+    assign megamenu_col_thumb_image = col.metafields.custom.card_thumbnail.value
     if megamenu_image != blank
       assign thumb = megamenu_image
-    elsif col.image != blank
-      assign thumb = col.image
+    elsif megamenu_col_thumb_image != blank
+      assign thumb = megamenu_col_thumb_image
     else
       assign first_product = col.products | where: 'featured_image' | first
       assign thumb = first_product.featured_image

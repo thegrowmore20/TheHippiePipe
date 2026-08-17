@@ -6,7 +6,7 @@
 %}
 
 {% if button_blog != blank and button_blog.articles_count > section.settings.post_limit %}
-  {% render 'button', link: button_blog.url %}
+  {% render 'button', link: button_blog.url, additional_classes: 'section-view-all-link' %}
 {% endif %}
 
 {% schema %}

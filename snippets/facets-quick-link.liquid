@@ -1,0 +1,32 @@
+{%- doc -%}
+  Renders a single "quick link" row styled like a facet accordion heading
+  (label + chevron + count) but acts as a plain redirect link — no expand,
+  chevron points right instead of down.
+
+  @param {object} collection - Collection object (from a `collection` schema setting)
+  @param {string} [label] - Optional label override; falls back to collection.title
+{%- enddoc -%}
+
+{%- if collection != blank -%}
+  {%- liquid
+    assign nav_count = collection.all_products_count | default: collection.products_count
+    assign link_label = label | default: collection.title
+  -%}
+  <div class="facets__item facets__item--quick-link">
+    <a href="{{ collection.url }}" class="facets__summary facets__quick-link">
+      <span class="facets__label">
+        {{ link_label }}
+        <span class="facets__status">
+          <span class="hide-when-empty">
+            {%- if nav_count != blank -%}({{ nav_count }}){%- endif -%}
+          </span>
+        </span>
+      </span>
+      <div class="facets__status-wrapper">
+        <span class="svg-wrapper icon-caret icon-caret--right">
+          {{- 'icon-caret.svg' | inline_asset_content -}}
+        </span>
+      </div>
+    </a>
+  </div>
+{%- endif -%}

@@ -115,6 +115,12 @@
         {%- endfor -%}
       {%- endif -%}
     </ul>
+    {% if collection_object.products.count > product_count %}
+      <div class="megamenu-view-all {{ collection_object.products.count }}={{ product_count }}">
+        <a href="{{ parent_link.url }}" class="button">View All</a>
+      </div>
+    {% endif %}
+    
   </div>
 {%- else -%}
   {% assign list_id = 'MegaMenuList-' | append: parent_link.title | handle %}

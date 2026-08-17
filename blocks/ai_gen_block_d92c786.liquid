@@ -1,0 +1,155 @@
+{% doc %}
+  @prompt
+    We need to display social media icons with there links. Like the theme has links if we add link then icon displays in svg format.
+    We need these social media block with image upload options for facebook, instagram,youtube and pinterest specially if we upload the image, whether the svg or any format it displays and if link and image are not blank then show the social media icon.
+    we want the mobile application style icons for social media which are displayed in ios or android devices, all the liquid markup and css should use the theme components and code to make the design consistent with all spacing options as well.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-social-icons-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    color: {{ block.settings.icon_color }};
+  }
+
+  .ai-social-icons-{{ ai_gen_id }}__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: {{ block.settings.alignment }};
+    gap: {{ block.settings.icon_gap }}px;
+    width: 100%;
+    padding: {{ block.settings.vertical_padding }}px 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .ai-social-icons-{{ ai_gen_id }}__item {
+    display: flex;
+  }
+
+  .ai-social-icons-{{ ai_gen_id }}__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: {{ block.settings.icon_size }}px;
+    height: {{ block.settings.icon_size }}px;
+    overflow: hidden;
+    color: {{ block.settings.icon_color }};
+    background: {{ block.settings.icon_background }};
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.corner_radius }}px;
+    text-decoration: none;
+    transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease;
+  }
+
+  .ai-social-icons-{{ ai_gen_id }}__link:hover,
+  .ai-social-icons-{{ ai_gen_id }}__link:focus-visible {
+    color: {{ block.settings.hover_icon_color }};
+    background: {{ block.settings.hover_background }};
+    border-color: {{ block.settings.hover_border_color }};
+  }
+
+  .ai-social-icons-{{ ai_gen_id }}__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  .ai-social-icons-{{ ai_gen_id }}__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .ai-social-icons-{{ ai_gen_id }}__fallback {
+    width: 55%;
+    height: 55%;
+    fill: currentColor;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-social-icons-{{ ai_gen_id }}__list {
+      gap: {{ block.settings.mobile_icon_gap }}px;
+      padding: {{ block.settings.mobile_vertical_padding }}px 0;
+    }
+
+    .ai-social-icons-{{ ai_gen_id }}__link {
+      width: {{ block.settings.mobile_icon_size }}px;
+      height: {{ block.settings.mobile_icon_size }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-social-icons-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <ul class="ai-social-icons-{{ ai_gen_id }}__list" aria-label="Social media links">
+    {% if block.settings.facebook_link != blank and block.settings.facebook_image != blank %}
+      <li class="ai-social-icons-{{ ai_gen_id }}__item">
+        <a class="ai-social-icons-{{ ai_gen_id }}__link" href="{{ block.settings.facebook_link }}" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+          <img class="ai-social-icons-{{ ai_gen_id }}__image" src="{{ block.settings.facebook_image | image_url: width: 160 }}" alt="" loading="lazy" width="160" height="160">
+        </a>
+      </li>
+    {% endif %}
+    {% if block.settings.instagram_link != blank and block.settings.instagram_image != blank %}
+      <li class="ai-social-icons-{{ ai_gen_id }}__item">
+        <a class="ai-social-icons-{{ ai_gen_id }}__link" href="{{ block.settings.instagram_link }}" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+          <img class="ai-social-icons-{{ ai_gen_id }}__image" src="{{ block.settings.instagram_image | image_url: width: 160 }}" alt="" loading="lazy" width="160" height="160">
+        </a>
+      </li>
+    {% endif %}
+    {% if block.settings.youtube_link != blank and block.settings.youtube_image != blank %}
+      <li class="ai-social-icons-{{ ai_gen_id }}__item">
+        <a class="ai-social-icons-{{ ai_gen_id }}__link" href="{{ block.settings.youtube_link }}" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+          <img class="ai-social-icons-{{ ai_gen_id }}__image" src="{{ block.settings.youtube_image | image_url: width: 160 }}" alt="" loading="lazy" width="160" height="160">
+        </a>
+      </li>
+    {% endif %}
+    {% if block.settings.pinterest_link != blank and block.settings.pinterest_image != blank %}
+      <li class="ai-social-icons-{{ ai_gen_id }}__item">
+        <a class="ai-social-icons-{{ ai_gen_id }}__link" href="{{ block.settings.pinterest_link }}" aria-label="Pinterest" target="_blank" rel="noopener noreferrer">
+          <img class="ai-social-icons-{{ ai_gen_id }}__image" src="{{ block.settings.pinterest_image | image_url: width: 160 }}" alt="" loading="lazy" width="160" height="160">
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "Social media icons",
+  "settings": [
+    { "type": "header", "content": "Social links" },
+    { "type": "url", "id": "facebook_link", "label": "Facebook link" },
+    { "type": "image_picker", "id": "facebook_image", "label": "Facebook icon" },
+    { "type": "url", "id": "instagram_link", "label": "Instagram link" },
+    { "type": "image_picker", "id": "instagram_image", "label": "Instagram icon" },
+    { "type": "url", "id": "youtube_link", "label": "YouTube link" },
+    { "type": "image_picker", "id": "youtube_image", "label": "YouTube icon" },
+    { "type": "url", "id": "pinterest_link", "label": "Pinterest link" },
+    { "type": "image_picker", "id": "pinterest_image", "label": "Pinterest icon" },
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "desktop_width_percent", "label": "Desktop width", "min": 50, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "select", "id": "alignment", "label": "Alignment", "options": [{ "value": "flex-start", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "flex-end", "label": "Right" }], "default": "center" },
+    { "type": "range", "id": "icon_size", "label": "Icon size", "min": 24, "max": 72, "step": 4, "unit": "px", "default": 44 },
+    { "type": "range", "id": "mobile_icon_size", "label": "Mobile icon size", "min": 24, "max": 64, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "icon_gap", "label": "Icon gap", "min": 4, "max": 32, "step": 4, "unit": "px", "default": 12 },
+    { "type": "range", "id": "mobile_icon_gap", "label": "Mobile icon gap", "min": 4, "max": 24, "step": 4, "unit": "px", "default": 8 },
+    { "type": "range", "id": "vertical_padding", "label": "Vertical spacing", "min": 0, "max": 48, "step": 4, "unit": "px", "default": 8 },
+    { "type": "range", "id": "mobile_vertical_padding", "label": "Mobile spacing", "min": 0, "max": 32, "step": 4, "unit": "px", "default": 8 },
+    { "type": "range", "id": "corner_radius", "label": "Corner radius", "min": 0, "max": 36, "step": 2, "unit": "px", "default": 14 },
+    { "type": "range", "id": "border_width", "label": "Border width", "min": 0, "max": 4, "step": 1, "unit": "px", "default": 1 },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "icon_color", "label": "Icon", "default": "#000000" },
+    { "type": "color", "id": "icon_background", "label": "Background", "default": "#FFFFFF" },
+    { "type": "color", "id": "border_color", "label": "Border", "default": "#DFDFDF" },
+    { "type": "color", "id": "hover_icon_color", "label": "Hover icon", "default": "#000000" },
+    { "type": "color", "id": "hover_background", "label": "Hover background", "default": "#F6D579" },
+    { "type": "color", "id": "hover_border_color", "label": "Hover border", "default": "#F6D579" }
+  ],
+  "presets": [{ "name": "Social media icons" }],
+  "tag": null,
+  "class": "social-media-icons-block"
+}
+{% endschema %}

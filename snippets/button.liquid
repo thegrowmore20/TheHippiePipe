@@ -3,6 +3,7 @@
 
   @param {string} link - link to render
   @param {object} [block] - The block
+  @param {string} [additional_classes] - Extra classes for a specific button instance
 
   @example
   {% render 'button', link: '/collections/all' %}
@@ -22,6 +23,7 @@
     size-style
     {{ block_settings.style_class }}
     {{ block_settings.style_class }}--{{ block.id }}
+    {{ additional_classes }}
   "
   style="{% render 'size-style', settings: block_settings %}"
   {%- if block_settings.open_in_new_tab -%}

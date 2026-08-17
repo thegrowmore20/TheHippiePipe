@@ -82,7 +82,7 @@
     {% render 'variant-swatches', product_resource: closest.product %}
   </product-swatches>
 
-  {%- if block_settings.overlay_on_media -%}
+  {% comment %} {%- if block_settings.overlay_on_media -%}
     <script>
       if (!customElements.get('product-swatches')) {
         customElements.define(
@@ -104,7 +104,7 @@
         );
       }
     </script>
-  {%- endif -%}
+  {%- endif -%} {% endcomment %}
 {% endif %}
 
 {% schema %}

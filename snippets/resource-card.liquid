@@ -10,6 +10,7 @@
   @param {boolean} [image_hover] - Whether to show a secondary image on hover and focus
   @param {string} [image_sizes] - The sizes attribute for responsive images. Defaults to 'auto'
   @param {string} [product_view_context] - The context for product view events (e.g., 'search'). Omit to disable view events.
+  @param {boolean} [show_quick_add] - Whether to render a quick-add-to-cart button on product cards. Defaults to false.
 {%- enddoc -%}
 
 {% liquid
@@ -18,15 +19,15 @@
   else
     assign ratio = image_aspect_ratio
   endif
-  assign image_width = image_width | default: 1200
-  assign widths = '240, 352, 832, 1200'
+  assign image_width = image_width | default: 832
+  assign widths = '240, 352, 452, 832'
   assign image_sizes = image_sizes | default: 'auto'
   assign single_thumbnail_collection = false
   if resource_type == 'collection' and collection_thumbnails != 'multiple'
     assign single_thumbnail_collection = true
   endif
 
-  if resource_type == 'product'
+if resource_type == 'product'
     assign product_wrapper_tag = 'product-component'
     if settings.transition_to_main_product
       assign product_wrapper_tag = 'product-card-link'
@@ -35,6 +36,13 @@
         assign featured_media_url = resource.featured_media.preview_image | image_url: width: image_width
       endif
     endif
+  endif
+
+  assign show_quick_add = show_quick_add | default: false
+  assign quick_add_variant = resource.selected_or_first_available_variant
+  assign render_quick_add = false
+  if resource_type == 'product' and show_quick_add and quick_add_variant != blank
+    assign render_quick_add = true
   endif
 %}
 
@@ -154,6 +162,30 @@
       {{- resource.title -}}
     </p>
 
+    {% if resource_type == 'product' and show_rating %}
+      {% liquid
+        assign product = resource | default: closest.product
+        assign rating = product.metafields.loox.avg_rating
+        assign review_count = product.metafields.loox.num_reviews
+      %}
+        <div
+          class="card-product-rating spacing-style {{ block.settings.custom_class | escape }}"
+          style="{% render 'spacing-style', settings: block.settings %} --card-product-rating-justify: {{ block.settings.alignment }};"
+          aria-label="Rated {{ rating }} out of 5 based on {{ review_count }} reviews"
+        >
+          <div
+            class="loox-rating"
+            data-pattern="[rating] ([count])"
+            data-show-empty-stars="true"
+            data-id="{{ product.id }}"
+            data-rating="{{ rating }}"
+            data-raters="{{ review_count }}"
+            data-floating-product-reviews-enabled="true"
+          ></div>
+        </div>
+      
+    {% endif %}  
+
     {% if resource_type == 'product' %}
       {% render 'price', product_resource: resource, show_unit_price: true %}
     {% elsif resource_type == 'collection' and single_thumbnail_collection == false %}
@@ -165,13 +197,47 @@
         {{- resource.excerpt | default: resource.content | strip_html | truncate: 65 -}}
       </p>
     {% endif %}
+    {%- if show_quick_add -%}
+      <div class="resource-card__quick-add">
+        {% render 'quick-add',
+          product: product,
+          section_id: section.id,
+          block: block,
+          layout: 'inline',
+          button_style_class: block.settings.style_class
+        %}
+      </div>
+    {%- endif -%}
+    
   </div>
 </div>
 {%- if resource_type == 'product' -%}
   </{{ product_wrapper_tag }}>
 {%- endif -%}
 
+
 {% stylesheet %}
+
+  .resource-card__quick-add {
+    /* position: absolute; */
+    inset-block-end: var(--padding-xs);
+    inset-inline-end: var(--padding-xs);
+    z-index: var(--layer-raised, 2);
+  }
+
+  .resource-card__quick-add-form {
+    margin: 0;
+  }
+
+  .resource-card__quick-add-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-2xs);
+    padding-block: var(--padding-2xs);
+    padding-inline: var(--padding-sm);
+    border-radius: var(--style-border-radius-buttons, 999px);
+  }
+
   .resource-card__wrapper {
     display: block;
     height: 100%;

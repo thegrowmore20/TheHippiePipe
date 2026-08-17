@@ -126,6 +126,7 @@
         class="sticky-add-to-cart__button add-to-cart-button button"
         ref="addToCartButton"
         on:click="/handleAddToCartClick"
+        aria-label="Sticky add to cart"
         {% unless current_variant.available %}
           disabled
         {% endunless %}
@@ -184,6 +185,24 @@
 %}
 
 {% stylesheet %}
+  .main-product-title h1 {
+    text-wrap: auto;
+    font-weight: 400;
+  }
+  .main-product-badges {
+    display: none;
+  }
+
+  .product-details .price-container {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .product-details .main-product-badges {
+    display: inline-flex;
+    position: static;
+    margin-left: 5px;
+  }
   .sticky-add-to-cart__bar {
     position: fixed;
     bottom: 20px;

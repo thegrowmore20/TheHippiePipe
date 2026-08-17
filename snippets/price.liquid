@@ -72,7 +72,20 @@
   endif
 -%}
 
-<div ref="priceContainer">
+{%- liquid
+  # Savings shown on the sale badge. Prefer the variant the card actually prices so the
+  # badge agrees with the visible strikethrough; fall back to the product-level values
+  # that gate the badge itself.
+  assign badge_variant = product.selected_or_first_available_variant
+  assign badge_savings = badge_variant.compare_at_price | minus: badge_variant.price
+  if badge_savings <= 0
+    assign badge_savings = product.compare_at_price | minus: product.price
+  endif
+  assign badge_savings_money = badge_savings | money
+-%}
+    
+
+<div ref="priceContainer" class="price-container">
   {% if has_volume_pricing %}
     {% comment %} Volume pricing display {% endcomment %}
     {% if show_compare_price %}
@@ -97,6 +110,34 @@
           <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
           {{- compare_at_price -}}
         </span>
+
+        {%- if product.available == false or product.compare_at_price > product.price -%}
+          <div
+            class="product-badges main-product-badges"
+            style="
+                --badge-border-radius: {{ settings.badge_corner_radius }}px;
+                --badge-font-family: var(--font-{{ settings.badge_font_family }}--family); --badge-font-weight: var(--font-{{ settings.badge_font_family }}--weight); --badge-text-transform: {{ settings.badge_text_transform }};
+            "
+          >
+            <div
+              class="
+                product-badges__badge product-badges__badge--rectangle
+                {% if product.available == false %} color-custom-badge-sold-out{% elsif product.compare_at_price > product.price %} color-custom-badge-sale{% endif %}
+              "
+            >
+              {%- if product.available == false -%}
+                {{ 'content.product_badge_sold_out' | t }}
+              {%- elsif product.compare_at_price > product.price -%}
+                {%- if badge_savings > 0 -%}
+                  {{ 'content.product_badge_save' | t: amount: badge_savings_money }}
+                {%- else -%}
+                  {{ 'content.product_badge_sale' | t }}
+                {%- endif -%}
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+        
       {% else %}
         <span class="price-item__group price-item--regular compare-at-price">
           <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>

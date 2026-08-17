@@ -175,12 +175,17 @@
       style="{% render 'spacing-style', settings: block_settings %}{% if block_settings.text_label_case == 'uppercase' %} --facet-label-transform: uppercase;{% endif %}"
       aria-label="{{ 'accessibility.filters' | t }}"
     >
+
+      {% render 'facets-quick-link', collection: block_settings.quick_link_1, label: block_settings.quick_link_1_text %}
+      {% render 'facets-quick-link', collection: block_settings.quick_link_2, label: block_settings.quick_link_2_text %}
+
       {% render 'collection-nav',
         menu: block_settings.collection_nav,
         filter_style: block_settings.filter_style,
         sectionId: section.id,
         in_drawer: in_drawer
       %}
+      
       <facets-form-component
         class="facets__form-wrapper"
         section-id="{{ section.id }}"
@@ -317,6 +322,12 @@
         </form>
       </facets-form-component>
     </div>
+  </div>
+
+  <div class="mobile-collection-tabs">
+    {% for link in block_settings.tabs_menu.links limit: 2 %}
+      <a href="{{ link.url }}" {% if link.current %}class="active-tab"{% endif %}>{{ link.title }}</a>
+    {% endfor %}
   </div>
 
   <div
@@ -466,6 +477,9 @@
           <scroll-hint
             class="facets-drawer__filters"
           >
+
+            {% render 'facets-quick-link', collection: block_settings.quick_link_1, label: block_settings.quick_link_1_text %}
+            {% render 'facets-quick-link', collection: block_settings.quick_link_2, label: block_settings.quick_link_2_text %}
             {% render 'collection-nav',
               menu: block_settings.collection_nav,
               filter_style: 'vertical',
@@ -571,6 +585,29 @@
     }
   }
 
+  .mobile-collection-tabs {
+    display: none;
+  }
+  @media (max-width: 749px) {
+    .mobile-collection-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      justify-content: center;
+      justify-items: center;
+      margin-bottom: 12px;
+    }
+    .mobile-collection-tabs a.active-tab {
+      background: #285a46;
+      color: #f6d579;
+    }
+    .mobile-collection-tabs a {
+      width: 100%;
+      text-align: center;
+      padding: 14px;
+      border: 1px solid #285a46;
+    }
+  }
+
   .facets-toggle {
     --icon-offset: -3px;
 
@@ -654,6 +691,7 @@
   .facets-block-wrapper--vertical + .facets-toggle {
     @media screen and (max-width: 749px) {
       margin: 0;
+      padding-top: 0;
     }
   }
 
@@ -1202,7 +1240,6 @@
     width: max-content;
     display: flex;
     margin-inline-start: auto;
-    font-weight: 500;
     color: var(--color-foreground);
   }
 
@@ -1307,6 +1344,32 @@
     height: var(--font-paragraph--size);
     position: absolute;
   }
+  
+
+  .facets__quick-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    padding-block: var(--padding-md);
+  }
+
+  .facets__quick-link .facets__label {
+    display: flex;
+    align-items: center;
+    gap: 4px
+  }
+
+  .icon-caret--right {
+    transform: rotate(-90deg);
+  }
+
+  .facets-drawer__filters .facets__item--quick-link {
+    padding: 0 var(--theme-drawer-padding);
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -1390,6 +1453,38 @@
       "type": "link_list",
       "id": "collection_nav",
       "label": "Filters Navigation"
+    },
+    {
+      "type": "header",
+      "content": "Quick Collection Links"
+    },
+    {
+      "type": "collection",
+      "id": "quick_link_1",
+      "label": "Quick link 1 collection"
+    },
+    {
+      "type": "text",
+      "id": "quick_link_1_text",
+      "label": "Quick link 1 label (optional)",
+      "info": "Leave blank to use the collection's title"
+    },
+    {
+      "type": "collection",
+      "id": "quick_link_2",
+      "label": "Quick link 2 collection"
+    },
+    {
+      "type": "text",
+      "id": "quick_link_2_text",
+      "label": "Quick link 2 label (optional)",
+      "info": "Leave blank to use the collection's title"
+    },
+    {
+      "type": "link_list",
+      "id": "tabs_menu",
+      "label": "Tabs Menu",
+      "info": "Supports upto two menu items and mobily only"
     },
     {
       "type": "checkbox",

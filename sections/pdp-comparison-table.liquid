@@ -82,6 +82,7 @@
   # ------------------------------------------------------------ column count
   # Only columns that are not the current product count. One-column tables are
   # not comparisons, so they are treated as no data.
+  comment 
   assign other_columns = 0
   if compare_products != blank
     for cp in compare_products
@@ -90,6 +91,30 @@
       endunless
     endfor
   endif
+  endcomment
+
+  # Resolve each comparison column's key ONCE here, not once per cell. Also caps the
+  # number of columns so a badly-populated metafield can't render a 9-column table.
+  assign max_cols = s.max_columns | default: 3
+  assign columns_built = 0
+  assign column_keys = ''
+  if compare_products != blank
+    for cp in compare_products
+      if columns_built >= max_cols
+        break
+      endif
+      unless cp.id == product.id
+        assign cp_key = cp.metafields[ns][compare_key_key].value | handle | replace: '-', '_'
+        if cp_key == blank
+          assign cp_key = cp.handle | replace: '-', '_'
+        endif
+        assign column_keys = column_keys | append: cp_key | append: '||'
+        assign columns_built = columns_built | plus: 1
+      endunless
+    endfor
+  endif
+  assign column_keys = column_keys | split: '||'
+  assign other_columns = column_keys.size
 
   # -------------------------------------------------------------- row count
   # A feature row with no name renders a blank sticky header, so it is skipped.
@@ -148,13 +173,41 @@
 
   # Track the real column width so srcset picks a correctly sized file. The block
   # hardcoded 230px here and ignored the column_width setting.
-  assign card_sizes = '(min-width: 750px) ' | append: s.column_width | append: 'px, 200px'
+
+  # assign card_sizes = '(min-width: 750px) ' | append: s.column_width | append: 'px, 200px'
+
+  # Product columns are width:auto inside a fixed-layout, 920px-max table, so their real
+  # width is (920 - attribute column) / column count — NOT column_width, which only sizes
+  # the sticky attribute column. Getting this wrong makes the CDN serve oversized files.
+  if use_manual
+    assign total_columns = 3
+  else
+    assign total_columns = other_columns | plus: 1
+  endif
+  if total_columns < 1
+    assign total_columns = 1
+  endif
+  assign col_px = 920 | minus: s.column_width | divided_by: total_columns | plus: 8
+  assign card_sizes = '(min-width: 750px) ' | append: col_px | append: 'px, 192px'
+
+  # Feeds contain-intrinsic-size so the placeholder height is close to the real height
+  # and scrolling into view doesn't jump the scrollbar.
+  assign est_rows = valid_features
+  if use_manual
+    assign est_rows = manual_rows.size
+  endif
+  assign est_height = est_rows | times: 52 | plus: 420
+
 -%}
 
 {%- if render_table -%}
 
-  {%- if has_heading -%}
-    {% style %}
+  {% style %}
+    #shopify-section-{{ section.id }} {
+      content-visibility: auto;
+      contain-intrinsic-size: auto {{ est_height }}px;
+    }
+    {%- if has_heading -%}
       .comparison-heading-{{ uid }} {
         display: block;
         margin: 0;
@@ -214,8 +267,9 @@
           {% endif %}
         }
       }
-    {% endstyle %}
-  {%- endif -%}
+    {%- endif -%}
+  {% endstyle %}
+  
 
   {%- capture children -%}
     <comparison-table
@@ -244,19 +298,26 @@
                   resource: product,
                   resource_type: 'product',
                   image_aspect_ratio: '1 / 1',
-                  image_sizes: card_sizes
+                  image_sizes: card_sizes,
+                  show_rating: true,
+                  show_quick_add: true
                 -%}
               </th>
 
               {%- if use_metafields -%}
+                {%- assign cols_rendered = 0 -%}
                 {%- for cp in compare_products -%}
+                  {%- if cols_rendered >= other_columns -%}{%- break -%}{%- endif -%}
                   {%- unless cp.id == product.id -%}
+                    {%- assign cols_rendered = cols_rendered | plus: 1 -%}
                     <th scope="col" class="comparison__column">
                       {%- render 'resource-card',
                         resource: cp,
                         resource_type: 'product',
                         image_aspect_ratio: '1 / 1',
-                        image_sizes: card_sizes
+                        image_sizes: card_sizes,
+                        show_rating: true,
+                        show_quick_add: true
                       -%}
                     </th>
                   {%- endunless -%}
@@ -300,7 +361,7 @@
                         height="230"
                         loading="lazy"
                         decoding="async"
-                        sizes="{{ card_sizes }}"
+                        fetchpriority="low"
                         alt="{{ col_alt | escape }}"
                       >
                     {%- endif -%}
@@ -329,7 +390,7 @@
                     {{ current_value | default: '—' }}
                   </td>
 
-                  {%- for cp in compare_products -%}
+                  {% comment %} {%- for cp in compare_products -%}
                     {%- unless cp.id == product.id -%}
                       {%- liquid
                         assign cp_key = cp.metafields[ns][compare_key_key].value | handle | replace: '-', '_'
@@ -340,6 +401,10 @@
                       -%}
                       <td class="comparison__cell">{{ cp_value | default: '—' }}</td>
                     {%- endunless -%}
+                  {%- endfor -%} {% endcomment %}
+                   {%- for cp_key in column_keys -%}
+                    {%- assign cp_value = entry[cp_key] | metafield_tag | strip_html | strip -%}
+                    <td class="comparison__cell">{{ cp_value | default: '—' }}</td>
                   {%- endfor -%}
                 </tr>
               {%- endfor -%}
@@ -392,62 +457,7 @@
     }
   {% endstyle %}
 
-  <script type="module">
-    if (!customElements.get('comparison-table')) {
-      customElements.define(
-        'comparison-table',
-        class ComparisonTable extends HTMLElement {
-          connectedCallback() {
-            this.scroller = this.querySelector('[ref="scroller"]');
-            if (!this.scroller) return;
-
-            // Pointer events give us mouse + pen in one path; touch keeps native scrolling.
-            this.scroller.addEventListener('pointerdown', this.onDown);
-            this.scroller.addEventListener('dragstart', (event) => event.preventDefault());
-          }
-
-          onDown = (event) => {
-            if (event.pointerType === 'touch' || event.button !== 0) return;
-
-            const startX = event.clientX;
-            const startLeft = this.scroller.scrollLeft;
-            let dragging = false;
-
-            const onMove = (moveEvent) => {
-              const delta = moveEvent.clientX - startX;
-              if (!dragging && Math.abs(delta) > 6) {
-                dragging = true;
-                this.scroller.classList.add('is-dragging');
-              }
-              if (dragging) this.scroller.scrollLeft = startLeft - delta;
-            };
-
-            const onUp = () => {
-              window.removeEventListener('pointermove', onMove);
-              window.removeEventListener('pointerup', onUp);
-              window.removeEventListener('pointercancel', onUp);
-              this.scroller.classList.remove('is-dragging');
-              // Swallow the click that ends a drag so cards don't navigate.
-              if (dragging) {
-                this.scroller.addEventListener('click', (clickEvent) => {
-                  clickEvent.preventDefault();
-                  clickEvent.stopPropagation();
-                }, { capture: true, once: true });
-              }
-            };
-
-            window.addEventListener('pointermove', onMove);
-            window.addEventListener('pointerup', onUp);
-            window.addEventListener('pointercancel', onUp);
-          };
-
-          disconnectedCallback() {
-            if (this.scroller) this.scroller.removeEventListener('pointerdown', this.onDown);
-          }
-        }
-      );
-    }
-  </script>
+  <script src="{{ 'comparison-table.js' | asset_url }}" type="module" defer></script>
 
 {%- elsif request.design_mode -%}
 
@@ -492,145 +502,9 @@
 
 {%- endif -%}
 
-{% stylesheet %}
-  .comparison {
-    display: block;
-    width: 100%;
-    align-self: stretch;
-    max-width: 920px;
-    margin: 0 auto;
-  }
 
-  .comparison-placeholder {
-    padding: 32px;
-    text-align: center;
-    border: 1px dashed currentcolor;
-    border-radius: 8px;
-    opacity: 0.65;
-  }
-
-  .comparison__scroller {
-    overflow-x: auto;
-    border-radius: var(--comparison-radius, 8px);
-    cursor: grab;
-  }
-
-  .comparison__scroller.is-dragging {
-    cursor: grabbing;
-    user-select: none;
-  }
-
-  .comparison__table {
-    border-collapse: separate;
-    border-spacing: 0;
-    width: 100%;
-  }
-
-  .comparison__table :is(td, th) {
-    border-block-end: 1px solid var(--comparison-border);
-    border-inline-end: 1px solid var(--comparison-border);
-    padding: var(--padding-xs) var(--padding-sm);
-    background-color: var(--color-background);
-    vertical-align: middle;
-    text-align: center;
-    font-size: var(--font-paragraph--size, 0.875rem);
-  }
-
-  /* Sticky first column so attribute names stay readable while the table scrolls. */
-  .comparison__attribute {
-    position: sticky;
-    inset-inline-start: 0;
-    z-index: var(--layer-raised, 2);
-    min-width: var(--comparison-column-width);
-    text-align: start;
-    font-weight: 600;
-    background-color: var(--comparison-attribute-background);
-    border-inline-start: 1px solid var(--comparison-border);
-  }
-
-  .comparison__attribute--empty {
-    border: 0;
-    background: transparent;
-  }
-
-  .comparison__column,
-  .comparison__cell {
-    inline-size: var(--comparison-column-width);
-    min-inline-size: var(--comparison-column-width);
-    max-inline-size: var(--comparison-column-width);
-  }
-
-  .comparison__column {
-    border-block-end: 0;
-    vertical-align: bottom;
-  }
-
-  .comparison__column-image {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1;
-    object-fit: contain;
-    display: block;
-  }
-
-  .comparison__column-label {
-    display: block;
-    margin-block-start: var(--margin-xs, 0.5rem);
-    font-weight: 600;
-  }
-
-  /* The resource-card is height:100% by default, which would stretch the header row. */
-  .comparison__column .resource-card,
-  .comparison__column .resource-card__wrapper {
-    height: auto;
-  }
-
-  .comparison__table tr:last-child td:last-child {
-    border-bottom-right-radius: var(--comparison-radius, 8px);
-    }
-    .comparison__table tr:last-child th:first-child {
-    border-bottom-left-radius: var(--comparison-radius, 8px);
-    }
-
-    .comparison__table tr:first-child th {
-    border-block-start: 1px solid var(--comparison-border);
-    }
-    .comparison__table tr:first-child th:last-child {
-    border-top-right-radius: var(--comparison-radius, 8px);
-    }
-    .comparison__table tr:first-child th:first-of-type {
-    border-top-left-radius: var(--comparison-radius, 8px);
-    border-inline-start: 1px solid var(--comparison-border);
-    }
-
-    .comparison__table tr:first-child td.comparison__attribute.comparison__attribute--empty {
-        border-inline-end: 0
-    }
-
-
-  .comparison__footnote {
-    margin-block-start: var(--margin-sm, 0.75rem);
-    text-align: center;
-    font-weight: 600;
-  }
-
-  @media screen and (max-width: 749px) {
-    .comparison__scroller {
-      cursor: auto;
-    }
-
-    .comparison__attribute {
-      min-width: 9.5rem;
-    }
-
-    .comparison__column,
-    .comparison__cell {
-      inline-size: 10rem;
-      min-inline-size: 10rem;
-      max-inline-size: 10rem;
-    }
-  }
-{% endstylesheet %}
+<link rel="preload" href="{{ 'pdp-comparison-section.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="{{ 'pdp-comparison-section.css' | asset_url }}"></noscript>
 
 {% schema %}
 {

@@ -14,3 +14,15 @@
     border-radius: 50%;
     background: rgba(246, 213, 121, .08);
 }
+
+
+@media (max-width: 749px) {
+    .about-multicolumn-unequal {
+        min-height: fit-content;
+        flex-shrink: 0;
+    }
+    .group-block:has(.about-multicolumn-unequal) {
+        flex: unset;
+        height: auto;
+    }
+}

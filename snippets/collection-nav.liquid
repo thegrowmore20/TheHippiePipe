@@ -124,6 +124,11 @@
                 if link.current or link.active
                   assign is_current = true
                 endif
+
+                assign nav_count = blank
+                if link.type == 'collection_link' and link.object
+                  assign nav_count = link.object.all_products_count | default: link.object.products_count
+                endif
               %}
               <li
                 data-skip-node-update="true"
@@ -149,7 +154,12 @@
                   >
                   <span class="checkbox__label">
                     {{ 'icon-checkmark.svg' | inline_asset_content }}
-                    <span class="checkbox__label-text">{{- link.title -}}</span>
+                    <span class="checkbox__label-text">
+                      {{- link.title -}}
+                      {%- if nav_count != blank -%}
+                        <span class="facets__nav-count"> ({{ nav_count }})</span>
+                      {%- endif -%}
+                    </span>
                   </span>
                 </a>
 

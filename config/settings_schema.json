@@ -1629,6 +1629,12 @@
       },
       {
         "type": "checkbox",
+        "id": "shipping_info",
+        "label": "Shipping Information",
+        "default": true
+      },
+      {
+        "type": "checkbox",
         "id": "show_accelerated_checkout_buttons",
         "label": "t:settings.checkout_buttons",
         "info": "t:info.checkout_buttons",

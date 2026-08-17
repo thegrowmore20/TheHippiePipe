@@ -153,6 +153,9 @@ strong{
 .header-actions__cart-icon:hover .cart-bubble {
   transform: scale(var(--hover-scale, 1.1));
 }
+.header-actions__cart-icon:hover .cart-bubble__background {
+  background-color: var(--cart-bubble-background-hover);
+}
 
 .hover-icon-scale svg {
   transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
@@ -162,6 +165,7 @@ strong{
 .hover-icon-scale:hover svg,
 .hover-icon-scale:focus-within svg {
   transform: scale(var(--hover-scale, 1.1));
+  color: var(--button-color);
 }
 
 .hover-color:hover .custom-icon-size path.st0,
@@ -190,12 +194,27 @@ accordion-custom summary.details__header .svg-wrapper {
   width: 1.75rem;
   height: 1.75rem;
   padding: 0.375rem;
-  background: var(--color-primary-button-background);
-  color: var(--color-primary-button-text);
+  background: #f1f3f4;
+  color: #747878;
   border-radius: 50%;
 
   @media screen and (max-width: 767px) {
     width: 1.5rem;
     height: 1.5rem;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
   }
 }
+
+accordion-custom summary.product-faqs__question:hover .svg-wrapper,
+accordion-custom summary.details__header:hover .svg-wrapper {
+  background: #e0e2e3;
+}
+
+
+@media (max-width: 48rem) {
+    .needsclick.kl-private-reset-css-Xuajs1 {
+			bottom: 55.46px !important;
+		}
+}
+

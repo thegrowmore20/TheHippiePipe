@@ -15,7 +15,7 @@
   {{ block.shopify_attributes }}
 >
   <span class="footer-utilities__text">
-    &copy; 2013 - {{ 'now' | date: '%Y' }}
+    &copy; 2014 - {{ 'now' | date: '%Y' }}
     {{ shop.name | link_to: routes.root_url -}}
     {%- if block_settings.show_powered_by -%}
       , Developed By <a href="https://thegrowmore.com/" class="powered-by-link hover-icon-scale flex justify-left gap-xs align-center">
@@ -82,15 +82,21 @@
   }
 
   .footer-utilities__group-copyright {
-  flex-wrap: wrap;
-  justify-content: center;
-  text-align: center;
-}
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
 
-.footer-utilities__group-copyright .footer-utilities__text {
-  white-space: normal;
-  text-align: center;
-}
+  .footer-utilities__group-copyright .footer-utilities__text {
+    white-space: normal;
+    text-align: center;
+  }
+
+  @media (max-width: 749px) {
+    .footer-utilities__group-copyright {
+      flex-direction: column-reverse;
+    }
+  }
 
 {% endstylesheet %}
 

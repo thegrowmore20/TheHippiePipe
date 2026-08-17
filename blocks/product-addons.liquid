@@ -288,12 +288,21 @@
   .addons__name {
     flex: 1;
     min-width: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .addons__toggle {
     position: relative;
     flex-shrink: 0;
     cursor: pointer;
+  }
+  .addons__toggle:hover .addons__pill-price {
+    color: #fff;
   }
 
   .addons__toggle input {

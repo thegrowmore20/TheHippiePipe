@@ -76,6 +76,22 @@
       {%- render 'theme-editor' -%}
     {% endif %}
 
+    <style>
+      .scroll-progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        background-color:	#f6d579;
+        transition: transform 0.25s ease;
+        z-index: 10001;
+        width: 100%;
+        transform: scaleX(0);
+        transform-origin: left center;
+        will-change: transform;
+      }  
+    </style>
+
     {{ content_for_header }}
   </head>
 
@@ -83,7 +99,8 @@
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
 
     {% render 'chat-drawer' %}
-
+    
+    <div class="scroll-progress-bar"><span></span></div>
     <div class="page-wrapper">
       <div id="header-group">
         {% sections 'header-group' %}
@@ -92,7 +109,7 @@
       <script>
         // Inline header height and menu style calculations to prevent layout shift
         // Note: Updates in calculateHeaderGroupHeight(), updateTransparentHeaderOffset() and setHeaderMenuStyle() utilities.js should be kept in sync with this function
-        (function setHeaderHeighCustomProperties() {
+        (function setHeaderHeighCustomProperties(isFollowUpMeasurement) {
           /*
            * Header calculation functions for maintaining CSS variables
            * Mimic calculateHeaderGroupHeight() in utilities.js
@@ -130,6 +147,25 @@
             });
           }
 
+          // Section/block styles can replace the logo's intrinsic dimensions while the
+          // document is still parsing. Observe that short first-paint window so the
+          // viewport offset is updated in the same rendering frame as the logo, instead
+          // of several seconds later when the deferred header module initializes.
+          if (!isFollowUpMeasurement) {
+            const firstPaintHeaderObserver = new ResizeObserver(function () {
+              setHeaderHeighCustomProperties(true);
+            });
+
+            firstPaintHeaderObserver.observe(header);
+            for (const child of headerGroup.children) {
+              if (child instanceof HTMLElement) firstPaintHeaderObserver.observe(child);
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+              firstPaintHeaderObserver.disconnect();
+            }, { once: true });
+          }
+
           /**
            * Updates CSS custom properties for transparent header offset calculation
            * Mimic updateTransparentHeaderOffset() in utilities.js
@@ -144,7 +180,7 @@
 
           const shouldApplyOffset = !hasImmediateSection ? '1' : '0';
           document.body.style.setProperty('--transparent-header-offset-boolean', shouldApplyOffset);
-        })();
+        })(false);
 
         (function setHeaderMenuStyle() {
           const headerComponent = document.querySelector('#header-component');
@@ -183,6 +219,135 @@
     {% endif %}
 
     {% render 'schema-rich-text' %}
+
+    <script>
+      (function () {
+        function init() {
+          const bars = document.querySelectorAll('.scroll-progress-bar');
+          const scroller = document.querySelector('.page-wrapper');
+          if (!bars.length || !scroller) return;
+
+          let ticking = false;
+
+          function update() {
+            ticking = false;
+            const max = scroller.scrollHeight - scroller.clientHeight;
+            const pct = max > 0
+              ? Math.min(100, Math.max(0, (scroller.scrollTop / max) * 100))
+              : 0;
+            bars.forEach(el => { el.style.transform = 'scaleX(' + (pct / 100) + ')'; });
+          }
+
+          scroller.addEventListener('scroll', () => {
+            if (!ticking) { ticking = true; requestAnimationFrame(update); }
+          }, { passive: true });
+
+          // Content height changes: image loads, accordions, review widgets, AJAX cart
+          if (window.ResizeObserver) {
+            new ResizeObserver(update).observe(scroller);
+          }
+          window.addEventListener('resize', update, { passive: true });
+
+          update();
+        }
+
+        document.readyState === 'loading'
+          ? document.addEventListener('DOMContentLoaded', init)
+          : init();
+      })();
+    </script>
+
+    {% if request.page_type == 'product' %}
+      <script>
+        (function () {
+          'use strict';
+
+          var TEASER_SELECTOR = 'body [class*="kl-teaser-"]';
+          var mq = window.matchMedia('(max-width: 749px)'); // matches Horizon's breakpoint
+          var GAP = 0;        // extra breathing room above the bar, if you want any
+          var FALLBACK = 65;  // only used if measuring fails
+
+          var wrap, bar, attrObserver, bodyObserver, bodyTimer;
+
+          function isStuck() {
+            return (
+              bar.getAttribute('data-stuck') === 'true' &&
+              wrap.getAttribute('data-variant-available') === 'true'
+            );
+          }
+
+          function barOffset() {
+            var h = bar.getBoundingClientRect().height;
+            var inset = parseFloat(getComputedStyle(bar).bottom) || 0; // 0 on mobile
+            return h ? Math.round(h + 1 + inset + GAP) : FALLBACK;
+          }
+
+          function updatePosition() {
+            var teaser = document.querySelector(TEASER_SELECTOR); // re-query: Klaviyo can re-inject
+            if (!teaser) return;
+
+            if (!teaser.dataset.atcOffsetInit) {
+              teaser.style.setProperty('transition', 'bottom 0.4s ease-in-out', 'important');
+              teaser.dataset.atcOffsetInit = '1';
+            }
+
+            var offset = mq.matches && isStuck() ? barOffset() : 0;
+            teaser.style.setProperty('bottom', offset + 'px', 'important'); // ← priority as 3rd arg
+          }
+
+          function watchBar() {
+            if (attrObserver) attrObserver.disconnect();
+            attrObserver = new MutationObserver(function () {
+              requestAnimationFrame(updatePosition);
+            });
+            // subtree: data-stuck lives on the inner bar, data-variant-available on the wrapper
+            attrObserver.observe(wrap, {
+              subtree: true,
+              attributes: true,
+              attributeFilter: ['data-stuck', 'data-variant-available'],
+            });
+          }
+
+          function waitForTeaser() {
+            if (document.querySelector(TEASER_SELECTOR)) return updatePosition();
+            if (bodyObserver) return;
+
+            // event-driven instead of polling every second
+            bodyObserver = new MutationObserver(function () {
+              if (!document.querySelector(TEASER_SELECTOR)) return;
+              bodyObserver.disconnect();
+              bodyObserver = null;
+              clearTimeout(bodyTimer);
+              updatePosition();
+            });
+            bodyObserver.observe(document.body, { childList: true, subtree: true });
+
+            bodyTimer = setTimeout(function () {
+              if (bodyObserver) { bodyObserver.disconnect(); bodyObserver = null; }
+            }, 15000); // Klaviyo never loaded — give up
+          }
+
+          function init() {
+            wrap = document.querySelector('sticky-add-to-cart');
+            bar = wrap && wrap.querySelector('.sticky-add-to-cart__bar');
+            if (!bar) return; // sticky ATC disabled in section settings
+
+            watchBar();
+            waitForTeaser();
+          }
+
+          // Re-evaluate on rotate / resize across the breakpoint
+          mq.addEventListener('change', updatePosition);
+          document.addEventListener('shopify:section:load', init);
+
+          document.readyState === 'loading'
+            ? document.addEventListener('DOMContentLoaded', init)
+            : init();
+        })();
+      </script>
+    {% endif %}
+
     
+    <script src="{{ 'product-swatches-overlay.js' | asset_url }}" defer></script>
   </body>
 </html>
